@@ -8,6 +8,10 @@ Run the script to load the function into the current PowerShell session.
 You will need to have a valid ClientID, which you can obtain from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/). 
 Requires at least PowerShell 7.0.
 
+`Get-TwitchXRef [-Clip] <String> [-XRef] <String> [-Count <Int32>] [-ClientID <String>] [-PassThru]`
+
+`Get-TwitchXRef -VideoUri <String> [-XRef] <String> [-Count <Int32>] [-ClientID <String>] [-PassThru]`
+
 **-Clip** accepts Twitch clips in either URL format.
 
 **-VideoUri** accepts video URLs that include a timestamp parameter.
