@@ -85,7 +85,6 @@ function global:Get-TwitchXRef {
             [int]$VideoID = $Source | Get-IdFromUri
 
             $RestArgs["Uri"] = ($API, "videos/", $VideoID) | Join-String
-
         }
         else {
             # Clip provided.
@@ -108,7 +107,6 @@ function global:Get-TwitchXRef {
 
             # Get Video ID from API response.
             $RestArgs["Uri"] = ($API, "videos/", $ClipResponse.vod.id) | Join-String
-
         }
 
         # Get information about main video.
@@ -150,7 +148,7 @@ function global:Get-TwitchXRef {
                 if ($UserLookup._total -eq 0) {
                     throw "Input Error: XRef user/channel not found!"
                 }
-                if (-not $UserLookup.users[0]._id) {
+                elseif (-not $UserLookup.users[0]._id) {
                     throw "Response Error: (User Lookup) Required data is missing from API response."
                 }
             }
