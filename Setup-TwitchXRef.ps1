@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.0
+.VERSION 2.1
 
 .GUID 8c89ef10-5110-4406-a876-82b8eadf5bb2
 
@@ -93,12 +93,14 @@ function global:Get-TwitchXRef {
 
             $RestArgs["Uri"] = ($API, "clips/", $Slug) | Join-String
 
-            $ClipResponse = Invoke-RestMethod @RestArgs
-            if (-not $ClipResponse.vod.offset) {
-                throw "Response Error: Time offset missing from API response."
+            try {
+                $ClipResponse = Invoke-RestMethod @RestArgs
+                if (-not ($ClipResponse.vod.offset -and $ClipResponse.vod.id)) {
+                    throw "Response Error: (Clip) Required data is missing from API response."
+                }
             }
-            if (-not $ClipResponse.vod.id) {
-                throw "Response Error: VOD ID missing from API response."
+            catch {
+                throw $_
             }
 
             # Get offset from API response.
@@ -110,12 +112,14 @@ function global:Get-TwitchXRef {
         }
 
         # Get information about main video.
-        $VodResponse = Invoke-RestMethod @RestArgs
-        if ($VodResponse.error) {
-            throw "API Error: $($VodResponse.status) $($VodResponse.error)."
+        try {
+            $VodResponse = Invoke-RestMethod @RestArgs
+            if (-not $VodResponse.recorded_at) {
+                throw "Response Error: (Video) Required data is missing from API response."
+            }
         }
-        if (-not $VodResponse.recorded_at) {
-            throw "Response Error: Source video start time missing from API response."
+        catch {
+            throw $_
         }
 
         # Set absolute timestamp of event.
@@ -140,7 +144,20 @@ function global:Get-TwitchXRef {
             $RestArgs["Body"] = @{
                 "login" = $XRef
             }
-            $UserLookup = Invoke-RestMethod @RestArgs
+
+            try {
+                $UserLookup = Invoke-RestMethod @RestArgs
+                if ($UserLookup._total -eq 0) {
+                    throw "Input Error: XRef user/channel not found!"
+                }
+                if (-not $UserLookup.users[0]._id) {
+                    throw "Response Error: (User Lookup) Required data is missing from API response."
+                }
+            }
+            catch {
+                throw $_
+            }
+            
             [int]$UserID = $UserLookup.users[0]._id
 
             # Set args using ID number.
@@ -152,7 +169,15 @@ function global:Get-TwitchXRef {
             }
         }
 
-        $XRefResponse = Invoke-RestMethod @RestArgs
+        try {
+            $XRefResponse = Invoke-RestMethod @RestArgs
+            if (-not ($XRefResponse.videos.recorded_at -and $XRefResponse.videos.url)) {
+                throw "Response Error: (XRef) Required data is missing from API response."
+            }
+        }
+        catch {
+            throw $_
+        }
 
         # ========================================
 
