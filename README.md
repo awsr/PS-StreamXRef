@@ -12,7 +12,7 @@ Tested using PowerShell 7.0.
 
 **-VideoUri** accepts video URLs that include a timestamp parameter.
 
-**-XRef** accepts either a spcific video URL or a channel/user name.
+**-XRef** accepts either a video URL, a channel URL, or a channel/user name.
 
 **-Count** (*default 10*) determines the number of videos to request when **-XRef** is a name.
 
