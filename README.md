@@ -6,7 +6,7 @@ Have you ever seen a clip from several people streaming together and wanted to s
 
 Run the script to load the function into the current PowerShell session. 
 You will need to have a valid ClientID, which you can obtain from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/). 
-Tested using PowerShell 7.0.
+Requires at least PowerShell 7.0.
 
 **-Clip** accepts Twitch clips in either URL format.
 
