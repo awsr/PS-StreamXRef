@@ -9,6 +9,8 @@
 
 #>
 
+#Requires -Version 7.0
+
 <# 
 
 .DESCRIPTION 
