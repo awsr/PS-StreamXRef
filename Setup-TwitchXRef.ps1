@@ -130,11 +130,14 @@ function global:Get-TwitchXRef {
         # Process cross-reference lookup.
         if ($XRef -match ".*twitch\.tv/videos/.+") {
             # Using VOD link.
-            [int]$XRefID = $XRef | Get-IdFromUrl
+            [int]$XRefID = $XRef | Get-IdFromUri
             $RestArgs["Uri"] = ($API, "videos/", $XRefID) | Join-String
         }
         else {
             # Using username.
+
+            # Strip formatting in case channel was passed as a URL.
+            $XRef = $XRef | Get-IdFromUri
 
             # Get ID number for username.
             $RestArgs["Uri"] = ($API, "users") | Join-String
