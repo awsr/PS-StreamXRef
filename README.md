@@ -1,14 +1,18 @@
 # Get-TwitchXRef
-Cross-reference events between streams. Tested using PowerShell 7.0.
+
+Have you ever seen a clip from several people streaming together and wanted to see what it looked like from other perspectives?
+
+---
 
 Run the script to load the function into the current PowerShell session. 
-You will need to have a valid ClientID, which you can obtain from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/).
+You will need to have a valid ClientID, which you can obtain from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/). 
+Tested using PowerShell 7.0.
 
-**-Clip** accepts either URL format for Twitch clips.
+**-Clip** accepts Twitch clips in either URL format.
 
 **-VideoUri** accepts video URLs that include a timestamp parameter.
 
-**-XRef** accepts either a video URL or a channel/user name.
+**-XRef** accepts either a spcific video URL or a channel/user name.
 
 **-Count** (*default 10*) determines the number of videos to request when **-XRef** is a name.
 
