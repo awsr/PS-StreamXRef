@@ -1,5 +1,5 @@
 # Get-TwitchXRef
-Cross-reference events between streams.
+Cross-reference events between streams. Tested using PowerShell 7.0.
 
 Run the script to load the function into the current PowerShell session. 
 You will need to have a valid ClientID, which you can obtain from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/).
