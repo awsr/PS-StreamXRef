@@ -103,7 +103,7 @@ function global:Get-TwitchXRef {
             }
 
             # Get offset from API response.
-            [datetime]$TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
+            $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
             # Get Video ID from API response.
             $RestArgs["Uri"] = ($API, "videos/", $ClipResponse.vod.id) | Join-String
@@ -121,7 +121,7 @@ function global:Get-TwitchXRef {
         }
 
         # Set absolute timestamp of event.
-        $EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+        [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
 
         # ========================================
 
