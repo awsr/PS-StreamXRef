@@ -12,6 +12,6 @@ You will need to have a valid ClientID, which you can obtain from the [Twitch De
 
 **-Count** (*default 10*) determines the number of videos to request when **-XRef** is a name.
 
-**-ClientID** (*required 1st time*) accepts your Twitch client ID.
+**-ClientID** (*required 1st time in session*) accepts your Twitch client ID.
 
 **-PassThru** returns the URL as a string instead of writing to host.
