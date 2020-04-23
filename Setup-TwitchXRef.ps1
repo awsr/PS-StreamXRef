@@ -30,7 +30,7 @@ function global:Get-TwitchXRef {
         [ValidatePattern(".*twitch\.tv/.+")]
         [string]$Clip,
 
-        [Parameter(Mandatory = $true, ParameterSetName = "VideoUri", Position = 0)]
+        [Parameter(Mandatory = $true, ParameterSetName = "VideoUri")]
         [ValidatePattern(".*twitch\.tv/videos/.+[?&]t=.+")]
         [string]$VideoUri,
 
