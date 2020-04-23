@@ -137,7 +137,10 @@ function global:Get-TwitchXRef {
             # Using username.
 
             # Get ID number for username.
-            $RestArgs["Uri"] = ($API, "users?login=", $XRef) | Join-String
+            $RestArgs["Uri"] = ($API, "users") | Join-String
+            $RestArgs["Body"] = @{
+                "login" = $XRef
+            }
             $UserLookup = Invoke-RestMethod @RestArgs
             [int]$UserID = $UserLookup.users[0]._id
 
