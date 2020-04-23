@@ -26,13 +26,8 @@
 function global:Get-TwitchXRef {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory = $true, ParameterSetName = "Clip", Position = 0)]
-        [ValidatePattern(".*twitch\.tv/.+")]
-        [string]$Clip,
-
-        [Parameter(Mandatory = $true, ParameterSetName = "VideoUri")]
-        [ValidatePattern(".*twitch\.tv/videos/.+[?&]t=.+")]
-        [string]$VideoUri,
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string]$Source,
 
         [Parameter(Mandatory = $true, Position = 1)]
         [string]$XRef,
@@ -74,16 +69,31 @@ function global:Get-TwitchXRef {
     }
 
     Process {
-        if ($Clip) {
-            # Get VOD from clip.
-            $Slug = $Clip | Get-IdFromUri
+        if ($Source -match ".*twitch\.tv/videos/.+[?&]t=.+") {
+            # Video URI provided.
+            #region Get offset from URL parameters
+            $Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
+
+            $OffsetArgs = @{}
+            $OffsetArgs["Hours"] = ($null -ne $Matches.Hours) ? $Matches.Hours : 0
+            $OffsetArgs["Minutes"] = ($null -ne $Matches.Minutes) ? $Matches.Minutes : 0
+            $OffsetArgs["Seconds"] = ($null -ne $Matches.Seconds) ? $Matches.Seconds : 0
+
+            $TimeOffset = New-TimeSpan @OffsetArgs
+            #endregion
+
+            [int]$VideoID = $Source | Get-IdFromUri
+
+            $RestArgs["Uri"] = ($API, "videos/", $VideoID) | Join-String
+
+        }
+        else {
+            # Clip provided.
+            $Slug = $Source | Get-IdFromUri
 
             $RestArgs["Uri"] = ($API, "clips/", $Slug) | Join-String
 
             $ClipResponse = Invoke-RestMethod @RestArgs
-            if ($ClipResponse.error) {
-                throw "API Error: $($ClipResponse.status) $($ClipResponse.error)."
-            }
             if (-not $ClipResponse.vod.offset) {
                 throw "Response Error: Time offset missing from API response."
             }
@@ -94,25 +104,9 @@ function global:Get-TwitchXRef {
             # Get offset from API response.
             $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
+            # Get Video ID from API response.
             $RestArgs["Uri"] = ($API, "videos/", $ClipResponse.vod.id) | Join-String
 
-        }
-        else {
-            # VOD already provided.
-            #region Get offset from URL parameters
-            $VideoUri -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
-
-            $OffsetArgs = @{}
-            $OffsetArgs["Hours"] = ($null -ne $Matches.Hours) ? $Matches.Hours : 0
-            $OffsetArgs["Minutes"] = ($null -ne $Matches.Minutes) ? $Matches.Minutes : 0
-            $OffsetArgs["Seconds"] = ($null -ne $Matches.Seconds) ? $Matches.Seconds : 0
-
-            $TimeOffset = New-TimeSpan @OffsetArgs
-            #endregion
-
-            [int]$VideoID = $VideoUri | Get-IdFromUri
-
-            $RestArgs["Uri"] = ($API, "videos/", $VideoID) | Join-String
         }
 
         # Get information about main video.
