@@ -103,7 +103,7 @@ function global:Get-TwitchXRef {
             }
 
             # Get offset from API response.
-            $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
+            [datetime]$TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
             # Get Video ID from API response.
             $RestArgs["Uri"] = ($API, "videos/", $ClipResponse.vod.id) | Join-String
