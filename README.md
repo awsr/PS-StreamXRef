@@ -6,7 +6,14 @@ Have you ever seen a clip from several people streaming together and wanted to s
 
 Run the script to load the function into the current PowerShell session. 
 You will need to have a valid ClientID, which you can obtain from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/). 
-Requires at least PowerShell 7.0.
+
+* For PowerShell 7.0+, use `Setup-TwitchXRef.ps1`
+
+* For Windows PowerShell 5.1, use `Setup-TwitchXRef-BackCompat.ps1`
+
+*I will probably turn this into an actual PowerShell Module in the future.*
+
+---
 
 `Get-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-ClientID <String>] [-PassThru]`
 
