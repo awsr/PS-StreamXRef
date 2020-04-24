@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.1
+.VERSION 2.1.1
 
 .GUID 8c89ef10-5110-4406-a876-82b8eadf5bb2
 
@@ -241,9 +241,25 @@ function global:Get-TwitchXRef {
     }
 }
 
-New-Alias -Name "gtx" -Value Get-TwitchXRef -Scope Global -Force
+Write-Host -NoNewline "Command loaded: "
+Write-Host -ForegroundColor Green "Get-TwitchXRef"
 
-Write-Host -NoNewline "Command "
-Write-Host -NoNewline -ForegroundColor Green "Get-TwitchXRef"
-Write-Host -NoNewline " loaded. Alias: "
-Write-Host -ForegroundColor Green "gtx"
+if (Test-Path Alias:gtx) {
+    # Alias already exists...
+    if ((Get-Alias gtx).Definition -ne "Get-TwitchXRef") {
+        # ... but is set to some other command.
+        Write-Warning "Alias already exists: $((Get-Alias gtx).DisplayName)"
+
+        if ((Read-Host "Overwrite alias? (y/n)") -like "y") {
+            Set-Alias -Name "gtx" -Value Get-TwitchXRef -Scope Global -Force
+            Write-Host -NoNewline "Alias set to: "
+            Write-Host -ForegroundColor Green "gtx"
+        }
+    }
+}
+else {
+    # Add alias.
+    New-Alias -Name "gtx" -Value Get-TwitchXRef -Scope Global
+    Write-Host -NoNewline "Alias set to: "
+    Write-Host -ForegroundColor Green "gtx"
+}
