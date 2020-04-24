@@ -14,9 +14,25 @@
 <# 
 
 .DESCRIPTION 
- Cross-reference timestamps for VODs and clips between different users.
+ Cross-reference timestamps for VODs and clips between different channels/users.
 
  You must provide a Client ID the first time the function is run.
+
+.PARAMETER Source
+ Accepts Twitch clips in either URL format, Twitch clip IDs, or video URLs that include a timestamp parameter.
+
+.PARAMETER XRef
+ Accepts either a video URL, a channel URL, or a channel/user name.
+
+.PARAMETER Count
+ Number of videos to search when -XRef is a name. Default: 10
+
+.PARAMETER ClientID
+ REQUIRED when run for the first time in a session.
+ Accepts your Twitch API client ID.
+
+.PARAMETER PassThru
+ Returns result URL as a string instead of writing to host.
 
 .NOTES
  This uses the v5 Twitch API.
