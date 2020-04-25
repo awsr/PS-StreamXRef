@@ -64,7 +64,7 @@ function global:Get-TwitchXRef {
     Begin {
         $API = "https://api.twitch.tv/kraken/"
 
-        if (-not $ClientID) {
+        if ($null, "" -contains $ClientID) {
             $ClientID = Read-Host "Enter ClientID"
         }
         $global:Twitch_API_ClientID = $ClientID
@@ -87,6 +87,10 @@ function global:Get-TwitchXRef {
     }
 
     Process {
+        if ($null, "" -contains $ClientID) {
+            throw "No Twitch API client ID specified or found."
+        }
+        
         if ($Source -match ".*twitch\.tv/videos/.+[?&]t=.+") {
             # Video URI provided.
             #region Get offset from URL parameters
