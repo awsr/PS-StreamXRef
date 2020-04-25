@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.1.1
+.VERSION 2.1.2
 
 .GUID 8c89ef10-5110-4406-a876-82b8eadf5bb2
 
@@ -44,9 +44,11 @@ function global:Get-TwitchXRef {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $true, Position = 0)]
+        [ValidateNotNullOrEmpty()]
         [string]$Source,
 
         [Parameter(Mandatory = $true, Position = 1)]
+        [ValidateNotNullOrEmpty()]
         [string]$XRef,
 
         [Parameter()]
@@ -57,7 +59,7 @@ function global:Get-TwitchXRef {
         [string]$ClientID = $global:Twitch_API_ClientID,
 
         [Parameter()]
-        [switch]$PassThru
+        [switch]$PassThru = $false
     )
 
     Begin {
