@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.1.2
+.VERSION 2.2
 
 .GUID 8c89ef10-5110-4406-a876-82b8eadf5bb2
 
@@ -42,22 +42,22 @@
 function global:Get-TwitchXRef {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory = $true, Position = 0)]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$Source,
 
-        [Parameter(Mandatory = $true, Position = 1)]
+        [Parameter(Mandatory = $true, Position = 1, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$XRef,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateRange(1,100)]
         [int]$Count = 10,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [string]$ClientID = $global:Twitch_API_ClientID,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [switch]$PassThru = $false
     )
 
@@ -74,12 +74,6 @@ function global:Get-TwitchXRef {
             "Accept"    = "application/vnd.twitchtv.v5+json"
         }
 
-        $RestArgs = @{
-            Method      = "Get"
-            Headers     = $v5Headers
-            ErrorAction = "Stop"
-        }
-
         filter Get-IdFromUri {
             $Uri = $_ -split "/" | Select-Object -Last 1
             return $Uri -split "\?" | Select-Object -First 1
@@ -89,6 +83,12 @@ function global:Get-TwitchXRef {
     Process {
         if ($null, "" -contains $ClientID) {
             throw "No Twitch API client ID specified or found."
+        }
+
+        $RestArgs = @{
+            Method      = "Get"
+            Headers     = $v5Headers
+            ErrorAction = "Stop"
         }
         
         if ($Source -match ".*twitch\.tv/videos/.+[?&]t=.+") {
