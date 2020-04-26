@@ -101,7 +101,7 @@ function global:Get-TwitchXRef {
             #region Get offset from URL parameters
             $Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
 
-            #region Old method of setting values. <BackCompat!>
+            #region Old method of setting values. <!Legacy>
             $OffsetArgs = @{
                 Hours = 0
                 Minutes = 0
@@ -116,20 +116,20 @@ function global:Get-TwitchXRef {
             if ($null -ne $Matches.Seconds) {
                 $OffsetArgs["Seconds"] = $Matches.Seconds
             }
-            #endregion
+            #endregion <!Legacy>
 
             $TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
 
             [int]$VideoID = $Source | Get-IdFromUri
 
-            $RestArgs["Uri"] = $API + "videos/" + $VideoID # <BackCompat!>
+            $RestArgs["Uri"] = $API + "videos/" + $VideoID # <!Legacy>
         }
         else {
             # Clip provided.
             $Slug = $Source | Get-IdFromUri
 
-            $RestArgs["Uri"] = $API + "clips/" + $Slug # <BackCompat!>
+            $RestArgs["Uri"] = $API + "clips/" + $Slug # <!Legacy>
 
             try {
                 $ClipResponse = Invoke-RestMethod @RestArgs
@@ -145,7 +145,7 @@ function global:Get-TwitchXRef {
             $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
             # Get Video ID from API response.
-            $RestArgs["Uri"] = $API + "videos/" + $ClipResponse.vod.id # <BackCompat!>
+            $RestArgs["Uri"] = $API + "videos/" + $ClipResponse.vod.id # <!Legacy>
         }
 
         # Get information about main video.
@@ -155,7 +155,7 @@ function global:Get-TwitchXRef {
                 throw "Response Error: (Video) Required data is missing from API response."
             }
             else {
-                # Manual conversion to UTC datetime. <BackCompat!>
+                # Manual conversion to UTC datetime. <!Legacy>
                 $VodResponse.recorded_at = ([datetime]::Parse($VodResponse.recorded_at)).ToUniversalTime()
             }
         }
@@ -172,7 +172,7 @@ function global:Get-TwitchXRef {
         if ($XRef -match ".*twitch\.tv/videos/.+") {
             # Using VOD link.
             [int]$XRefID = $XRef | Get-IdFromUri
-            $RestArgs["Uri"] = $API + "videos/" + $XRefID # <BackCompat!>
+            $RestArgs["Uri"] = $API + "videos/" + $XRefID # <!Legacy>
         }
         else {
             # Using username.
@@ -181,7 +181,7 @@ function global:Get-TwitchXRef {
             $XRef = $XRef | Get-IdFromUri
 
             # Get ID number for username.
-            $RestArgs["Uri"] = $API + "users" # <BackCompat!>
+            $RestArgs["Uri"] = $API + "users" # <!Legacy>
             $RestArgs["Body"] = @{
                 "login" = $XRef
             }
@@ -202,7 +202,7 @@ function global:Get-TwitchXRef {
             [int]$UserID = $UserLookup.users[0]._id
 
             # Set args using ID number.
-            $RestArgs["Uri"] = $API + "channels/" + $UserID + "/videos" # <BackCompat!>
+            $RestArgs["Uri"] = $API + "channels/" + $UserID + "/videos" # <!Legacy>
             $RestArgs["Body"] = @{
                 "broadcast-type" = "archive"
                 "sort"           = "time"
@@ -216,7 +216,7 @@ function global:Get-TwitchXRef {
                 throw "Response Error: (XRef) Required data is missing from API response."
             }
             else {
-                # Manual conversion to UTC datetime. <BackCompat!>
+                # Manual conversion to UTC datetime. <!Legacy>
                 for ($i = 0; $i -lt $XRefResponse.videos.Length; $i++) {
                     $XRefResponse.videos[$i].recorded_at = ([datetime]::Parse($XRefResponse.videos[$i].recorded_at)).ToUniversalTime()
                 }

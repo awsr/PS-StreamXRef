@@ -81,6 +81,7 @@ function Get-TwitchXRef {
 
     Process {
         if ($null, "" -contains $ClientID) {
+            # Fatal error.
             throw "No Twitch API client ID specified or found."
         }
 
