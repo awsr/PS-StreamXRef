@@ -1,20 +1,24 @@
 
-<#PSScriptInfo
+Set-StrictMode -Version Latest
 
-.VERSION 2.2.2
+if (-not (Test-Path Variable:Global:Twitch_API_ClientID)) {
+    $global:Twitch_API_ClientID = $null
+}
 
-.GUID 8c89ef10-5110-4406-a876-82b8eadf5bb2
+# Helper function.
+filter Get-IdFromUri {
+    $Uri = $_ -split "/" | Select-Object -Last 1
+    return $Uri -split "\?" | Select-Object -First 1
+}
 
-.AUTHOR Alex
-
-#>
-
-#Requires -Version 7.0
 
 <# 
 
+.SYNOPSIS
+ Cross-reference timestamps for Twitch VODs and clips between different channels/users.
+
 .DESCRIPTION 
- Cross-reference timestamps for VODs and clips between different channels/users.
+ Given a Twitch clip or video timestamp URL, get a URL to the same moment from the cross-referenced video or channel.
 
  You must provide a Client ID the first time the function is run.
 
@@ -39,7 +43,7 @@
 
 #>
 
-function global:Get-TwitchXRef {
+function Get-TwitchXRef {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true)]
@@ -72,11 +76,6 @@ function global:Get-TwitchXRef {
         $v5Headers = @{
             "Client-ID" = $ClientID
             "Accept"    = "application/vnd.twitchtv.v5+json"
-        }
-
-        filter Get-IdFromUri {
-            $Uri = $_ -split "/" | Select-Object -Last 1
-            return $Uri -split "\?" | Select-Object -First 1
         }
     }
 
@@ -158,8 +157,7 @@ function global:Get-TwitchXRef {
             $RestArgs["Uri"] = ($API, "videos/", $XRefID) | Join-String
         }
         else {
-            # Using username.
-
+            # Using username/channel.
             # Strip formatting in case channel was passed as a URL.
             $XRef = $XRef | Get-IdFromUri
 
@@ -228,25 +226,9 @@ function global:Get-TwitchXRef {
     }
 }
 
-Write-Host -NoNewline "Command loaded: "
-Write-Host -ForegroundColor Green "Get-TwitchXRef"
+Set-Alias -Name gtxr -Value Get-TwitchXRef
 
-if (Test-Path Alias:gtx) {
-    # Alias already exists...
-    if ((Get-Alias gtx).Definition -ne "Get-TwitchXRef") {
-        # ... but is set to some other command.
-        Write-Warning "Alias already exists: $((Get-Alias gtx).DisplayName)"
-
-        if ((Read-Host "Overwrite alias? (y/n)") -like "y") {
-            Set-Alias -Name "gtx" -Value Get-TwitchXRef -Scope Global -Force
-            Write-Host -NoNewline "Alias set to: "
-            Write-Host -ForegroundColor Green "gtx"
-        }
-    }
-}
-else {
-    # Add alias.
-    New-Alias -Name "gtx" -Value Get-TwitchXRef -Scope Global
-    Write-Host -NoNewline "Alias set to: "
-    Write-Host -ForegroundColor Green "gtx"
+# Clean up global variable when module is removed.
+$ExecutionContext.SessionState.Module.OnRemove += {
+    Remove-Variable -Name Twitch_API_ClientID -Scope Global
 }
