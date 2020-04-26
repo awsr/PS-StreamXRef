@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2
+.VERSION 2.2.1
 
 .GUID 8c89ef10-5110-4406-a876-82b8eadf5bb2
 
@@ -92,8 +92,12 @@ function global:Get-TwitchXRef {
             ErrorAction = "Stop"
         }
         
-        if ($Source -match ".*twitch\.tv/videos/.+[?&]t=.+") {
+        if ($Source -match ".*twitch\.tv/videos/.+") {
             # Video URI provided.
+            if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
+                throw "Input Error: Video URL missing timestamp parameter."
+            }
+
             #region Get offset from URL parameters
             $Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
 
