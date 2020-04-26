@@ -15,7 +15,7 @@ filter Get-IdFromUri {
 <# 
 
 .SYNOPSIS
- Cross-reference timestamps for Twitch VODs and clips between different channels/users.
+ Cross-reference Twitch clips and video timestamps between different channels/users.
 
 .DESCRIPTION 
  Given a Twitch clip or video timestamp URL, get a URL to the same moment from the cross-referenced video or channel.
@@ -208,8 +208,8 @@ function Get-TwitchXRef {
         if (-not $VideoToCompare) {
             throw "Event occurs before search range."
         }
-        elseif (-not ($VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length) -gt $EventTimestamp)) {
-            # End time isn't after timestamp.
+        elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
+            # Event timestamp is after the end of stream.
             throw "Event not found during stream."
         }
         else {

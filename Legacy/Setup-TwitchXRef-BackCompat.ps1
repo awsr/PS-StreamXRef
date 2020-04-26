@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2.2
+.VERSION 2.2.3
 
 .GUID 8c89ef10-5110-4406-a876-82b8eadf5bb2
 
@@ -14,7 +14,7 @@
 <# 
 
 .DESCRIPTION 
- Cross-reference timestamps for VODs and clips between different channels/users.
+ Cross-reference Twitch clips and video timestamps between different channels/users.
  This version of the script works with Windows PowerShell 5.1.
 
  You must provide a Client ID the first time the function is run.
@@ -233,8 +233,8 @@ function global:Get-TwitchXRef {
         if (-not $VideoToCompare) {
             throw "Event occurs before search range."
         }
-        elseif (-not ($VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length) -gt $EventTimestamp)) {
-            # End time isn't after timestamp.
+        elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
+            # Event timestamp is after the end of stream.
             throw "Event not found during stream."
         }
         else {
