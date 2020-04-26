@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2.1
+.VERSION 2.2.2
 
 .GUID 8c89ef10-5110-4406-a876-82b8eadf5bb2
 
@@ -210,7 +210,7 @@ function global:Get-TwitchXRef {
         if (-not $VideoToCompare) {
             throw "Event occurs before search range."
         }
-        elseif (-not $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length) -gt $EventTimestamp) {
+        elseif (-not ($VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length) -gt $EventTimestamp)) {
             # End time isn't after timestamp.
             throw "Event not found during stream."
         }
