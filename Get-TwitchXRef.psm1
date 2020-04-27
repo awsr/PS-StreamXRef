@@ -52,7 +52,7 @@ function Get-TwitchXRef {
         [string]$XRef,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [ValidateRange(1,100)]
+        [ValidateRange(1, 100)]
         [int]$Count = 10,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
@@ -95,7 +95,7 @@ function Get-TwitchXRef {
             #region Get offset from URL parameters
             $Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
 
-            $OffsetArgs = @{}
+            $OffsetArgs = @{ }
             $OffsetArgs["Hours"] = ($null -ne $Matches.Hours) ? $Matches.Hours : 0
             $OffsetArgs["Minutes"] = ($null -ne $Matches.Minutes) ? $Matches.Minutes : 0
             $OffsetArgs["Seconds"] = ($null -ne $Matches.Seconds) ? $Matches.Seconds : 0
