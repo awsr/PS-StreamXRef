@@ -2,7 +2,7 @@
 Set-StrictMode -Version Latest
 
 if (-not (Test-Path Variable:Global:Twitch_API_ClientID)) {
-    $global:Twitch_API_ClientID = $null
+    $script:Twitch_API_ClientID = $null
 }
 
 # Helper function.
@@ -56,7 +56,7 @@ function Get-TwitchXRef {
         [int]$Count = 10,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [string]$ClientID = $global:Twitch_API_ClientID
+        [string]$ClientID = $script:Twitch_API_ClientID
     )
 
     Begin {
@@ -65,7 +65,7 @@ function Get-TwitchXRef {
         if ($null, "" -contains $ClientID) {
             $ClientID = Read-Host "Enter ClientID"
         }
-        $global:Twitch_API_ClientID = $ClientID
+        $script:Twitch_API_ClientID = $ClientID
 
         $v5Headers = @{
             "Client-ID" = $ClientID
@@ -247,7 +247,4 @@ function Get-TwitchXRef {
 
 Set-Alias -Name gtxr -Value Get-TwitchXRef
 
-# Clean up global variable when module is removed.
-$ExecutionContext.SessionState.Module.OnRemove += {
-    Remove-Variable -Name Twitch_API_ClientID -Scope Global
-}
+Export-ModuleMember -Alias "gtxr" -Variable "Twitch_API_ClientID"
