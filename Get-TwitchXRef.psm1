@@ -28,12 +28,12 @@ filter Get-IdFromUri {
 .PARAMETER XRef
  Accepts either a video URL, a channel URL, or a channel/user name.
 
-.PARAMETER Count
- Number of videos to search when -XRef is a name. Default: 10
-
 .PARAMETER ClientID
  REQUIRED when run for the first time in a session.
  Accepts your Twitch API client ID.
+
+.PARAMETER Count
+ Number of videos to search when -XRef is a name. Default: 10
 
 .PARAMETER Offset
  Number of results to offset the search range by. Default: 0
@@ -56,11 +56,11 @@ function Get-TwitchXRef {
         [string]$XRef,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [ValidateRange(1, 100)]
-        [int]$Count = 10,
+        [string]$ClientID = $script:Twitch_API_ClientID,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [string]$ClientID = $script:Twitch_API_ClientID,
+        [ValidateRange(1, 100)]
+        [int]$Count = 10,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateRange("NonNegative")]

@@ -20,8 +20,8 @@ Alias: `gtxr`
 
 **-XRef** accepts either a video URL, a channel URL, or a channel/user name.
 
-**-Count** (*default 10*) determines the number of videos to request when **-XRef** is a name.
-
 **-ClientID** (*required 1st time in session*) accepts your Twitch client ID.
+
+**-Count** (*default 10*) determines the number of videos to request when **-XRef** is a name.
 
 **-Offset** (*default 0*) sets the starting offset for search results when **-XRef** is a name.
