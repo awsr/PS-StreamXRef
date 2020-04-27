@@ -35,6 +35,10 @@ filter Get-IdFromUri {
  REQUIRED when run for the first time in a session.
  Accepts your Twitch API client ID.
 
+.PARAMETER Offset
+ Number of results to offset the search range by. Default: 0
+ (Useful if the source is older than 100 results.)
+
 .NOTES
  This uses the v5 Twitch API.
 
@@ -56,7 +60,11 @@ function Get-TwitchXRef {
         [int]$Count = 10,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [string]$ClientID = $script:Twitch_API_ClientID
+        [string]$ClientID = $script:Twitch_API_ClientID,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [ValidateRange("NonNegative")]
+        [int]$Offset = 0
     )
 
     Begin {
@@ -204,6 +212,7 @@ function Get-TwitchXRef {
                 "broadcast-type" = "archive"
                 "sort"           = "time"
                 "limit"          = $Count
+                "offset"         = $Offset
             }
         }
 
