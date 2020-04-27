@@ -88,7 +88,7 @@ function Get-TwitchXRef {
         if ($Source -match ".*twitch\.tv/videos/.+") {
             # Video URI provided.
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
-                Write-Error "Video URL missing timestamp parameter" -Category SyntaxError -CategoryTargetName "Source"
+                Write-Error "Video URL missing timestamp parameter" -ErrorID MissingTimestamp -Category SyntaxError -CategoryTargetName "Source"
                 return $null
             }
 
@@ -179,7 +179,7 @@ function Get-TwitchXRef {
             try {
                 $UserLookup = Invoke-RestMethod @RestArgs
                 if ($UserLookup._total -eq 0) {
-                    Write-Error "(XRef Channel/User) Not found" -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
+                    Write-Error "(XRef Channel/User) Not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
                     return $null
                 }
                 elseif (-not $UserLookup.users[0]._id) {
@@ -228,12 +228,12 @@ function Get-TwitchXRef {
         # Look for first video that starts before the timestamp.
         $VideoToCompare = $XRefResponse.videos | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
         if (-not $VideoToCompare) {
-            Write-Error "Event occurs before search range" -Category InvalidResult -CategoryTargetName "EventTimestamp" -TargetObject $EventTimestamp
+            Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category InvalidResult -CategoryTargetName "EventTimestamp" -TargetObject $EventTimestamp
             return $null
         }
         elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
             # Event timestamp is after the end of stream.
-            Write-Error "Event not found during stream" -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $EventTimestamp
+            Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $EventTimestamp
             return $null
         }
         else {
