@@ -130,8 +130,15 @@ function Get-TwitchXRef {
             }
             catch [Microsoft.PowerShell.Commands.HttpResponseException] {
                 # API responded with error status.
-                $PSCmdlet.WriteError($_)
-                return $null
+                if ($_.Exception.Response.StatusCode -eq 404) {
+                    # Not found
+                    $PSCmdlet.WriteError($_)
+                    return $null
+                }
+                else {
+                    # Other error
+                    $PSCmdlet.ThrowTerminatingError($_)
+                }
             }
             catch {
                 # Pass along throw or other error.
@@ -154,8 +161,15 @@ function Get-TwitchXRef {
         }
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             # API responded with error status.
-            $PSCmdlet.WriteError($_)
-            return $null
+            if ($_.Exception.Response.StatusCode -eq 404) {
+                # Not found
+                $PSCmdlet.WriteError($_)
+                return $null
+            }
+            else {
+                # Other error
+                $PSCmdlet.ThrowTerminatingError($_)
+            }
         }
         catch {
             # Pass along throw or other error.
@@ -196,8 +210,15 @@ function Get-TwitchXRef {
             }
             catch [Microsoft.PowerShell.Commands.HttpResponseException] {
                 # API responded with error status.
-                $PSCmdlet.WriteError($_)
-                return $null
+                if ($_.Exception.Response.StatusCode -eq 404) {
+                    # Not found
+                    $PSCmdlet.WriteError($_)
+                    return $null
+                }
+                else {
+                    # Other error
+                    $PSCmdlet.ThrowTerminatingError($_)
+                }
             }
             catch {
                 # Pass along throw or other error.
@@ -224,8 +245,15 @@ function Get-TwitchXRef {
         }
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             # API responded with error status.
-            $PSCmdlet.WriteError($_)
-            return $null
+            if ($_.Exception.Response.StatusCode -eq 404) {
+                # Not found
+                $PSCmdlet.WriteError($_)
+                return $null
+            }
+            else {
+                # Other error
+                $PSCmdlet.ThrowTerminatingError($_)
+            }
         }
         catch {
             # Pass along throw or other error.
