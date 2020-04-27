@@ -24,4 +24,4 @@ Alias: `gtxr`
 
 **-ClientID** (*required 1st time in session*) accepts your Twitch client ID.
 
-**-PassThru** returns the URL as a string instead of writing to host.
+**-Offset** (*default 0*) sets the starting offset for search results when **-XRef** is a name.
