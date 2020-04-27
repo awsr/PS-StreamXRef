@@ -228,12 +228,12 @@ function Get-TwitchXRef {
         # Look for first video that starts before the timestamp.
         $VideoToCompare = $XRefResponse.videos | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
         if (-not $VideoToCompare) {
-            Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category InvalidResult -CategoryTargetName "EventTimestamp" -TargetObject $EventTimestamp
+            Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
             return $null
         }
         elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
             # Event timestamp is after the end of stream.
-            Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $EventTimestamp
+            Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
             return $null
         }
         else {
