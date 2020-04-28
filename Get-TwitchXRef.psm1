@@ -134,10 +134,6 @@ function Get-TwitchXRef {
 
             try {
                 $ClipResponse = Invoke-RestMethod @RestArgs
-                if (-not ($ClipResponse.vod.offset -and $ClipResponse.vod.id)) {
-                    # Something is wrong with the data being returned
-                    throw "(Source Clip) Required data is missing from API response"
-                }
             }
             catch [Microsoft.PowerShell.Commands.HttpResponseException] {
                 # API responded with error status
@@ -166,9 +162,6 @@ function Get-TwitchXRef {
         # Get information about main video
         try {
             $VodResponse = Invoke-RestMethod @RestArgs
-            if (-not $VodResponse.recorded_at) {
-                throw "(Source Video) Required data is missing from API response"
-            }
         }
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             # API responded with error status
@@ -215,9 +208,6 @@ function Get-TwitchXRef {
                     Write-Error "(XRef Channel/User) Not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
                     return $null
                 }
-                elseif (-not $UserLookup.users[0]._id) {
-                    throw "(XRef Channel/User) Required data is missing from API response"
-                }
             }
             catch [Microsoft.PowerShell.Commands.HttpResponseException] {
                 # API responded with error status
@@ -250,9 +240,6 @@ function Get-TwitchXRef {
 
         try {
             $XRefResponse = Invoke-RestMethod @RestArgs
-            if (-not ($XRefResponse.videos.recorded_at -and $XRefResponse.videos.url)) {
-                throw "(XRef Video) Required data is missing from API response"
-            }
         }
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             # API responded with error status
@@ -274,8 +261,9 @@ function Get-TwitchXRef {
         # ========================================
 
         # Look for first video that starts before the timestamp
+        $VideoToCompare = $null
         $VideoToCompare = $XRefResponse.videos | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
-        if (-not $VideoToCompare) {
+        if ($null -contains $VideoToCompare) {
             Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
             return $null
         }
