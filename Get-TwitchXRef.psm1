@@ -64,20 +64,24 @@ function Get-TwitchXRef {
     )
 
     DynamicParam {
+        $mandAttr = [System.Management.Automation.ParameterAttribute]::new()
         if ($null, "" -contains $script:Twitch_API_ClientID) {
-            $mandAttr = [System.Management.Automation.ParameterAttribute]::new()
             $mandAttr.Mandatory = $true
-            $vnnoeAttr = [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
-            $attributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::new()
-            $attributeCollection.Add($mandAttr)
-            $attributeCollection.Add($vnnoeAttr)
-    
-            $dynParam1 = [System.Management.Automation.RuntimeDefinedParameter]::new("ClientID", [string], $attributeCollection)
-    
-            $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
-            $paramDictionary.Add("ClientID", $dynParam1)
-            return $paramDictionary
         }
+        else {
+            $mandAttr.Mandatory = $false
+        }
+
+        $vnnoeAttr = [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
+        $attributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::new()
+        $attributeCollection.Add($mandAttr)
+        $attributeCollection.Add($vnnoeAttr)
+
+        $dynParam1 = [System.Management.Automation.RuntimeDefinedParameter]::new("ClientID", [string], $attributeCollection)
+
+        $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
+        $paramDictionary.Add("ClientID", $dynParam1)
+        return $paramDictionary
     }
 
     Begin {
