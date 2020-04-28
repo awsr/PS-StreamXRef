@@ -129,7 +129,7 @@ function Get-TwitchXRef {
         if ($Source -match ".*twitch\.tv/videos/.+") {
             # Video URI provided
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
-                Write-Error "Video URL missing timestamp parameter" -ErrorID MissingTimestamp -Category SyntaxError -CategoryTargetName "Source"
+                Write-Error "Video URL missing timestamp parameter" -ErrorID MissingTimestamp -Category SyntaxError -CategoryTargetName "Source" -TargetObject $Source
                 return $null
             }
 
