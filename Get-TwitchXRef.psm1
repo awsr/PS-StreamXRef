@@ -102,6 +102,24 @@ function Get-TwitchXRef {
     }
 
     Process {
+        trap [Microsoft.PowerShell.Commands.HttpResponseException] {
+            # API Responded with error status
+            if ($_.Exception.Response.StatusCode -eq 404) {
+                # Not found
+                $PSCmdlet.WriteError($_)
+                return $null
+            }
+            else {
+                # Other error status codes
+                $PSCmdlet.ThrowTerminatingError($_)
+            }
+        }
+        trap [System.Net.Http.HttpRequestException] {
+            # Other http request errors
+            # Parent to HttpResponseException so it must go after
+            $PSCmdlet.ThrowTerminatingError($_)
+        }
+
         $RestArgs = @{
             Method      = "Get"
             Headers     = $v5Headers
@@ -136,25 +154,7 @@ function Get-TwitchXRef {
 
             $RestArgs["Uri"] = ($API, "clips/", $Slug) | Join-String
 
-            try {
-                $ClipResponse = Invoke-RestMethod @RestArgs
-            }
-            catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-                # API responded with error status
-                if ($_.Exception.Response.StatusCode -eq 404) {
-                    # Not found
-                    $PSCmdlet.WriteError($_)
-                    return $null
-                }
-                else {
-                    # Other error status code
-                    $PSCmdlet.ThrowTerminatingError($_)
-                }
-            }
-            catch {
-                # Pass along other error
-                $PSCmdlet.ThrowTerminatingError($_)
-            }
+            $ClipResponse = Invoke-RestMethod @RestArgs
 
             # Get offset from API response
             $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
@@ -164,25 +164,7 @@ function Get-TwitchXRef {
         }
 
         # Get information about main video
-        try {
-            $VodResponse = Invoke-RestMethod @RestArgs
-        }
-        catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-            # API responded with error status
-            if ($_.Exception.Response.StatusCode -eq 404) {
-                # Not found
-                $PSCmdlet.WriteError($_)
-                return $null
-            }
-            else {
-                # Other error
-                $PSCmdlet.ThrowTerminatingError($_)
-            }
-        }
-        catch {
-            # Pass along other error
-            $PSCmdlet.ThrowTerminatingError($_)
-        }
+        $VodResponse = Invoke-RestMethod @RestArgs
 
         # Set absolute timestamp of event
         [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
@@ -206,28 +188,10 @@ function Get-TwitchXRef {
                 "login" = $XRef
             }
 
-            try {
-                $UserLookup = Invoke-RestMethod @RestArgs
-                if ($UserLookup._total -eq 0) {
-                    Write-Error "(XRef Channel/User) Not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
-                    return $null
-                }
-            }
-            catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-                # API responded with error status
-                if ($_.Exception.Response.StatusCode -eq 404) {
-                    # Not found
-                    $PSCmdlet.WriteError($_)
-                    return $null
-                }
-                else {
-                    # Other error
-                    $PSCmdlet.ThrowTerminatingError($_)
-                }
-            }
-            catch {
-                # Pass along other error
-                $PSCmdlet.ThrowTerminatingError($_)
+            $UserLookup = Invoke-RestMethod @RestArgs
+            if ($UserLookup._total -eq 0) {
+                Write-Error "(XRef Channel/User) Not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
+                return $null
             }
             
             [int]$UserID = $UserLookup.users[0]._id
@@ -242,25 +206,7 @@ function Get-TwitchXRef {
             }
         }
 
-        try {
-            $XRefResponse = Invoke-RestMethod @RestArgs
-        }
-        catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-            # API responded with error status
-            if ($_.Exception.Response.StatusCode -eq 404) {
-                # Not found
-                $PSCmdlet.WriteError($_)
-                return $null
-            }
-            else {
-                # Other error
-                $PSCmdlet.ThrowTerminatingError($_)
-            }
-        }
-        catch {
-            # Pass along throw or other error
-            $PSCmdlet.ThrowTerminatingError($_)
-        }
+        $XRefResponse = Invoke-RestMethod @RestArgs
 
         # ========================================
 
