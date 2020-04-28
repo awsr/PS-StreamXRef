@@ -1,9 +1,8 @@
 
 Set-StrictMode -Version Latest
 
-if (-not (Test-Path Variable:Global:Twitch_API_ClientID)) {
-    $script:Twitch_API_ClientID = $null
-}
+# Initialize to null
+$script:Twitch_API_ClientID = $null
 
 # Helper function.
 filter Get-IdFromUri {
