@@ -4,7 +4,7 @@ Set-StrictMode -Version Latest
 # Initialize to null
 $script:Twitch_API_ClientID = $null
 
-# Helper function.
+# Helper function
 filter Get-IdFromUri {
     $Uri = $_ -split "/" | Select-Object -Last 1
     return $Uri -split "\?" | Select-Object -First 1
@@ -105,7 +105,7 @@ function Get-TwitchXRef {
         }
         
         if ($Source -match ".*twitch\.tv/videos/.+") {
-            # Video URI provided.
+            # Video URI provided
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
                 Write-Error "Video URL missing timestamp parameter" -ErrorID MissingTimestamp -Category SyntaxError -CategoryTargetName "Source"
                 return $null
@@ -127,7 +127,7 @@ function Get-TwitchXRef {
             $RestArgs["Uri"] = ($API, "videos/", $VideoID) | Join-String
         }
         else {
-            # Clip provided.
+            # Clip provided
             $Slug = $Source | Get-IdFromUri
 
             $RestArgs["Uri"] = ($API, "clips/", $Slug) | Join-String
@@ -135,35 +135,35 @@ function Get-TwitchXRef {
             try {
                 $ClipResponse = Invoke-RestMethod @RestArgs
                 if (-not ($ClipResponse.vod.offset -and $ClipResponse.vod.id)) {
-                    # Something is wrong with the data being returned.
+                    # Something is wrong with the data being returned
                     throw "(Source Clip) Required data is missing from API response"
                 }
             }
             catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-                # API responded with error status.
+                # API responded with error status
                 if ($_.Exception.Response.StatusCode -eq 404) {
                     # Not found
                     $PSCmdlet.WriteError($_)
                     return $null
                 }
                 else {
-                    # Other error
+                    # Other error status code
                     $PSCmdlet.ThrowTerminatingError($_)
                 }
             }
             catch {
-                # Pass along throw or other error.
+                # Pass along throw or other error
                 $PSCmdlet.ThrowTerminatingError($_)
             }
 
-            # Get offset from API response.
+            # Get offset from API response
             $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
-            # Get Video ID from API response.
+            # Get Video ID from API response
             $RestArgs["Uri"] = ($API, "videos/", $ClipResponse.vod.id) | Join-String
         }
 
-        # Get information about main video.
+        # Get information about main video
         try {
             $VodResponse = Invoke-RestMethod @RestArgs
             if (-not $VodResponse.recorded_at) {
@@ -171,7 +171,7 @@ function Get-TwitchXRef {
             }
         }
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-            # API responded with error status.
+            # API responded with error status
             if ($_.Exception.Response.StatusCode -eq 404) {
                 # Not found
                 $PSCmdlet.WriteError($_)
@@ -183,27 +183,27 @@ function Get-TwitchXRef {
             }
         }
         catch {
-            # Pass along throw or other error.
+            # Pass along throw or other error
             $PSCmdlet.ThrowTerminatingError($_)
         }
 
-        # Set absolute timestamp of event.
+        # Set absolute timestamp of event
         [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
 
         # ========================================
 
-        # Process cross-reference lookup.
+        # Process cross-reference lookup
         if ($XRef -match ".*twitch\.tv/videos/.+") {
             # Using VOD link.
             [int]$XRefID = $XRef | Get-IdFromUri
             $RestArgs["Uri"] = ($API, "videos/", $XRefID) | Join-String
         }
         else {
-            # Using username/channel.
-            # Strip formatting in case channel was passed as a URL.
+            # Using username/channel
+            # Strip formatting in case channel was passed as a URL
             $XRef = $XRef | Get-IdFromUri
 
-            # Get ID number for username.
+            # Get ID number for username
             $RestArgs["Uri"] = ($API, "users") | Join-String
             $RestArgs["Body"] = @{
                 "login" = $XRef
@@ -220,7 +220,7 @@ function Get-TwitchXRef {
                 }
             }
             catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-                # API responded with error status.
+                # API responded with error status
                 if ($_.Exception.Response.StatusCode -eq 404) {
                     # Not found
                     $PSCmdlet.WriteError($_)
@@ -232,13 +232,13 @@ function Get-TwitchXRef {
                 }
             }
             catch {
-                # Pass along throw or other error.
+                # Pass along throw or other error
                 $PSCmdlet.ThrowTerminatingError($_)
             }
             
             [int]$UserID = $UserLookup.users[0]._id
 
-            # Set args using ID number.
+            # Set args using ID number
             $RestArgs["Uri"] = ($API, "channels/", $UserID, "/videos") | Join-String
             $RestArgs["Body"] = @{
                 "broadcast-type" = "archive"
@@ -255,7 +255,7 @@ function Get-TwitchXRef {
             }
         }
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-            # API responded with error status.
+            # API responded with error status
             if ($_.Exception.Response.StatusCode -eq 404) {
                 # Not found
                 $PSCmdlet.WriteError($_)
@@ -267,20 +267,20 @@ function Get-TwitchXRef {
             }
         }
         catch {
-            # Pass along throw or other error.
+            # Pass along throw or other error
             $PSCmdlet.ThrowTerminatingError($_)
         }
 
         # ========================================
 
-        # Look for first video that starts before the timestamp.
+        # Look for first video that starts before the timestamp
         $VideoToCompare = $XRefResponse.videos | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
         if (-not $VideoToCompare) {
             Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
             return $null
         }
         elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
-            # Event timestamp is after the end of stream.
+            # Event timestamp is after the end of stream
             Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
             return $null
         }
