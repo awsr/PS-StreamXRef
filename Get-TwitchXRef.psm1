@@ -55,9 +55,6 @@ function Get-TwitchXRef {
         [string]$XRef,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [string]$ClientID = $script:Twitch_API_ClientID,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateRange(1, 100)]
         [int]$Count = 10,
 
@@ -66,13 +63,33 @@ function Get-TwitchXRef {
         [int]$Offset = 0
     )
 
+    DynamicParam {
+        if ($null, "" -contains $script:Twitch_API_ClientID) {
+            $mandAttr = [System.Management.Automation.ParameterAttribute]::new()
+            $mandAttr.Mandatory = $true
+            $vnnoeAttr = [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
+            $attributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::new()
+            $attributeCollection.Add($mandAttr)
+            $attributeCollection.Add($vnnoeAttr)
+    
+            $dynParam1 = [System.Management.Automation.RuntimeDefinedParameter]::new("ClientID", [string], $attributeCollection)
+    
+            $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
+            $paramDictionary.Add("ClientID", $dynParam1)
+            return $paramDictionary
+        }
+    }
+
     Begin {
         $API = "https://api.twitch.tv/kraken/"
 
-        if ($null, "" -contains $ClientID) {
-            $ClientID = Read-Host "Enter ClientID"
+        if ($PSBoundParameters.ContainsKey("ClientID")) {
+            $ClientID = $PSBoundParameters.ClientID
+            $script:Twitch_API_ClientID = $PSBoundParameters.ClientID
         }
-        $script:Twitch_API_ClientID = $ClientID
+        else {
+            $ClientID = $script:Twitch_API_ClientID
+        }
 
         $v5Headers = @{
             "Client-ID" = $ClientID
@@ -82,7 +99,7 @@ function Get-TwitchXRef {
 
     Process {
         if ($null, "" -contains $ClientID) {
-            # Client ID is mandatory. Don't allow continuing without it.
+            # Failsafe: Client ID is mandatory. Don't allow continuing without it.
             throw "No Twitch API client ID specified or found"
         }
 
