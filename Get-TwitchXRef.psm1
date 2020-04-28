@@ -152,7 +152,7 @@ function Get-TwitchXRef {
                 }
             }
             catch {
-                # Pass along throw or other error
+                # Pass along other error
                 $PSCmdlet.ThrowTerminatingError($_)
             }
 
@@ -183,7 +183,7 @@ function Get-TwitchXRef {
             }
         }
         catch {
-            # Pass along throw or other error
+            # Pass along other error
             $PSCmdlet.ThrowTerminatingError($_)
         }
 
@@ -194,7 +194,7 @@ function Get-TwitchXRef {
 
         # Process cross-reference lookup
         if ($XRef -match ".*twitch\.tv/videos/.+") {
-            # Using VOD link.
+            # Using VOD link
             [int]$XRefID = $XRef | Get-IdFromUri
             $RestArgs["Uri"] = ($API, "videos/", $XRefID) | Join-String
         }
@@ -232,7 +232,7 @@ function Get-TwitchXRef {
                 }
             }
             catch {
-                # Pass along throw or other error
+                # Pass along other error
                 $PSCmdlet.ThrowTerminatingError($_)
             }
             
