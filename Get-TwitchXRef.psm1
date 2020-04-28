@@ -98,11 +98,6 @@ function Get-TwitchXRef {
     }
 
     Process {
-        if ($null, "" -contains $ClientID) {
-            # Failsafe: Client ID is mandatory. Don't allow continuing without it.
-            throw "No Twitch API client ID specified or found"
-        }
-
         $RestArgs = @{
             Method      = "Get"
             Headers     = $v5Headers
