@@ -126,35 +126,23 @@ function Get-TwitchXRef {
             #region Get offset from URL parameters
             $Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
 
-            #region Old method of setting values. <!Legacy>
-            $OffsetArgs = @{
-                Hours = 0
-                Minutes = 0
-                Seconds = 0
-            }
-            if ($null -ne $Matches.Hours) {
-                $OffsetArgs["Hours"] = $Matches.Hours
-            }
-            if ($null -ne $Matches.Minutes) {
-                $OffsetArgs["Minutes"] = $Matches.Minutes
-            }
-            if ($null -ne $Matches.Seconds) {
-                $OffsetArgs["Seconds"] = $Matches.Seconds
-            }
-            #endregion <!Legacy>
+            $OffsetArgs = @{ }
+            $OffsetArgs["Hours"] = ($null -ne $Matches.Hours) ? $Matches.Hours : 0
+            $OffsetArgs["Minutes"] = ($null -ne $Matches.Minutes) ? $Matches.Minutes : 0
+            $OffsetArgs["Seconds"] = ($null -ne $Matches.Seconds) ? $Matches.Seconds : 0
 
             $TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
 
             [int]$VideoID = $Source | Get-IdFromUri
 
-            $RestArgs["Uri"] = "$($API)videos/$VideoID" # <!Legacy>
+            $RestArgs["Uri"] = ($API, "videos/", $VideoID) | Join-String
         }
         else {
             # Clip provided
             $Slug = $Source | Get-IdFromUri
 
-            $RestArgs["Uri"] = "$($API)clips/$Slug" # <!Legacy>
+            $RestArgs["Uri"] = ($API, "clips/", $Slug) | Join-String
 
             $ClipResponse = Invoke-RestMethod @RestArgs
 
@@ -162,14 +150,11 @@ function Get-TwitchXRef {
             $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
             # Get Video ID from API response
-            $RestArgs["Uri"] = "$($API)videos/$($ClipResponse.vod.id)" # <!Legacy>
+            $RestArgs["Uri"] = ($API, "videos/", $ClipResponse.vod.id) | Join-String
         }
 
         # Get information about main video
         $VodResponse = Invoke-RestMethod @RestArgs
-
-        # Manual conversion to UTC datetime <!Legacy>
-        $VodResponse.recorded_at = ([datetime]::Parse($VodResponse.recorded_at)).ToUniversalTime()
 
         # Set absolute timestamp of event
         [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
@@ -180,7 +165,7 @@ function Get-TwitchXRef {
         if ($XRef -match ".*twitch\.tv/videos/.+") {
             # Using VOD link
             [int]$XRefID = $XRef | Get-IdFromUri
-            $RestArgs["Uri"] = "$($API)videos/$XRefID" # <!Legacy>
+            $RestArgs["Uri"] = ($API, "videos/", $XRefID) | Join-String
         }
         else {
             # Using username/channel
@@ -188,7 +173,7 @@ function Get-TwitchXRef {
             $XRef = $XRef | Get-IdFromUri
 
             # Get ID number for username
-            $RestArgs["Uri"] = "$($API)users" # <!Legacy>
+            $RestArgs["Uri"] = ($API, "users") | Join-String
             $RestArgs["Body"] = @{
                 "login" = $XRef
             }
@@ -202,7 +187,7 @@ function Get-TwitchXRef {
             [int]$UserID = $UserLookup.users[0]._id
 
             # Set args using ID number
-            $RestArgs["Uri"] = "$($API)channels/$UserID/videos" # <!Legacy>
+            $RestArgs["Uri"] = ($API, "channels/", $UserID, "/videos") | Join-String
             $RestArgs["Body"] = @{
                 "broadcast-type" = "archive"
                 "sort"           = "time"
@@ -212,11 +197,6 @@ function Get-TwitchXRef {
         }
 
         $XRefResponse = Invoke-RestMethod @RestArgs
-
-        # Manual conversion to UTC datetime <!Legacy>
-        for ($i = 0; $i -lt $XRefResponse.videos.length; $i++) {
-            $XRefResponse.videos[$i].recorded_at = ([datetime]::Parse($XRefResponse.videos[$i].recorded_at)).ToUniversalTime()
-        }
 
         # ========================================
 

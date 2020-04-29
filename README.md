@@ -6,10 +6,6 @@ Have you ever seen a clip from several people streaming together and wanted to s
 
 You will need to have a valid ClientID, which you can obtain from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/).
 
-* For PowerShell 7.0+, use `Import-Module Get-TwitchXRef.psd1`
-
-* For earlier versions of PowerShell, run `Legacy/Setup-TwitchXRef-BackCompat.ps1` to load the function into the current PowerShell session.
-
 ---
 
 Alias: `gtxr`
