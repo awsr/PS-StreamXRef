@@ -1,8 +1,9 @@
 
 Set-StrictMode -Version Latest
 
-# Initialize to null
+# Initialize variables
 $script:Twitch_API_ClientID = $null
+$script:Twitch_API_UserIDCache = @{}
 
 # Helper function
 filter Get-IdFromUri {
@@ -24,5 +25,5 @@ else {
 Set-Alias -Name gtxr -Value Get-TwitchXRef
 
 Export-ModuleMember -Alias "gtxr"
-Export-ModuleMember -Variable "Twitch_API_ClientID"
+Export-ModuleMember -Variable "Twitch_API_ClientID", "Twitch_API_UserIDCache"
 Export-ModuleMember -Function "Get-TwitchXRef"

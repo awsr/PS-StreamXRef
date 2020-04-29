@@ -172,22 +172,32 @@ function Get-TwitchXRef {
             # Strip formatting in case channel was passed as a URL
             $XRef = $XRef | Get-IdFromUri
 
-            # Get ID number for username
-            $RestArgs["Uri"] = ($API, "users") | Join-String
-            $RestArgs["Body"] = @{
-                "login" = $XRef
+            # Check ID cache for user
+            if ($script:Twitch_API_UserIDCache.ContainsKey($XRef)) {
+                # Use cached ID number
+                [int]$UserIDNum = $script:Twitch_API_UserIDCache[$XRef]
             }
+            else {
+                # Get ID number for username using API
+                $RestArgs["Uri"] = ($API, "users") | Join-String
+                $RestArgs["Body"] = @{
+                    "login" = $XRef
+                }
 
-            $UserLookup = Invoke-RestMethod @RestArgs
-            if ($UserLookup._total -eq 0) {
-                Write-Error "(XRef Channel/User) Not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
-                return $null
+                $UserLookup = Invoke-RestMethod @RestArgs
+                if ($UserLookup._total -eq 0) {
+                    Write-Error "(XRef Channel/User) Not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
+                    return $null
+                }
+                
+                [int]$UserIDNum = $UserLookup.users[0]._id
+
+                # Save ID number in cache hashtable
+                $script:Twitch_API_UserIDCache.Add($XRef, $UserIDNum)
             }
-            
-            [int]$UserID = $UserLookup.users[0]._id
 
             # Set args using ID number
-            $RestArgs["Uri"] = ($API, "channels/", $UserID, "/videos") | Join-String
+            $RestArgs["Uri"] = ($API, "channels/", $UserIDNum, "/videos") | Join-String
             $RestArgs["Body"] = @{
                 "broadcast-type" = "archive"
                 "sort"           = "time"
