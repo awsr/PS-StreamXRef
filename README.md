@@ -12,7 +12,7 @@ Alias: `gtxr`
 
 `Get-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-ClientID <String>] [-PassThru]`
 
-**-Source** accepts Twitch clips in either URL format, Twitch clip IDs, and video URLs that include a timestamp parameter.
+**-Source** accepts Twitch clip URLs (either format), Twitch clip IDs, and video URLs that include a timestamp parameter.
 
 **-XRef** accepts either a video URL, a channel URL, or a channel/user name.
 
