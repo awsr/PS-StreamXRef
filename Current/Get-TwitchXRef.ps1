@@ -1,38 +1,4 @@
-<# 
-
-.SYNOPSIS
- Cross-reference Twitch clips and video timestamps between different channels/users.
-
-.DESCRIPTION 
- Given a Twitch clip or video timestamp URL, get a URL to the same moment from the cross-referenced video or channel.
-
- You must provide a Client ID the first time the function is run.
-
-.PARAMETER Source
- Accepts Twitch clip URLs (either format), Twitch clip IDs, or video URLs that include a timestamp parameter.
-
-.PARAMETER XRef
- Accepts either a video URL, a channel URL, or a channel/user name.
-
-.PARAMETER ClientID
- Accepts your Twitch API client ID.
-
- (REQUIRED when run for the first time in a session.)
-
-.PARAMETER Count
- Number of videos to search when -XRef is a name.
- Default: 10
-
-.PARAMETER Offset
- Number of results to offset the search range by.
- Default: 0
-
- (Useful if the source is older than 100 results.)
-
-.NOTES
- This uses the v5 Twitch API.
-
-#>
+#.ExternalHelp Get-TwitchXRef-help.xml
 function Get-TwitchXRef {
     [CmdletBinding()]
     Param(
