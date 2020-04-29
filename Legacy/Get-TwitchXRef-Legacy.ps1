@@ -132,13 +132,13 @@ function Get-TwitchXRef {
                 Minutes = 0
                 Seconds = 0
             }
-            if ($null -ne $Matches.Hours) {
+            if ($Matches.ContainsKey("Hours")) {
                 $OffsetArgs["Hours"] = $Matches.Hours
             }
-            if ($null -ne $Matches.Minutes) {
+            if ($Matches.ContainsKey("Minutes")) {
                 $OffsetArgs["Minutes"] = $Matches.Minutes
             }
-            if ($null -ne $Matches.Seconds) {
+            if ($Matches.ContainsKey("Seconds")) {
                 $OffsetArgs["Seconds"] = $Matches.Seconds
             }
             #endregion <!Legacy>

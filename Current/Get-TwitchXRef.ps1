@@ -127,9 +127,9 @@ function Get-TwitchXRef {
             $Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
 
             $OffsetArgs = @{ }
-            $OffsetArgs["Hours"] = ($null -ne $Matches.Hours) ? $Matches.Hours : 0
-            $OffsetArgs["Minutes"] = ($null -ne $Matches.Minutes) ? $Matches.Minutes : 0
-            $OffsetArgs["Seconds"] = ($null -ne $Matches.Seconds) ? $Matches.Seconds : 0
+            $OffsetArgs["Hours"] = $Matches.ContainsKey("Hours") ? $Matches.Hours : 0
+            $OffsetArgs["Minutes"] = $Matches.ContainsKey("Minutes") ? $Matches.Minutes : 0
+            $OffsetArgs["Seconds"] = $Matches.ContainsKey("Seconds") ? $Matches.Seconds : 0
 
             $TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
