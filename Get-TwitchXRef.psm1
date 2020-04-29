@@ -1,5 +1,5 @@
 
-Set-StrictMode -Version Latest
+Set-StrictMode -Version 3
 
 # Initialize variables
 $script:Twitch_API_ClientID = $null
