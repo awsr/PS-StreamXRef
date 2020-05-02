@@ -102,13 +102,13 @@ function Get-TwitchXRef {
             $TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
 
-            [int]$VideoID = $Source | Get-IdFromUri
+            [int]$VideoID = $Source | Get-LastUrlSegment
 
             $RestArgs["Uri"] = "$API/videos/$VideoID"
         }
         else {
             # Clip provided
-            $Slug = $Source | Get-IdFromUri
+            $Slug = $Source | Get-LastUrlSegment
 
             $RestArgs["Uri"] = "$API/clips/$Slug"
 
@@ -133,13 +133,13 @@ function Get-TwitchXRef {
 
         if ($XRef -match ".*twitch\.tv/videos/.+") {
             # Using VOD link
-            [int]$XRefID = $XRef | Get-IdFromUri
+            [int]$XRefID = $XRef | Get-LastUrlSegment
             $RestArgs["Uri"] = "$API/videos/$XRefID"
         }
         else {
             # Using username/channel
             # Strip formatting in case channel was passed as a URL
-            $XRef = $XRef | Get-IdFromUri
+            $XRef = $XRef | Get-LastUrlSegment
 
             # Check ID cache for user
             if ($script:Twitch_API_UserIDCache.ContainsKey($XRef)) {

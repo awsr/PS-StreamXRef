@@ -5,9 +5,9 @@ $script:Twitch_API_ClientID = $null
 $script:Twitch_API_UserIDCache = @{}
 
 #region Shared helper function(s)
-filter Get-IdFromUri {
-    $Uri = $_ -split "/" | Select-Object -Last 1
-    return $Uri -split "\?" | Select-Object -First 1
+filter Get-LastUrlSegment {
+    $Url = $_ -split "/" | Select-Object -Last 1
+    return $Url -split "\?" | Select-Object -First 1
 }
 #endregion
 
