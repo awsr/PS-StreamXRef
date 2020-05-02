@@ -41,7 +41,7 @@ function Get-TwitchXRef {
     }
 
     Begin {
-        $API = "https://api.twitch.tv/kraken/"
+        $API = "https://api.twitch.tv/kraken"
 
         if ($PSBoundParameters.ContainsKey("ClientID")) {
             $ClientID = $PSBoundParameters.ClientID
@@ -114,13 +114,13 @@ function Get-TwitchXRef {
 
             [int]$VideoID = $Source | Get-IdFromUri
 
-            $RestArgs["Uri"] = "$($API)videos/$VideoID" # <!Legacy>
+            $RestArgs["Uri"] = "$API/videos/$VideoID"
         }
         else {
             # Clip provided
             $Slug = $Source | Get-IdFromUri
 
-            $RestArgs["Uri"] = "$($API)clips/$Slug" # <!Legacy>
+            $RestArgs["Uri"] = "$API/clips/$Slug"
 
             $ClipResponse = Invoke-RestMethod @RestArgs
 
@@ -128,7 +128,7 @@ function Get-TwitchXRef {
             $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
             # Get Video ID from API response
-            $RestArgs["Uri"] = "$($API)videos/$($ClipResponse.vod.id)" # <!Legacy>
+            $RestArgs["Uri"] = "$API/videos/$($ClipResponse.vod.id)"
         }
 
         # Get information about main video
@@ -146,7 +146,7 @@ function Get-TwitchXRef {
         if ($XRef -match ".*twitch\.tv/videos/.+") {
             # Using VOD link
             [int]$XRefID = $XRef | Get-IdFromUri
-            $RestArgs["Uri"] = "$($API)videos/$XRefID" # <!Legacy>
+            $RestArgs["Uri"] = "$API/videos/$XRefID"
         }
         else {
             # Using username/channel
@@ -160,7 +160,7 @@ function Get-TwitchXRef {
             }
             else {
                 # Get ID number for username using API
-                $RestArgs["Uri"] = ($API, "users") | Join-String
+                $RestArgs["Uri"] = "$API/users"
                 $RestArgs["Body"] = @{
                     "login" = $XRef
                 }
@@ -178,7 +178,7 @@ function Get-TwitchXRef {
             }
 
             # Set args using ID number
-            $RestArgs["Uri"] = "$($API)channels/$UserIDNum/videos" # <!Legacy>
+            $RestArgs["Uri"] = "$API/channels/$UserIDNum/videos"
             $RestArgs["Body"] = @{
                 "broadcast-type" = "archive"
                 "sort"           = "time"
