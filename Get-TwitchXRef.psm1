@@ -4,15 +4,15 @@ Set-StrictMode -Version 3
 $script:Twitch_API_ClientID = $null
 $script:Twitch_API_UserIDCache = @{}
 
-#region Helper function(s) (used by imported function(s))
+#region Shared helper function(s)
 filter Get-IdFromUri {
     $Uri = $_ -split "/" | Select-Object -Last 1
     return $Uri -split "\?" | Select-Object -First 1
 }
 #endregion
 
-# Dot source the "Legacy" version(s) if not running at least PowerShell 7.0.
-# Otherwise, load the "Current" version(s) of the function(s).
+# Dot source the "Legacy" version if not running at least PowerShell 7.0
+# Otherwise, load the "Current" version of the function(s)
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     $FunctionRoot = Join-Path $PSScriptRoot "Legacy"
 }
