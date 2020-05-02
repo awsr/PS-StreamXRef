@@ -11,13 +11,13 @@ filter Get-IdFromUri {
 }
 #endregion
 
-# Dot source the "Legacy" version if not running at least PowerShell 7.0
-# Otherwise, load the "Current" version of the function(s)
+# Dot source the "PSLegacy" version if not running at least PowerShell 7.0
+# Otherwise, load the "PSCurrent" version of the function(s)
 if ($PSVersionTable.PSVersion.Major -lt 7) {
-    $FunctionRoot = Join-Path $PSScriptRoot "Legacy"
+    $FunctionRoot = Join-Path $PSScriptRoot "PSLegacy"
 }
 else {
-    $FunctionRoot = Join-Path $PSScriptRoot "Current"
+    $FunctionRoot = Join-Path $PSScriptRoot "PSCurrent"
 }
 
 $AllFunctions = Get-ChildItem (Join-Path $FunctionRoot "*.ps1") -File
