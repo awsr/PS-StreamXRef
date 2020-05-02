@@ -1,29 +1,45 @@
-
 Set-StrictMode -Version 3
 
 # Initialize variables
 $script:Twitch_API_ClientID = $null
 $script:Twitch_API_UserIDCache = @{}
 
-# Helper function
+#region Helper function(s) (used by imported function(s))
 filter Get-IdFromUri {
     $Uri = $_ -split "/" | Select-Object -Last 1
     return $Uri -split "\?" | Select-Object -First 1
 }
+#endregion
 
-
-# Dot source the Legacy version if not running at least PowerShell 7.0.
-# Otherwise, load the Current version of the function.
+# Dot source the "Legacy" version(s) if not running at least PowerShell 7.0.
+# Otherwise, load the "Current" version(s) of the function(s).
 if ($PSVersionTable.PSVersion.Major -lt 7) {
-    . "$PSScriptRoot/Legacy/Get-TwitchXRef-Legacy.ps1"
+    $FunctionRoot = Join-Path $PSScriptRoot "Legacy"
 }
 else {
-    . "$PSScriptRoot/Current/Get-TwitchXRef.ps1"
+    $FunctionRoot = Join-Path $PSScriptRoot "Current"
 }
 
+$AllFunctions = Get-ChildItem (Join-Path $FunctionRoot "*.ps1") -File
+
+foreach ($File in $AllFunctions) {
+    try {
+        # Dot source the file to load in function(s)
+        . $File.FullName
+    }
+    catch {
+        Write-Error "Failed to load $($File.BaseName): $_"
+    }
+}
+
+$FunctionNames = $AllFunctions | ForEach-Object {
+    # Use the name of the file to specify function(s) to be exported
+    # Filter out potential ".Legacy" from name
+    $_.Name.Split('.')[0]
+}
 
 Set-Alias -Name gtxr -Value Get-TwitchXRef
 
 Export-ModuleMember -Alias "gtxr"
 Export-ModuleMember -Variable "Twitch_API_ClientID", "Twitch_API_UserIDCache"
-Export-ModuleMember -Function "Get-TwitchXRef"
+Export-ModuleMember -Function $FunctionNames
