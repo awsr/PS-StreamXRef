@@ -24,7 +24,7 @@ $AllFunctions = Get-ChildItem (Join-Path $FunctionRoot "*.ps1") -File
 
 foreach ($File in $AllFunctions) {
     try {
-        # Dot source the file to load in function(s)
+        # Dot source the file to load in function
         . $File.FullName
     }
     catch {
