@@ -41,5 +41,4 @@ $FunctionNames = $AllFunctions | ForEach-Object {
 Set-Alias -Name gtxr -Value Get-TwitchXRef
 
 Export-ModuleMember -Alias "gtxr"
-Export-ModuleMember -Variable "Twitch_API_ClientID", "Twitch_API_UserIDCache"
 Export-ModuleMember -Function $FunctionNames
