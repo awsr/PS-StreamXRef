@@ -81,6 +81,8 @@ function Get-TwitchXRef {
             Headers     = $v5Headers
             ErrorAction = "Stop"
         }
+
+        #region Source Lookup ##########################
         
         if ($Source -match ".*twitch\.tv/videos/.+") {
             # Video URI provided
@@ -140,9 +142,10 @@ function Get-TwitchXRef {
         # Set absolute timestamp of event
         [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
 
-        # ========================================
+        #endregion Source Lookup =======================
 
-        # Process cross-reference lookup
+        #region XRef Lookup ############################
+
         if ($XRef -match ".*twitch\.tv/videos/.+") {
             # Using VOD link
             [int]$XRefID = $XRef | Get-IdFromUri
@@ -194,7 +197,7 @@ function Get-TwitchXRef {
             $XRefResponse.videos[$i].recorded_at = ([datetime]::Parse($XRefResponse.videos[$i].recorded_at)).ToUniversalTime()
         }
 
-        # ========================================
+        #endregion XRef Lookup =========================
 
         # Look for first video that starts before the timestamp
         $VideoToCompare = $null
