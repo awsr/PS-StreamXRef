@@ -125,15 +125,32 @@ function Get-TwitchXRef {
 
             $Slug = $Source | Get-LastUrlSegment
 
-            $RestArgs["Uri"] = "$API/clips/$Slug"
+            if ($script:Twitch_API_ClipCache.ContainsKey($Slug)) {
+                # Found cached values to use
 
-            $ClipResponse = Invoke-RestMethod @RestArgs
+                $RestArgs["Uri"] = "$API/videos/$($script:Twitch_API_ClipCache[$Slug].VideoID)"
+                $TimeOffset = $script:Twitch_API_ClipCache[$Slug].Offset
+            }
+            else {
+                # New uncached source
 
-            # Get offset from API response
-            $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
+                # Get information about clip
+                $RestArgs["Uri"] = "$API/clips/$Slug"
+                $ClipResponse = Invoke-RestMethod @RestArgs
+    
+                # Get offset from API response
+                $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
+    
+                # Get Video ID from API response
+                $RestArgs["Uri"] = "$API/videos/$($ClipResponse.vod.id)"
 
-            # Get Video ID from API response
-            $RestArgs["Uri"] = "$API/videos/$($ClipResponse.vod.id)"
+                # Add data to clip cache
+                $obj = [PSCustomObject]@{
+                    VideoID = $ClipResponse.vod.id
+                    Offset  = $ClipResponse.vod.offset
+                }
+                $script:Twitch_API_ClipCache.Add($Slug, $obj)
+            }
         }
 
         # Get information about main video

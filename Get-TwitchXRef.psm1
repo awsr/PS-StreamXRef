@@ -3,6 +3,7 @@ Set-StrictMode -Version 3
 # Initialize variables
 $script:Twitch_API_ClientID = $null
 $script:Twitch_API_UserIDCache = @{}
+$script:Twitch_API_ClipCache = @{}
 
 #region Shared helper function(s)
 filter Get-LastUrlSegment {
