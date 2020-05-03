@@ -85,7 +85,9 @@ function Get-TwitchXRef {
         #region Source Lookup ##########################
         
         if ($Source -match ".*twitch\.tv/videos/.+") {
-            # Video URI provided
+            # Video URL provided --- no additional API call needed
+
+            # Check if missing timestamp
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
                 Write-Error "Video URL missing timestamp parameter" -ErrorID MissingTimestamp -Category SyntaxError -CategoryTargetName "Source" -TargetObject $Source
                 return $null
@@ -119,7 +121,8 @@ function Get-TwitchXRef {
             $RestArgs["Uri"] = "$API/videos/$VideoID"
         }
         else {
-            # Clip provided
+            # Clip provided ---- needs additional API call
+
             $Slug = $Source | Get-LastUrlSegment
 
             $RestArgs["Uri"] = "$API/clips/$Slug"
@@ -148,11 +151,13 @@ function Get-TwitchXRef {
 
         if ($XRef -match ".*twitch\.tv/videos/.+") {
             # Using VOD link
+
             [int]$XRefID = $XRef | Get-LastUrlSegment
             $RestArgs["Uri"] = "$API/videos/$XRefID"
         }
         else {
             # Using username/channel
+
             # Strip formatting in case channel was passed as a URL
             $XRef = $XRef | Get-LastUrlSegment
 
