@@ -155,7 +155,7 @@ function Get-TwitchXRef {
 
                 $UserLookup = Invoke-RestMethod @RestArgs
                 if ($UserLookup._total -eq 0) {
-                    Write-Error "(XRef Channel/User) Not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
+                    Write-Error "(XRef Channel/User) `"$XRef`" not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
                     return $null
                 }
                 
