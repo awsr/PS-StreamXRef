@@ -129,7 +129,7 @@ function Get-TwitchXRef {
                 # Found cached values to use
 
                 $RestArgs["Uri"] = "$API/videos/$($script:Twitch_API_ClipCache[$Slug].VideoID)"
-                $TimeOffset = $script:Twitch_API_ClipCache[$Slug].Offset
+                $TimeOffset = New-TimeSpan -Seconds $script:Twitch_API_ClipCache[$Slug].Offset
             }
             else {
                 # New uncached source
