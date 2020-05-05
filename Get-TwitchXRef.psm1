@@ -5,12 +5,28 @@ $script:Twitch_API_ClientID = $null
 $script:Twitch_API_UserIDCache = @{}
 $script:Twitch_API_ClipCache = @{}
 
-#region Shared helper function(s)
+#region Shared helper functions ================
 filter Get-LastUrlSegment {
     $Url = $_ -split "/" | Select-Object -Last 1
     return $Url -split "\?" | Select-Object -First 1
 }
-#endregion
+
+filter ConvertTo-UtcDateTime {
+    if (($_ -is [datetime]) -and ($_.Kind -eq [System.DateTimeKind]::Utc)) {
+        # Already formatted correctly
+        return $_
+    }
+    elseif ($_ -is [datetime]) {
+        return $_.ToUniversalTime()
+    }
+    elseif ($_ -is [string]) {
+        return ([datetime]::Parse($_)).ToUniversalTime()
+    }
+    else {
+        throw "Unable to convert to UTC: $_"
+    }
+}
+#endregion Shared helper functions ----------------
 
 # Dot source the "PSLegacy" version if not running at least PowerShell 7.0
 # Otherwise, load the "PSCurrent" version of the function(s)
