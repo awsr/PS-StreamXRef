@@ -150,7 +150,7 @@ function Get-TwitchXRef {
                 # Set REST arguments
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
                 
-                # Add data to clip cache
+                # Add data to clip cache (StrictMode will have thrown an error by now if it wasn't found)
                 $obj = [PSCustomObject]@{
                     Offset  = $ClipResponse.vod.offset
                     VideoID = $VideoID
