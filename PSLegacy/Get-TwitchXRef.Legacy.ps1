@@ -125,11 +125,11 @@ function Get-TwitchXRef {
 
             $Slug = $Source | Get-LastUrlSegment
 
-            if ($script:Twitch_API_ClipCache.ContainsKey($Slug)) {
+            if ($script:Twitch_API_ClipInfoCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
-                [timespan]$TimeOffset = New-TimeSpan -Seconds $script:Twitch_API_ClipCache[$Slug].Offset
-                [int]$VideoID = $script:Twitch_API_ClipCache[$Slug].VideoID
+                [timespan]$TimeOffset = New-TimeSpan -Seconds $script:Twitch_API_ClipInfoCache[$Slug].Offset
+                [int]$VideoID = $script:Twitch_API_ClipInfoCache[$Slug].VideoID
                 
                 # Set REST arguments
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
@@ -155,18 +155,28 @@ function Get-TwitchXRef {
                     Offset  = $ClipResponse.vod.offset
                     VideoID = $VideoID
                 }
-                $script:Twitch_API_ClipCache.Add($Slug, $obj)
+                $script:Twitch_API_ClipInfoCache.Add($Slug, $obj)
             }
         }
 
-        # Get information about main video
-        $VodResponse = Invoke-RestMethod @RestArgs
-
-        # Manual conversion to UTC datetime <!Legacy>
-        $VodResponse.recorded_at = ([datetime]::Parse($VodResponse.recorded_at)).ToUniversalTime()
-
         # Set absolute timestamp of event
-        [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+        if ($script:Twitch_API_VideoStartCache.ContainsKey($VideoID)) {
+            # Use start time from cache
+            [datetime]$EventTimestamp = $script:Twitch_API_VideoStartCache[$VideoID] + $TimeOffset
+        }
+        else {
+            # Get information about main video
+            $VodResponse = Invoke-RestMethod @RestArgs
+            
+            # Manual conversion to UTC datetime <!Legacy>
+            $VodResponse.recorded_at = $VodResponse.recorded_at | ConvertTo-UtcDateTime
+
+            # Use start time from API response
+            [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+
+            # Add data to Vod cache
+            $script:Twitch_API_VideoStartCache.Add($VideoID, $VodResponse.recorded_at)
+        }
 
         #endregion Source Lookup =======================
 
@@ -177,6 +187,8 @@ function Get-TwitchXRef {
 
             [int]$XRefID = $XRef | Get-LastUrlSegment
             $RestArgs["Uri"] = "$API/videos/$XRefID"
+
+            $Multi = $false
         }
         else {
             # Using username/channel
@@ -216,20 +228,34 @@ function Get-TwitchXRef {
                 "limit"          = $Count
                 "offset"         = $Offset
             }
+
+            $Multi = $true
         }
 
         $XRefResponse = Invoke-RestMethod @RestArgs
 
-        # Manual conversion to UTC datetime <!Legacy>
-        for ($i = 0; $i -lt $XRefResponse.videos.length; $i++) {
-            $XRefResponse.videos[$i].recorded_at = ([datetime]::Parse($XRefResponse.videos[$i].recorded_at)).ToUniversalTime()
+        #region Old method <!Legacy>
+        if ($Multi) {
+            $XRefSet = $XRefResponse.videos
+
+            # Manual conversion to UTC datetime
+            for ($i = 0; $i -lt $XRefSet.length; $i++) {
+                $XRefSet[$i].recorded_at = $XRefSet[$i].recorded_at | ConvertTo-UtcDateTime
+            }
         }
+        else {
+            $XRefSet = $XRefResponse
+
+            # Manual conversion to UTC datetime
+            $XRefSet.recorded_at = $XRefSet.recorded_at | ConvertTo-UtcDateTime
+        }
+        #endregion <!Legacy>
 
         #endregion XRef Lookup =========================
 
         # Look for first video that starts before the timestamp
         $VideoToCompare = $null
-        $VideoToCompare = $XRefResponse.videos | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
+        $VideoToCompare = $XRefSet | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
         if ($null -contains $VideoToCompare) {
             Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
             return $null

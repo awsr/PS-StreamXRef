@@ -1,11 +1,23 @@
 Set-StrictMode -Version 3
 
-# Initialize variables
+#region Initialize variables ===================
+
+# [string] Client ID for API access
 $script:Twitch_API_ClientID = $null
-$script:Twitch_API_UserIDCache = @{}
-$script:Twitch_API_ClipCache = @{}
+
+# @{ [string] User/channel name; [int] User/channel ID number }
+$script:Twitch_API_UserIDCache = [System.Collections.Generic.Dictionary[string, int]]::new()
+
+# @{ [string] Clip slug name; @( [int] Time offset in seconds; [int] Video ID number ) }
+$script:Twitch_API_ClipInfoCache = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
+
+# @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
+$script:Twitch_API_VideoStartCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
+
+#endregion Initialize variables ----------------
 
 #region Shared helper functions ================
+
 filter Get-LastUrlSegment {
     $Url = $_ -split "/" | Select-Object -Last 1
     return $Url -split "\?" | Select-Object -First 1
@@ -26,6 +38,7 @@ filter ConvertTo-UtcDateTime {
         throw "Unable to convert to UTC: $_"
     }
 }
+
 #endregion Shared helper functions ----------------
 
 # Dot source the "PSLegacy" version if not running at least PowerShell 7.0

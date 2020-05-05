@@ -113,11 +113,11 @@ function Get-TwitchXRef {
 
             $Slug = $Source | Get-LastUrlSegment
 
-            if ($script:Twitch_API_ClipCache.ContainsKey($Slug)) {
+            if ($script:Twitch_API_ClipInfoCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
-                [timespan]$TimeOffset = New-TimeSpan -Seconds $script:Twitch_API_ClipCache[$Slug].Offset
-                [int]$VideoID = $script:Twitch_API_ClipCache[$Slug].VideoID
+                [timespan]$TimeOffset = New-TimeSpan -Seconds $script:Twitch_API_ClipInfoCache[$Slug].Offset
+                [int]$VideoID = $script:Twitch_API_ClipInfoCache[$Slug].VideoID
                 
                 # Set REST arguments
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
@@ -143,15 +143,25 @@ function Get-TwitchXRef {
                     Offset  = $ClipResponse.vod.offset
                     VideoID = $VideoID
                 }
-                $script:Twitch_API_ClipCache.Add($Slug, $obj)
+                $script:Twitch_API_ClipInfoCache.Add($Slug, $obj)
             }
         }
 
-        # Get information about main video
-        $VodResponse = Invoke-RestMethod @RestArgs
-
         # Set absolute timestamp of event
-        [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+        if ($script:Twitch_API_VideoStartCache.ContainsKey($VideoID)) {
+            # Use start time from cache
+            [datetime]$EventTimestamp = $script:Twitch_API_VideoStartCache[$VideoID] + $TimeOffset
+        }
+        else {
+            # Get information about main video
+            $VodResponse = Invoke-RestMethod @RestArgs
+
+            # Use start time from API response
+            [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+
+            # Add data to Vod cache
+            $script:Twitch_API_VideoStartCache.Add($VideoID, $VodResponse.recorded_at)
+        }
 
         #endregion Source Lookup =======================
 
@@ -162,6 +172,8 @@ function Get-TwitchXRef {
 
             [int]$XRefID = $XRef | Get-LastUrlSegment
             $RestArgs["Uri"] = "$API/videos/$XRefID"
+
+            $Multi = $false
         }
         else {
             # Using username/channel
@@ -201,15 +213,19 @@ function Get-TwitchXRef {
                 "limit"          = $Count
                 "offset"         = $Offset
             }
+
+            $Multi = $true
         }
 
         $XRefResponse = Invoke-RestMethod @RestArgs
+
+        $XRefSet = $Multi ? $XRefResponse.videos : $XRefResponse
 
         #endregion XRef Lookup =========================
 
         # Look for first video that starts before the timestamp
         $VideoToCompare = $null
-        $VideoToCompare = $XRefResponse.videos | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
+        $VideoToCompare = $XRefSet | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
         if ($null -contains $VideoToCompare) {
             Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
             return $null
