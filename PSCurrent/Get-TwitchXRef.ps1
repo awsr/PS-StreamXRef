@@ -85,7 +85,7 @@ function Get-TwitchXRef {
         #region Source Lookup ##########################
 
         if ($Source -match ".*twitch\.tv/videos/.+") {
-            # Video URL provided --- no additional API call needed
+            # Video URL provided
 
             # Check if missing timestamp
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
@@ -101,7 +101,7 @@ function Get-TwitchXRef {
             $OffsetArgs["Minutes"] = $Matches.ContainsKey("Minutes") ? $Matches.Minutes : 0
             $OffsetArgs["Seconds"] = $Matches.ContainsKey("Seconds") ? $Matches.Seconds : 0
 
-            $TimeOffset = New-TimeSpan @OffsetArgs
+            [timespan]$TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
 
             [int]$VideoID = $Source | Get-LastUrlSegment
@@ -109,33 +109,39 @@ function Get-TwitchXRef {
             $RestArgs["Uri"] = "$API/videos/$VideoID"
         }
         else {
-            # Clip provided ---- needs additional API call
+            # Clip provided
 
             $Slug = $Source | Get-LastUrlSegment
 
             if ($script:Twitch_API_ClipCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
-                $RestArgs["Uri"] = "$API/videos/$($script:Twitch_API_ClipCache[$Slug].VideoID)"
-                $TimeOffset = New-TimeSpan -Seconds $script:Twitch_API_ClipCache[$Slug].Offset
+                [timespan]$TimeOffset = New-TimeSpan -Seconds $script:Twitch_API_ClipCache[$Slug].Offset
+                [int]$VideoID = $script:Twitch_API_ClipCache[$Slug].VideoID
+                
+                # Set REST arguments
+                $RestArgs["Uri"] = "$API/videos/$VideoID"
             }
             else {
-                # New uncached source
+                # New uncached source ---- needs additional API call
 
                 # Get information about clip
                 $RestArgs["Uri"] = "$API/clips/$Slug"
                 $ClipResponse = Invoke-RestMethod @RestArgs
     
                 # Get offset from API response
-                $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
+                [timespan]$TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
     
                 # Get Video ID from API response
-                $RestArgs["Uri"] = "$API/videos/$($ClipResponse.vod.id)"
+                [int]$VideoID = $ClipResponse.vod.id
 
-                # Add data to clip cache
+                # Set REST arguments
+                $RestArgs["Uri"] = "$API/videos/$VideoID"
+                
+                # Add data to clip cache (StrictMode will have thrown an error by now if it wasn't found)
                 $obj = [PSCustomObject]@{
-                    VideoID = $ClipResponse.vod.id
                     Offset  = $ClipResponse.vod.offset
+                    VideoID = $VideoID
                 }
                 $script:Twitch_API_ClipCache.Add($Slug, $obj)
             }
