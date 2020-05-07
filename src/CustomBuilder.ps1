@@ -54,6 +54,8 @@ Param(
     [string[]]$LabelDefinitions
 )
 
+#region Setup ##########################
+
 $Mappings = @{}
 $script:ScriptDataSets = @{}
 [string[]]$script:OutputKeys = @()
@@ -94,9 +96,6 @@ $Mappings.GetEnumerator() | ForEach-Object {
 
 }
 
-# Read in the main source file
-$Source = Get-Content $File
-
 function ToAllOutputs {
     [CmdletBinding()]
     Param(
@@ -124,8 +123,49 @@ function ToAllOutputs {
 
 }
 
+# Read in the main source file
+$Source = Get-Content $File
+
+#endregion Setup =======================
+
+# If not flagged, copy directly to output directories
+if ($Source[0] -notlike "#.EnablePSCodeSets") {
+
+    $Mappings.Values | ForEach-Object {
+
+        # Check if path doesn't exist
+        if (-not (Test-Path $_)) {
+
+            # Create placeholder file and directories if missing
+            New-Item -Path $_ -ItemType File -Force
+
+        }
+
+        Copy-Item $File $_ -Force
+
+    }
+
+    return
+
+}
+else {
+
+    # Skip blank lines after the initial flag
+    
+    # Start with 1 since index 0 was the flag
+    $script:Offset = 1
+
+    #Only skip lines that are actually empty so that whitespaces can keep line padding if desired
+    while ($Source[$script:Offset] -eq "") {
+
+        $script:Offset++
+
+    }
+
+}
+
 # Begin main loop for processing source file
-for ($Index = 0; $Index -lt $Source.Count; $Index++) {
+for ($Index = $script:Offset; $Index -lt $Source.Count; $Index++) {
 
     # Look for marker indicating an instruction to act upon
     if ($Source[$Index] -match $RegionStartRegex) {

@@ -1,3 +1,4 @@
+#.EnablePSCodeSets
 #.ExternalHelp Get-TwitchXRef-help.xml
 function Get-TwitchXRef {
     [CmdletBinding()]
