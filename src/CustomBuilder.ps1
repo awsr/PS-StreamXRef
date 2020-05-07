@@ -55,7 +55,8 @@ Param(
 )
 
 $Mappings = @{}
-$ScriptDataSets = @{}
+$script:ScriptDataSets = @{}
+[string[]]$script:OutputKeys = @()
 
 $RegionStartRegex = '\s*#region\s*@\{\s*(.*=.*)\s*\}.*'
 
@@ -86,12 +87,12 @@ if ($Mappings.Count -eq 0) {
 $Mappings.GetEnumerator() | ForEach-Object {
 
     # Create empty array for holding lines and store in hashtable for lookup
-    $ScriptDataSets.($_.Key) = @()
+    $script:ScriptDataSets.($_.Key) = @()
+
+    # Save keys to another variable to avoid enumeration operation errors
+    $script:OutputKeys += $_.Key
 
 }
-
-# Save keys to another variable to avoid enumeration operation errors
-$OutputKeys = $ScriptDataSets.Keys
 
 # Read in the main source file
 $Source = Get-Content $File
@@ -105,12 +106,12 @@ function ToAllOutputs {
     )
 
     # Process for all outputs
-    $OutputKeys | ForEach-Object {
+    $script:OutputKeys | ForEach-Object {
 
         try {
 
             # Try adding line
-            $ScriptDataSets.$_ += $ToWrite
+            $script:ScriptDataSets.$_ += $ToWrite
 
         }
         catch {
@@ -154,8 +155,8 @@ for ($Index = 0; $Index -lt $Source.Count; $Index++) {
             $CodeSetLabel = $Instruction.PSCodeSet
 
             # If it's not known, write error and continue
-            # Use "-notin" operator to prevent using reference equality since $OutputKeys is a collection
-            if ($CodeSetLabel -notin $OutputKeys) {
+            # Use "-notin" operator to prevent using reference equality since OutputKeys is a collection
+            if ($CodeSetLabel -notin $script:OutputKeys) {
 
                 Write-Error "Unknown output label: $CodeSetLabel"
 
@@ -174,7 +175,7 @@ for ($Index = 0; $Index -lt $Source.Count; $Index++) {
                 # Continue to loop until matching endregion marker is found
                 while ($Source[$Index] -notmatch "\s*#endregion\s*@\{\s*(.*=\s*$CodeSetLabel)\s*\}.*") {
 
-                    $ScriptDataSets.$CodeSetLabel += $Source[$Index]
+                    $script:ScriptDataSets.$CodeSetLabel += $Source[$Index]
 
                     $Index++
 
@@ -230,7 +231,7 @@ for ($Index = 0; $Index -lt $Source.Count; $Index++) {
 $Mappings.GetEnumerator() | ForEach-Object {
 
     # Make sure it's actually one that was processed
-    if ($ScriptDataSets.ContainsKey($_.Key)) {
+    if ($script:ScriptDataSets.ContainsKey($_.Key)) {
 
         # Check if path doesn't exist
         if (-not (Test-Path $_.Value)) {
@@ -240,7 +241,7 @@ $Mappings.GetEnumerator() | ForEach-Object {
     
         }
 
-        $ScriptDataSets[$_.Key] | Out-File $_.Value
+        $script:ScriptDataSets[$_.Key] | Out-File $_.Value
 
     }
 
