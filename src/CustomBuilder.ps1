@@ -37,7 +37,7 @@
 .DESCRIPTION 
  Custom build script for generating multiple scripts from a single source.
 
-.PARAMETER SrcFile
+.PARAMETER File
  Input source file to read from.
 
 .PARAMETER LabelDefinitions
