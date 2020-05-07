@@ -123,10 +123,10 @@ function ToAllOutputs {
 }
 
 # Begin main loop for processing source file
-foreach ($CurrentLine in $Source) {
+for ($Index = 0; $Index -lt $Source.Count; $Index++) {
 
     # Look for marker indicating an instruction to act upon
-    if ($CurrentLine -match $RegionStartRegex) {
+    if ($Source[$Index] -match $RegionStartRegex) {
 
         try {
 
@@ -140,7 +140,7 @@ foreach ($CurrentLine in $Source) {
             Write-Error "Error parsing instruction: $($Matches[1])"
 
             # Add the line to all outputs and continue
-            $CurrentLine | ToAllOutputs
+            $Source[$Index] | ToAllOutputs
 
             continue
 
@@ -162,25 +162,38 @@ foreach ($CurrentLine in $Source) {
             }
             else {
 
+                # Take note of the line number before the instruction
+                $SubLoopPrevIndex = $Index - 1
+
                 # Skip adding the instruction comment to the output
-                $foreach.MoveNext()
+                $Index++
 
-                <#
-                 Begin sub-loop for specific version processing.
-                 Use $foreach.Current instead of $CurrentLine !!!
-                #>
-
+                # Begin sub-loop for specific version processing
                 # Continue to loop until matching endregion marker is found
-                while ($foreach.Current -notmatch "\s*#endregion\s*@\{\s*(.*=\s*$CodeVersion)\s*\}.*)") {
+                while ($Source[$Index] -notmatch "\s*#endregion\s*@\{\s*(.*=\s*$CodeVersion)\s*\}.*)") {
 
-                    $Outputs.$CodeVersion += $foreach.Current
+                    $Outputs.$CodeVersion += $Source[$Index]
 
-                    $foreach.MoveNext()
+                    $Index++
 
                 }
                 # End sub loop
 
                 # Don't add current line with instruction to output
+
+                # Check if lines before and after sub loop were both blank
+                # First confirm that values are within bounds
+                if (($SubLoopPrevIndex -ge 0) -and ($Index + 1 -le $Source.Count)) {
+
+                    # If blank or empty spaces
+                    if ( (($Source[$SubLoopPrevIndex] -eq "") -or ($Source[$SubLoopPrevIndex] -match '^\s*$')) -and
+                         (($Source[$Index + 1] -eq "") -or ($Source[$Index + 1] -match '^\s*$')) ) {
+
+                            # If so, advance $Index by 1 to prevent excess whitespace in output files
+                            $Index++
+
+                        }
+                }
 
                 # Resume main loop
                 continue
@@ -194,7 +207,7 @@ foreach ($CurrentLine in $Source) {
             Write-Error "Unknown instruction: $($Matches[1])"
 
             # Could be a false positive, so add it to all outputs
-            $CurrentLine | ToAllOutputs
+            $Source[$Index] | ToAllOutputs
 
             continue
 
@@ -203,7 +216,7 @@ foreach ($CurrentLine in $Source) {
     }
     else {
 
-        $CurrentLine | ToAllOutputs
+        $Source[$Index] | ToAllOutputs
 
     }
 
