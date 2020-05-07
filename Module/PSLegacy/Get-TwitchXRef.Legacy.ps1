@@ -81,11 +81,11 @@ function Get-TwitchXRef {
             Headers     = $v5Headers
             ErrorAction = "Stop"
         }
-
-        #region Source Lookup ##########################
         
+        #region Source Lookup ##########################
+
         if ($Source -match ".*twitch\.tv/videos/.+") {
-            # Video URL provided --- no additional API call needed
+            # Video URL provided
 
             # Check if missing timestamp
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
@@ -96,7 +96,6 @@ function Get-TwitchXRef {
             #region Get offset from URL parameters
             $Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
 
-            #region Old method of setting values. <!Legacy>
             $OffsetArgs = @{
                 Hours = 0
                 Minutes = 0
@@ -111,9 +110,8 @@ function Get-TwitchXRef {
             if ($Matches.ContainsKey("Seconds")) {
                 $OffsetArgs["Seconds"] = $Matches.Seconds
             }
-            #endregion <!Legacy>
 
-            $TimeOffset = New-TimeSpan @OffsetArgs
+            [timespan]$TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
 
             [int]$VideoID = $Source | Get-LastUrlSegment
@@ -121,7 +119,7 @@ function Get-TwitchXRef {
             $RestArgs["Uri"] = "$API/videos/$VideoID"
         }
         else {
-            # Clip provided ---- needs additional API call
+            # Clip provided
 
             $Slug = $Source | Get-LastUrlSegment
 
@@ -135,7 +133,7 @@ function Get-TwitchXRef {
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
             }
             else {
-                # New uncached source
+                # New uncached source ---- needs additional API call
 
                 # Get information about clip
                 $RestArgs["Uri"] = "$API/clips/$Slug"
@@ -167,10 +165,9 @@ function Get-TwitchXRef {
         else {
             # Get information about main video
             $VodResponse = Invoke-RestMethod @RestArgs
-            
+
             # Manual conversion to UTC datetime <!Legacy>
             $VodResponse.recorded_at = $VodResponse.recorded_at | ConvertTo-UtcDateTime
-
             # Use start time from API response
             [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
 
@@ -210,7 +207,7 @@ function Get-TwitchXRef {
 
                 $UserLookup = Invoke-RestMethod @RestArgs
                 if ($UserLookup._total -eq 0) {
-                    Write-Error "(XRef Channel/User) Not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
+                    Write-Error "(XRef Channel/User) `"$XRef`" not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
                     return $null
                 }
                 
@@ -234,7 +231,6 @@ function Get-TwitchXRef {
 
         $XRefResponse = Invoke-RestMethod @RestArgs
 
-        #region Old method <!Legacy>
         if ($Multi) {
             $XRefSet = $XRefResponse.videos
 
@@ -249,7 +245,6 @@ function Get-TwitchXRef {
             # Manual conversion to UTC datetime
             $XRefSet.recorded_at = $XRefSet.recorded_at | ConvertTo-UtcDateTime
         }
-        #endregion <!Legacy>
 
         #endregion XRef Lookup =========================
 

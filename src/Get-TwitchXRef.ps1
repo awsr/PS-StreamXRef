@@ -245,7 +245,6 @@ function Get-TwitchXRef {
         #region @{ PSCodeSet = Current }
         $XRefSet = $Multi ? $XRefResponse.videos : $XRefResponse
         #endregion @{ PSCodeSet = Current }
-
         #region @{ PSCodeSet = Legacy }
         if ($Multi) {
             $XRefSet = $XRefResponse.videos
