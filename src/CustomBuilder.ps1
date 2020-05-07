@@ -40,7 +40,7 @@
 .PARAMETER SrcFile
  Input source file to read from.
 
-.PARAMETER LabelInfo
+.PARAMETER LabelDefinitions
  Output file mappings for labels.
 
 #> 
@@ -51,16 +51,16 @@ Param(
     [String]$File,
 
     [Parameter(Position = 1, ValueFromRemainingArguments)]
-    [string[]]$LabelInfo
+    [string[]]$LabelDefinitions
 )
 
 $Mappings = @{}
-$Outputs = @{}
+$ScriptDataSets = @{}
 
 $RegionStartRegex = '\s*#region\s*@\{\s*(.*=.*)\s*\}.*'
 
 # Read label -> file mappings from remaining arguments
-foreach ($Entry in $LabelInfo) {
+foreach ($Entry in $LabelDefinitions) {
 
     try {
 
@@ -86,11 +86,12 @@ if ($Mappings.Count -eq 0) {
 $Mappings.GetEnumerator() | ForEach-Object {
 
     # Create empty array for holding lines and store in hashtable for lookup
-    $Outputs.($_.Key) = @()
+    $ScriptDataSets.($_.Key) = @()
+
 }
 
 # Save keys to another variable to avoid enumeration operation errors
-$OutputKeys = $Outputs.Keys
+$OutputKeys = $ScriptDataSets.Keys
 
 # Read in the main source file
 $Source = Get-Content $File
@@ -109,7 +110,7 @@ function ToAllOutputs {
         try {
 
             # Try adding line
-            $Outputs.$_ += $ToWrite
+            $ScriptDataSets.$_ += $ToWrite
 
         }
         catch {
@@ -149,13 +150,14 @@ for ($Index = 0; $Index -lt $Source.Count; $Index++) {
         # Check for "PSCodeSet" instruction and process if found
         if ($Instruction.ContainsKey("PSCodeSet")) {
 
-            $CodeVersion = $Instruction.PSCodeSet
+            # Get parsed label
+            $CodeSetLabel = $Instruction.PSCodeSet
 
             # If it's not known, write error and continue
             # Use "-notin" operator to prevent using reference equality since $OutputKeys is a collection
-            if ($CodeVersion -notin $OutputKeys) {
+            if ($CodeSetLabel -notin $OutputKeys) {
 
-                Write-Error "Unknown output label: $CodeVersion"
+                Write-Error "Unknown output label: $CodeSetLabel"
 
                 continue
 
@@ -170,9 +172,9 @@ for ($Index = 0; $Index -lt $Source.Count; $Index++) {
 
                 # Begin sub-loop for specific version processing
                 # Continue to loop until matching endregion marker is found
-                while ($Source[$Index] -notmatch "\s*#endregion\s*@\{\s*(.*=\s*$CodeVersion)\s*\}.*)") {
+                while ($Source[$Index] -notmatch "\s*#endregion\s*@\{\s*(.*=\s*$CodeSetLabel)\s*\}.*)") {
 
-                    $Outputs.$CodeVersion += $Source[$Index]
+                    $ScriptDataSets.$CodeSetLabel += $Source[$Index]
 
                     $Index++
 
@@ -228,7 +230,7 @@ for ($Index = 0; $Index -lt $Source.Count; $Index++) {
 $Mappings.GetEnumerator() | ForEach-Object {
 
     # Make sure it's actually one that was processed
-    if ($Outputs.ContainsKey($_.Key)) {
+    if ($ScriptDataSets.ContainsKey($_.Key)) {
 
         # Check if path doesn't exist
         if (-not (Test-Path $_.Value)) {
@@ -238,7 +240,7 @@ $Mappings.GetEnumerator() | ForEach-Object {
     
         }
 
-        $Outputs[$_.Key] | Out-File $_.Value
+        $ScriptDataSets[$_.Key] | Out-File $_.Value
 
     }
 
