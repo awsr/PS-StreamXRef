@@ -8,17 +8,22 @@
             "type": "shell",
             "command": "${workspaceFolder}/src/CustomBuilder.ps1",
             "args": [
-                "-File", "${file}",
+                "${file}",
                 "Current = ${workspaceFolder}/Module/PSCurrent/${fileBasenameNoExtension}.ps1",
                 "Legacy = ${workspaceFolder}/Module/PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
             ],
             "windows": {
                 "command": "${workspaceFolder}\\src\\CustomBuilder.ps1",
                 "args": [
-                    "-File", "${file}",
+                    "${file}",
                     "Current = ${workspaceFolder}\\Module\\PSCurrent\\${fileBasenameNoExtension}.ps1",
                     "Legacy = ${workspaceFolder}\\Module\\PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
                 ]
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
             }
         }
     ]
