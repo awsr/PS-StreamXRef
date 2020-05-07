@@ -172,7 +172,7 @@ for ($Index = 0; $Index -lt $Source.Count; $Index++) {
 
                 # Begin sub-loop for specific version processing
                 # Continue to loop until matching endregion marker is found
-                while ($Source[$Index] -notmatch "\s*#endregion\s*@\{\s*(.*=\s*$CodeSetLabel)\s*\}.*)") {
+                while ($Source[$Index] -notmatch "\s*#endregion\s*@\{\s*(.*=\s*$CodeSetLabel)\s*\}.*") {
 
                     $ScriptDataSets.$CodeSetLabel += $Source[$Index]
 
