@@ -6,14 +6,14 @@
     {
       "label": "Build versioned scripts",
       "type": "shell",
-      "command": "${workspaceFolder}/src/CustomBuilder.ps1",
+      "command": "${workspaceFolder}/tools/ScriptBuilder.ps1",
       "args": [
         "${file}",
         "Current = ${workspaceFolder}/Module/PSCurrent/${fileBasenameNoExtension}.ps1",
         "Legacy = ${workspaceFolder}/Module/PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
       ],
       "windows": {
-        "command": "${workspaceFolder}\\src\\CustomBuilder.ps1",
+        "command": "${workspaceFolder}\\tools\\ScriptBuilder.ps1",
         "args": [
           "${file}",
           "Current = ${workspaceFolder}\\Module\\PSCurrent\\${fileBasenameNoExtension}.ps1",
@@ -29,14 +29,14 @@
     {
       "label": "Build scripts for debugging",
       "type": "shell",
-      "command": "${workspaceFolder}/src/CustomBuilder.ps1",
+      "command": "${workspaceFolder}/tools/ScriptBuilder.ps1",
       "args": [
         "${file}",
         "Current = ${workspaceFolder}/debug/PSCurrent/${fileBasenameNoExtension}.ps1",
         "Legacy = ${workspaceFolder}/debug/PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
       ],
       "windows": {
-        "command": "${workspaceFolder}\\src\\CustomBuilder.ps1",
+        "command": "${workspaceFolder}\\tools\\ScriptBuilder.ps1",
         "args": [
           "${file}",
           "Current = ${workspaceFolder}\\debug\\PSCurrent\\${fileBasenameNoExtension}.ps1",
