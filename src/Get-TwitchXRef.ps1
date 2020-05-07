@@ -96,10 +96,28 @@ function Get-TwitchXRef {
             #region Get offset from URL parameters
             $Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
 
+            #region @{ PSCodeSet = Current }
             $OffsetArgs = @{ }
             $OffsetArgs["Hours"] = $Matches.ContainsKey("Hours") ? $Matches.Hours : 0
             $OffsetArgs["Minutes"] = $Matches.ContainsKey("Minutes") ? $Matches.Minutes : 0
             $OffsetArgs["Seconds"] = $Matches.ContainsKey("Seconds") ? $Matches.Seconds : 0
+            #endregion @{ PSCodeSet = Current }
+            #region @{pscodeset=legacy}
+            $OffsetArgs = @{
+                Hours = 0
+                Minutes = 0
+                Seconds = 0
+            }
+            if ($Matches.ContainsKey("Hours")) {
+                $OffsetArgs["Hours"] = $Matches.Hours
+            }
+            if ($Matches.ContainsKey("Minutes")) {
+                $OffsetArgs["Minutes"] = $Matches.Minutes
+            }
+            if ($Matches.ContainsKey("Seconds")) {
+                $OffsetArgs["Seconds"] = $Matches.Seconds
+            }
+            #endregion @{pscodeset=legacy}
 
             [timespan]$TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
@@ -155,6 +173,11 @@ function Get-TwitchXRef {
         else {
             # Get information about main video
             $VodResponse = Invoke-RestMethod @RestArgs
+
+            #region @{ PSCodeSet = Legacy }
+            # Manual conversion to UTC datetime <!Legacy>
+            $VodResponse.recorded_at = $VodResponse.recorded_at | ConvertTo-UtcDateTime
+            #endregion @{ PSCodeSet = Legacy }
 
             # Use start time from API response
             [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
@@ -219,7 +242,26 @@ function Get-TwitchXRef {
 
         $XRefResponse = Invoke-RestMethod @RestArgs
 
+        #region @{ PSCodeSet = Current }
         $XRefSet = $Multi ? $XRefResponse.videos : $XRefResponse
+        #endregion @{ PSCodeSet = Current }
+
+        #region @{ PSCodeSet = Legacy }
+        if ($Multi) {
+            $XRefSet = $XRefResponse.videos
+
+            # Manual conversion to UTC datetime
+            for ($i = 0; $i -lt $XRefSet.length; $i++) {
+                $XRefSet[$i].recorded_at = $XRefSet[$i].recorded_at | ConvertTo-UtcDateTime
+            }
+        }
+        else {
+            $XRefSet = $XRefResponse
+
+            # Manual conversion to UTC datetime
+            $XRefSet.recorded_at = $XRefSet.recorded_at | ConvertTo-UtcDateTime
+        }
+        #endregion @{ PSCodeSet = Legacy }
 
         #endregion XRef Lookup =========================
 
