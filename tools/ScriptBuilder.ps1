@@ -47,7 +47,7 @@
 [CmdletBinding()]
 Param(
     [Parameter(Mandatory = $true, Position = 0)]
-    [ValidatePattern('.*\.ps1$')]
+    [ValidateScript({ ($_ -notmatch '\*') -and ($_ -match '.*\.ps1$') })]
     [String]$File,
 
     [Parameter(Position = 1, ValueFromRemainingArguments)]
