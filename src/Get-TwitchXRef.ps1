@@ -103,7 +103,7 @@ function Get-TwitchXRef {
             $OffsetArgs["Minutes"] = $Matches.ContainsKey("Minutes") ? $Matches.Minutes : 0
             $OffsetArgs["Seconds"] = $Matches.ContainsKey("Seconds") ? $Matches.Seconds : 0
             #endregion @{ PSCodeSet = Current }
-            #region @{pscodeset=legacy}
+            #region @{ PSCodeSet = Legacy}
             $OffsetArgs = @{
                 Hours = 0
                 Minutes = 0
@@ -118,7 +118,7 @@ function Get-TwitchXRef {
             if ($Matches.ContainsKey("Seconds")) {
                 $OffsetArgs["Seconds"] = $Matches.Seconds
             }
-            #endregion @{pscodeset=legacy}
+            #endregion @{ PSCodeSet = Legacy }
 
             [timespan]$TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
