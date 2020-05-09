@@ -226,7 +226,7 @@ for ($Index = $script:Offset; $Index -lt $Source.Count; $Index++) {
 
                 # Check if lines before and after sub loop were both blank
                 # First confirm that values are within bounds
-                if (($SubLoopPrevIndex -ge 0) -and ($Index + 1 -le $Source.Count)) {
+                if (($SubLoopPrevIndex -ge 0) -and ($Index + 1 -lt $Source.Count)) {
 
                     # If blank or empty spaces
                     if ( (($Source[$SubLoopPrevIndex] -eq "") -or ($Source[$SubLoopPrevIndex] -match '^\s*$')) -and
