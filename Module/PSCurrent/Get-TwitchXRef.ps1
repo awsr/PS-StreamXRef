@@ -21,7 +21,7 @@ function Get-TwitchXRef {
 
     DynamicParam {
         $mandAttr = [System.Management.Automation.ParameterAttribute]::new()
-        if ($null, "" -contains $script:Twitch_API_ClientID) {
+        if ($null, "" -contains $script:TwitchData.ClientID) {
             $mandAttr.Mandatory = $true
         }
         else {
@@ -45,10 +45,10 @@ function Get-TwitchXRef {
 
         if ($PSBoundParameters.ContainsKey("ClientID")) {
             $ClientID = $PSBoundParameters.ClientID
-            $script:Twitch_API_ClientID = $PSBoundParameters.ClientID
+            $script:TwitchData.ClientID = $PSBoundParameters.ClientID
         }
         else {
-            $ClientID = $script:Twitch_API_ClientID
+            $ClientID = $script:TwitchData.ClientID
         }
 
         $v5Headers = @{
@@ -113,11 +113,11 @@ function Get-TwitchXRef {
 
             $Slug = $Source | Get-LastUrlSegment
 
-            if ($script:Twitch_API_ClipInfoCache.ContainsKey($Slug)) {
+            if ($script:TwitchData.ClipInfoCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
-                [timespan]$TimeOffset = New-TimeSpan -Seconds $script:Twitch_API_ClipInfoCache[$Slug].Offset
-                [int]$VideoID = $script:Twitch_API_ClipInfoCache[$Slug].VideoID
+                [timespan]$TimeOffset = New-TimeSpan -Seconds $script:TwitchData.ClipInfoCache[$Slug].Offset
+                [int]$VideoID = $script:TwitchData.ClipInfoCache[$Slug].VideoID
                 
                 # Set REST arguments
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
@@ -143,14 +143,14 @@ function Get-TwitchXRef {
                     Offset  = $ClipResponse.vod.offset
                     VideoID = $VideoID
                 }
-                $script:Twitch_API_ClipInfoCache.Add($Slug, $obj)
+                $script:TwitchData.ClipInfoCache.Add($Slug, $obj)
             }
         }
 
         # Set absolute timestamp of event
-        if ($script:Twitch_API_VideoStartCache.ContainsKey($VideoID)) {
+        if ($script:TwitchData.VideoStartCache.ContainsKey($VideoID)) {
             # Use start time from cache
-            [datetime]$EventTimestamp = $script:Twitch_API_VideoStartCache[$VideoID] + $TimeOffset
+            [datetime]$EventTimestamp = $script:TwitchData.VideoStartCache[$VideoID] + $TimeOffset
         }
         else {
             # Get information about main video
@@ -160,7 +160,7 @@ function Get-TwitchXRef {
             [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
 
             # Add data to Vod cache
-            $script:Twitch_API_VideoStartCache.Add($VideoID, $VodResponse.recorded_at)
+            $script:TwitchData.VideoStartCache.Add($VideoID, $VodResponse.recorded_at)
         }
 
         #endregion Source Lookup =======================
@@ -182,9 +182,9 @@ function Get-TwitchXRef {
             $XRef = $XRef | Get-LastUrlSegment
 
             # Check ID cache for user
-            if ($script:Twitch_API_UserIDCache.ContainsKey($XRef)) {
+            if ($script:TwitchData.UserIDCache.ContainsKey($XRef)) {
                 # Use cached ID number
-                [int]$UserIDNum = $script:Twitch_API_UserIDCache[$XRef]
+                [int]$UserIDNum = $script:TwitchData.UserIDCache[$XRef]
             }
             else {
                 # Get ID number for username using API
@@ -202,7 +202,7 @@ function Get-TwitchXRef {
                 [int]$UserIDNum = $UserLookup.users[0]._id
 
                 # Save ID number in cache hashtable
-                $script:Twitch_API_UserIDCache.Add($XRef, $UserIDNum)
+                $script:TwitchData.UserIDCache.Add($XRef, $UserIDNum)
             }
 
             # Set args using ID number

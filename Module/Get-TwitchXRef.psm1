@@ -2,17 +2,21 @@ Set-StrictMode -Version 3
 
 #region Initialize variables ===================
 
-# [string] Client ID for API access
-$script:Twitch_API_ClientID = $null
+$script:TwitchData = [pscustomobject]@{
 
-# @{ [string] User/channel name; [int] User/channel ID number }
-$script:Twitch_API_UserIDCache = [System.Collections.Generic.Dictionary[string, int]]::new()
+    # [string] Client ID for API access
+    ClientID = $null
 
-# @{ [string] Clip slug name; @( [int] Time offset in seconds; [int] Video ID number ) }
-$script:Twitch_API_ClipInfoCache = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
+    # @{ [string] User/channel name; [int] User/channel ID number }
+    UserIDCache = [System.Collections.Generic.Dictionary[string, int]]::new()
 
-# @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
-$script:Twitch_API_VideoStartCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
+    # @{ [string] Clip slug name; @( [int] Time offset in seconds; [int] Video ID number ) }
+    ClipInfoCache = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
+
+    # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
+    VideoStartCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
+
+}
 
 #endregion Initialize variables ----------------
 
