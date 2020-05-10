@@ -120,7 +120,8 @@ $Mappings = @{}
 $script:ScriptDataSets = @{}
 [string[]]$script:OutputKeys = @()
 
-$RegionStartRegex = '\s*#region\s*@\{\s*(.*=.*)\s*\}.*'
+# Allow for "#region...", "<#region...", and "<# #region..."
+$RegionStartRegex = "^\s*(?:<|(?:<#\s*))?#region\s*@\{\s*(?<Instruction>.*=.*)\s*\}.*$"
 
 # Read label -> file mappings from remaining arguments
 foreach ($Entry in $LabelDefinitions) {
@@ -194,13 +195,13 @@ for ($Index = $script:Offset; $Index -lt $Source.Count; $Index++) {
         try {
 
             # Try processing the instruction
-            $Instruction = ConvertFrom-StringData $Matches[1]
+            $Instruction = ConvertFrom-StringData $Matches.Instruction
 
         }
         catch {
 
             # Could not read the instruction format
-            Write-Error "Error parsing instruction: $($Matches[1])"
+            Write-Error "Error parsing instruction: $($Matches.Instruction)"
 
             # Add the line to all outputs and continue
             $Source[$Index] | ToAllOutputs
@@ -232,9 +233,9 @@ for ($Index = $script:Offset; $Index -lt $Source.Count; $Index++) {
                 # Skip adding the instruction comment to the output
                 $Index++
 
-                # Begin sub-loop for specific version processing
-                # Continue to loop until matching endregion marker is found
-                while ($Source[$Index] -notmatch "\s*#endregion\s*@\{\s*(.*=\s*$CodeSetLabel)\s*\}.*") {
+                # Sub-loop for specific version until matching endregion marker is found
+                # Matches "#> #endregion..." and "#endregion... #>"
+                while ($Source[$Index] -notmatch "^\s*(?:#>\s*)?#endregion\s*@\{\s*(.*=\s*$CodeSetLabel)\s*\}.*(?:#>)?$") {
 
                     $script:ScriptDataSets.$CodeSetLabel += $Source[$Index]
 
@@ -267,8 +268,8 @@ for ($Index = $script:Offset; $Index -lt $Source.Count; $Index++) {
         }
         else {
 
-            # Using $Matches[1] is fine here because main instruction loop happened immediately before
-            Write-Error "Unknown instruction: $($Matches[1])"
+            # Using $Matches.Instruction is fine here because main instruction loop happened immediately before
+            Write-Error "Unknown instruction: $($Matches.Instruction)"
 
             # Could be a false positive, so add it to all outputs
             $Source[$Index] | ToAllOutputs
