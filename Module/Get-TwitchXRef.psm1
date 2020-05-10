@@ -59,13 +59,13 @@ $SharedFunctionRoot = Join-Path $PSScriptRoot "Shared"
 $AllFunctions = Get-ChildItem (Join-Path $FunctionRoot "*.ps1") -File
 $AllFunctions += Get-ChildItem (Join-Path $SharedFunctionRoot "*.ps1") -File
 
-foreach ($File in $AllFunctions) {
+foreach ($FunctionFile in $AllFunctions) {
     try {
         # Dot source the file to load in function
-        . $File.FullName
+        . $FunctionFile.FullName
     }
     catch {
-        Write-Error "Failed to load $($File.Parent)/$($File.BaseName): $_"
+        Write-Error "Failed to load $($FunctionFile.Parent)/$($FunctionFile.BaseName): $_"
     }
 }
 
