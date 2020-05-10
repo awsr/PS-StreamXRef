@@ -40,7 +40,6 @@ function Get-TwitchXRef {
         else {
             $mandAttr.Mandatory = $false
         }
-
         $vnnoeAttr = [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
         $attributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::new()
         $attributeCollection.Add($mandAttr)

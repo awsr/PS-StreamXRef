@@ -28,9 +28,16 @@ function Get-TwitchXRef {
         [ValidateRange(1, 100)]
         [int]$Count = 10,
 
+        #region @{ PSCodeSet = Current }
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateRange("NonNegative")]
         [int]$Offset = 0
+        #endregion @{ PSCodeSet = Current }
+        <# #region @{ PSCodeSet = Legacy }
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [ValidateScript({ $_ -ge 0 })]
+        [int]$Offset = 0
+        #endregion @{ PSCodeSet = Legacy } #>
     )
 
     DynamicParam {
@@ -41,7 +48,6 @@ function Get-TwitchXRef {
         else {
             $mandAttr.Mandatory = $false
         }
-
         $vnnoeAttr = [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
         $attributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::new()
         $attributeCollection.Add($mandAttr)
