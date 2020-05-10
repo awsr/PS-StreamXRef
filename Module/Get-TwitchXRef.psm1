@@ -45,8 +45,8 @@ filter ConvertTo-UtcDateTime {
 
 #endregion Shared helper functions ----------------
 
-# Dot source the "PSLegacy" version if not running at least PowerShell 7.0
-# Otherwise, load the "PSCurrent" version of the function(s)
+# If not running at least PowerShell 7.0, get the "PSLegacy" version of the functions
+# Otherwise, load the "PSCurrent" version of the functions
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     $FunctionRoot = Join-Path $PSScriptRoot "PSLegacy"
 }
@@ -54,7 +54,10 @@ else {
     $FunctionRoot = Join-Path $PSScriptRoot "PSCurrent"
 }
 
+$SharedFunctionRoot = Join-Path $PSScriptRoot "Shared"
+
 $AllFunctions = Get-ChildItem (Join-Path $FunctionRoot "*.ps1") -File
+$AllFunctions += Get-ChildItem (Join-Path $SharedFunctionRoot "*.ps1") -File
 
 foreach ($File in $AllFunctions) {
     try {
@@ -62,7 +65,7 @@ foreach ($File in $AllFunctions) {
         . $File.FullName
     }
     catch {
-        Write-Error "Failed to load $($File.BaseName): $_"
+        Write-Error "Failed to load $($File.Parent)/$($File.BaseName): $_"
     }
 }
 
