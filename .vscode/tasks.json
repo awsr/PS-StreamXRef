@@ -9,15 +9,17 @@
       "command": "${workspaceFolder}/tools/ScriptBuilder.ps1",
       "args": [
         "${file}",
-        "Current = ${workspaceFolder}/Module/PSCurrent/${fileBasenameNoExtension}.ps1",
-        "Legacy = ${workspaceFolder}/Module/PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
+        "Current = ${workspaceFolder}/Module/PSCurrent/${fileBasename}",
+        "Legacy = ${workspaceFolder}/Module/PSLegacy/${fileBasenameNoExtension}.Legacy.ps1",
+        "-SharedPath", "${workspaceFolder}/Module/Shared/${fileBasename}"
       ],
       "windows": {
         "command": "${workspaceFolder}\\tools\\ScriptBuilder.ps1",
         "args": [
           "${file}",
-          "Current = ${workspaceFolder}\\Module\\PSCurrent\\${fileBasenameNoExtension}.ps1",
-          "Legacy = ${workspaceFolder}\\Module\\PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
+          "Current = ${workspaceFolder}\\Module\\PSCurrent\\${fileBasename}",
+          "Legacy = ${workspaceFolder}\\Module\\PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1",
+          "-SharedPath", "${workspaceFolder}\\Module\\Shared\\${fileBasename}"
         ]
       },
       "problemMatcher": [],
@@ -32,15 +34,19 @@
       "command": "${workspaceFolder}/tools/ScriptBuilder.ps1",
       "args": [
         "${file}",
-        "Current = ${workspaceFolder}/debug/PSCurrent/${fileBasenameNoExtension}.ps1",
-        "Legacy = ${workspaceFolder}/debug/PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
+        "Current = ${workspaceFolder}/debug/PSCurrent/${fileBasename}",
+        "Legacy = ${workspaceFolder}/debug/PSLegacy/${fileBasenameNoExtension}.Legacy.ps1",
+        "-SharedPath", "${workspaceFolder}/debug/Shared/${fileBasename}",
+        "-Verbose"
       ],
       "windows": {
         "command": "${workspaceFolder}\\tools\\ScriptBuilder.ps1",
         "args": [
           "${file}",
-          "Current = ${workspaceFolder}\\debug\\PSCurrent\\${fileBasenameNoExtension}.ps1",
-          "Legacy = ${workspaceFolder}\\debug\\PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
+          "Current = ${workspaceFolder}\\debug\\PSCurrent\\${fileBasename}",
+          "Legacy = ${workspaceFolder}\\debug\\PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1",
+          "-SharedPath", "${workspaceFolder}\\debug\\Shared\\${fileBasename}",
+          "-Verbose"
         ]
       },
       "problemMatcher": []

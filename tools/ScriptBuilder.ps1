@@ -43,16 +43,76 @@
 .PARAMETER LabelDefinitions
  Output file mappings for labels.
 
+.PARAMETER SharedPath
+ Output path for shared files that skip processing.
+
 #> 
 [CmdletBinding()]
 Param(
     [Parameter(Mandatory = $true, Position = 0)]
-    [ValidateScript({ ($_ -notmatch '\*') -and ($_ -match '.*\.ps1$') })]
-    [String]$File,
+    [ValidateScript({ (Test-Path $_ -IsValid) -and ($_ -match '.*\.ps1$') })]
+    [string]$File,
 
     [Parameter(Position = 1, ValueFromRemainingArguments)]
-    [string[]]$LabelDefinitions
+    [string[]]$LabelDefinitions,
+
+    [Parameter()]
+    [ValidateScript({ Test-Path $_ -IsValid })]
+    [string]$SharedPath
 )
+
+#region Pre-setup ######################
+
+# Read in the main source file
+$Source = Get-Content $File -ErrorAction Stop
+
+Write-Verbose "Parsing $File"
+
+# If not flagged, copy directly to output directories
+if ($Source[0] -notlike "#.EnablePSCodeSets") {
+
+    # Make sure a path was given for shared files
+    if ($PSBoundParameters.ContainsKey("SharedPath")) {
+
+        # Check if path doesn't exist
+        if (-not (Test-Path $SharedPath)) {
+
+            # Create placeholder file and directories if missing
+            New-Item -Path $SharedPath -ItemType File -Force -ErrorAction Stop | Out-Null
+
+        }
+
+        Copy-Item $File $SharedPath -Force
+
+        Write-Verbose "$(Split-Path $File -Leaf) copied to $SharedPath"
+
+        return
+
+    }
+    else {
+
+        throw "No output path given for shared file $File"
+
+    }
+
+}
+else {
+
+    # Skip blank lines after the initial flag
+    
+    # Start with 1 since index 0 was the flag
+    $script:Offset = 1
+
+    #Only skip lines that are actually empty so that whitespaces can keep line padding if desired
+    while ($Source[$script:Offset] -eq "") {
+
+        $script:Offset++
+
+    }
+
+}
+
+#endregion Pre-setup ===================
 
 #region Setup ##########################
 
@@ -123,46 +183,7 @@ function ToAllOutputs {
 
 }
 
-# Read in the main source file
-$Source = Get-Content $File
-
 #endregion Setup =======================
-
-# If not flagged, copy directly to output directories
-if ($Source[0] -notlike "#.EnablePSCodeSets") {
-
-    $Mappings.Values | ForEach-Object {
-
-        # Check if path doesn't exist
-        if (-not (Test-Path $_)) {
-
-            # Create placeholder file and directories if missing
-            New-Item -Path $_ -ItemType File -Force
-
-        }
-
-        Copy-Item $File $_ -Force
-
-    }
-
-    return
-
-}
-else {
-
-    # Skip blank lines after the initial flag
-    
-    # Start with 1 since index 0 was the flag
-    $script:Offset = 1
-
-    #Only skip lines that are actually empty so that whitespaces can keep line padding if desired
-    while ($Source[$script:Offset] -eq "") {
-
-        $script:Offset++
-
-    }
-
-}
 
 # Begin main loop for processing source file
 for ($Index = $script:Offset; $Index -lt $Source.Count; $Index++) {
@@ -277,11 +298,14 @@ $Mappings.GetEnumerator() | ForEach-Object {
         if (-not (Test-Path $_.Value)) {
 
             # Create placeholder file and directories if missing
-            New-Item -Path $_.Value -ItemType File -Force
+            New-Item -Path $_.Value -ItemType File -Force -ErrorAction Stop
     
         }
 
+        # Use mapping key to get corresponding script data and output to mapped location
         $script:ScriptDataSets[$_.Key] | Out-File $_.Value
+
+        Write-Verbose "$(Split-Path $File -Leaf) parsed and written to $($_.Value)"
 
     }
 
