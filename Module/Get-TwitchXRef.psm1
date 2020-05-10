@@ -5,10 +5,10 @@ Set-StrictMode -Version 3
 $script:TwitchData = [pscustomobject]@{
 
     # [string] Client ID for API access
-    ClientID = $null
+    ApiKey = $null
 
     # @{ [string] User/channel name; [int] User/channel ID number }
-    UserIDCache = [System.Collections.Generic.Dictionary[string, int]]::new()
+    UserIdCache = [System.Collections.Generic.Dictionary[string, int]]::new()
 
     # @{ [string] Clip slug name; @( [int] Time offset in seconds; [int] Video ID number ) }
     ClipInfoCache = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()

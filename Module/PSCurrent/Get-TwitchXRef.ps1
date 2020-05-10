@@ -16,7 +16,7 @@ function Get-TwitchXRef {
                 $fakeBoundParameters
             )
 
-            $script:TwitchData.UserIDCache.Keys | Where-Object {
+            $script:TwitchData.UserIdCache.Keys | Where-Object {
                 $_ -like "$wordToComplete*"
             }
         })]
@@ -34,7 +34,7 @@ function Get-TwitchXRef {
 
     DynamicParam {
         $mandAttr = [System.Management.Automation.ParameterAttribute]::new()
-        if ($null, "" -contains $script:TwitchData.ClientID) {
+        if ($null, "" -contains $script:TwitchData.ApiKey) {
             $mandAttr.Mandatory = $true
         }
         else {
@@ -45,22 +45,22 @@ function Get-TwitchXRef {
         $attributeCollection.Add($mandAttr)
         $attributeCollection.Add($vnnoeAttr)
 
-        $dynParam1 = [System.Management.Automation.RuntimeDefinedParameter]::new("ClientID", [string], $attributeCollection)
+        $dynParam1 = [System.Management.Automation.RuntimeDefinedParameter]::new("ApiKey", [string], $attributeCollection)
 
         $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
-        $paramDictionary.Add("ClientID", $dynParam1)
+        $paramDictionary.Add("ApiKey", $dynParam1)
         return $paramDictionary
     }
 
     Begin {
         $API = "https://api.twitch.tv/kraken"
 
-        if ($PSBoundParameters.ContainsKey("ClientID")) {
-            $ClientID = $PSBoundParameters.ClientID
-            $script:TwitchData.ClientID = $PSBoundParameters.ClientID
+        if ($PSBoundParameters.ContainsKey("ApiKey")) {
+            $ClientID = $PSBoundParameters.ApiKey
+            $script:TwitchData.ApiKey = $PSBoundParameters.ApiKey
         }
         else {
-            $ClientID = $script:TwitchData.ClientID
+            $ClientID = $script:TwitchData.ApiKey
         }
 
         $v5Headers = @{
@@ -194,9 +194,9 @@ function Get-TwitchXRef {
             $XRef = $XRef | Get-LastUrlSegment
 
             # Check ID cache for user
-            if ($script:TwitchData.UserIDCache.ContainsKey($XRef)) {
+            if ($script:TwitchData.UserIdCache.ContainsKey($XRef)) {
                 # Use cached ID number
-                [int]$UserIDNum = $script:TwitchData.UserIDCache[$XRef]
+                [int]$UserIdNum = $script:TwitchData.UserIdCache[$XRef]
             }
             else {
                 # Get ID number for username using API
@@ -211,14 +211,14 @@ function Get-TwitchXRef {
                     return $null
                 }
                 
-                [int]$UserIDNum = $UserLookup.users[0]._id
+                [int]$UserIdNum = $UserLookup.users[0]._id
 
                 # Save ID number in cache hashtable
-                $script:TwitchData.UserIDCache.Add($XRef, $UserIDNum)
+                $script:TwitchData.UserIdCache.Add($XRef, $UserIdNum)
             }
 
             # Set args using ID number
-            $RestArgs["Uri"] = "$API/channels/$UserIDNum/videos"
+            $RestArgs["Uri"] = "$API/channels/$UserIdNum/videos"
             $RestArgs["Body"] = @{
                 "broadcast-type" = "archive"
                 "sort"           = "time"
