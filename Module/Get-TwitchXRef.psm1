@@ -1,26 +1,28 @@
 Set-StrictMode -Version 3
 
-#region Initialize variables ===================
+#region Private shared helper functions ================
 
-$script:TwitchData = [pscustomobject]@{
+function Initialize-LookupCache {
+    [CmdletBinding()]
+    Param()
 
-    # [string] Client ID for API access
-    ApiKey = $null
+    $script:TwitchData = [pscustomobject]@{
 
-    # @{ [string] User/channel name; [int] User/channel ID number }
-    UserIdCache = [System.Collections.Generic.Dictionary[string, int]]::new()
+        # [string] Client ID for API access
+        ApiKey = $null
 
-    # @{ [string] Clip slug name; @( [int] Time offset in seconds; [int] Video ID number ) }
-    ClipInfoCache = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
+        # @{ [string] User/channel name; [int] User/channel ID number }
+        UserIdCache = [System.Collections.Generic.Dictionary[string, int]]::new()
 
-    # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
-    VideoStartCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
+        # @{ [string] Clip slug name; @( [int] Time offset in seconds; [int] Video ID number ) }
+        ClipInfoCache = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
+
+        # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
+        VideoStartCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
+
+    }
 
 }
-
-#endregion Initialize variables ----------------
-
-#region Shared helper functions ================
 
 filter Get-LastUrlSegment {
     $Url = $_ -split "/" | Select-Object -Last 1
@@ -43,7 +45,13 @@ filter ConvertTo-UtcDateTime {
     }
 }
 
-#endregion Shared helper functions ----------------
+#endregion Shared helper functions -------------
+
+#region Initialize variables ===================
+
+Initialize-LookupCache
+
+#endregion Initialize variables ----------------
 
 # If not running at least PowerShell 7.0, get the "PSLegacy" version of the functions
 # Otherwise, load the "PSCurrent" version of the functions
