@@ -56,16 +56,15 @@ Initialize-LookupCache
 # If not running at least PowerShell 7.0, get the "PSLegacy" version of the functions
 # Otherwise, load the "PSCurrent" version of the functions
 if ($PSVersionTable.PSVersion.Major -lt 7) {
-    $FunctionRoot = Join-Path $PSScriptRoot "PSLegacy"
+    $VersionedFunctions = @( Get-ChildItem $PSScriptRoot/PSLegacy/*.ps1 -ErrorAction SilentlyContinue )
 }
 else {
-    $FunctionRoot = Join-Path $PSScriptRoot "PSCurrent"
+    $VersionedFunctions = @( Get-ChildItem $PSScriptRoot/PSCurrent/*.ps1 -ErrorAction SilentlyContinue)
 }
 
-$SharedFunctionRoot = Join-Path $PSScriptRoot "Shared"
+$SharedFunctions = @( Get-ChildItem $PSScriptRoot/Shared/*.ps1 -ErrorAction SilentlyContinue )
 
-$AllFunctions = Get-ChildItem (Join-Path $FunctionRoot "*.ps1") -File
-$AllFunctions += Get-ChildItem (Join-Path $SharedFunctionRoot "*.ps1") -File
+$AllFunctions = $VersionedFunctions + $SharedFunctions
 
 foreach ($FunctionFile in $AllFunctions) {
     try {
@@ -73,7 +72,7 @@ foreach ($FunctionFile in $AllFunctions) {
         . $FunctionFile.FullName
     }
     catch {
-        Write-Error "Failed to load $($FunctionFile.Parent)/$($FunctionFile.BaseName): $_"
+        Write-Error "Failed to load $($FunctionFile.Directory.Name)/$($FunctionFile.BaseName): $_"
     }
 }
 
