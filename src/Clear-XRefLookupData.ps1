@@ -37,6 +37,20 @@ function Clear-XRefLookupData {
             return $paramDictionary
         }
     }
+
+    Begin {
+
+        if (-not (Test-Path Variable:Script:TwitchData) -and $ResetAll) {
+
+            Write-Verbose "No data to clear. Initializing empty variable instead."
+
+            Initialize-LookupCache -ErrorAction Stop
+
+            return
+
+        }
+
+    }
     
     Process {
 
