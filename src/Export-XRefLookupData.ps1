@@ -1,5 +1,5 @@
 
-function Export-TXRConfig {
+function Export-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "Object")]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ParameterSetName = "File", ValueFromPipeline = $true)]

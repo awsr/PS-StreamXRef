@@ -1,5 +1,5 @@
 
-function Clear-TXRConfig {
+function Clear-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low", DefaultParameterSetName = "All")]
     Param(
         [Parameter(ParameterSetName = "All")]
@@ -58,7 +58,7 @@ function Clear-TXRConfig {
                 if ($PSCmdlet.ShouldProcess("ApiKey", "Delete")) {
 
                     $script:TwitchData.ApiKey.Clear()
-                    Write-Verbose "API Key cleared"
+                    Write-Verbose "API key cleared"
 
                 }
 
