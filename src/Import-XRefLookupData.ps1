@@ -52,12 +52,23 @@ function Import-XRefLookupData {
         # Process ApiKey
         if ($ConfigStaging.psobject.Properties.Name -contains "ApiKey") {
 
-            if ($ReplaceData -and $PSCmdlet.ShouldProcess("Api key", "Replace")) {
+            if ($null, "" -contains $script:TwitchData.ApiKey) {
+
+                # No pre-existing data, so no need for confirmation
+                $script:TwitchData.ApiKey = $ConfigStaging.ApiKey
+
+            }
+            elseif ($ReplaceData -and $PSCmdlet.ShouldProcess("Api key", "Replace")) {
 
                 # Perform ApiKey replacement within this block because
                 # it is not a collection that can be added to
                 $script:TwitchData.ApiKey = $ConfigStaging.ApiKey
                 Write-Verbose "API key replaced."
+
+            }
+            elseif ($script:TwitchData.ApiKey -ine $ConfigStaging.ApiKey) {
+
+                Write-Warning "New API key was provided but -ReplaceData was not specified"
 
             }
 
