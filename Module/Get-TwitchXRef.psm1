@@ -1,6 +1,6 @@
 Set-StrictMode -Version 3
 
-#region Private shared helper functions ================
+#region Internal shared helper functions ================
 
 function Initialize-LookupCache {
     [CmdletBinding()]
