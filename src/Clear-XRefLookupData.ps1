@@ -19,6 +19,7 @@ function Clear-XRefLookupData {
     )
 
     DynamicParam {
+        # If VideoStartCache is specified, add DaysToKeep parameter
         if ($PSBoundParameters.ContainsKey("VideoStartCache")) {
             $psnAttr = [System.Management.Automation.ParameterAttribute]::new()
             $psnAttr.ParameterSetName = "Selection"
