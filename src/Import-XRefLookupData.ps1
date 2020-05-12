@@ -36,6 +36,9 @@ function Import-XRefLookupData {
 
     Process {
 
+        # Remove surrounding whitespaces from input
+        $InputObject = $InputObject.Trim()
+
         # Check if not a JSON string
         if ( -not ($InputObject.StartsWith('{') -and $InputObject.EndsWith('}'))) {
 
