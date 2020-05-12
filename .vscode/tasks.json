@@ -51,5 +51,24 @@
       },
       "problemMatcher": []
     },
+    {
+      "label": "Generate help from markdown",
+      "type": "shell",
+      "command": "New-ExternalHelp",
+      "args": [
+        "-Path", "${workspaceFolder}/docs/",
+        "-OutputPath", "${workspaceFolder}/Module/",
+        "-Force"
+      ],
+      "windows": {
+        "command": "New-ExternalHelp",
+        "args": [
+          "-Path", "${workspaceFolder}\\docs\\",
+          "-OutputPath", "${workspaceFolder}\\Module\\",
+          "-Force"
+        ]
+      },
+      "problemMatcher": []
+    }
   ]
 }
