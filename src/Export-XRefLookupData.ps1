@@ -50,7 +50,7 @@ function Export-XRefLookupData {
 
         }
 
-        # Bundle data together for convertign to Json
+        # Bundle data together for converting to JSON (for compatibility with potential Javascript-based version)
         $TXRConfigData = [pscustomobject]@{
             ApiKey          = $script:TwitchData.ApiKey
             UserIdCache     = $script:TwitchData.UserIdCache
