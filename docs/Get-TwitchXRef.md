@@ -13,16 +13,43 @@ Cross-reference Twitch clips and video timestamps between different channels/use
 ## SYNTAX
 
 ```
-Get-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] -ClientID <String>
+Get-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] -ApiKey <String>
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Given a Twitch clip or video timestamp URL, get a URL to the same moment from the cross-referenced video or channel.
 
-You must provide a Client ID the first time the function is run in a session.
+You must provide your own API key.
 
 ## EXAMPLES
+
+### Example 1
+```powershell
+PS > Get-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -XRef "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
+
+https://www.twitch.tv/videos/123456789?t=0h32m54s
+```
+
+This will search through ChannelName1's most recent broadcasts and return a URL that goes to the timestamp in their video at the same moment.
+
+### Example 2
+```powershell
+PS > Get-TwitchXRef -Source "NameOfTheClip" -XRef "twitch.tv/videos/123456789"
+
+https://www.twitch.tv/videos/123456789?t=0h32m54s
+```
+
+This will get the same result as the previous example, but uses just the name of the clip and a specific video to check against.
+
+### Example 3
+```powershell
+PS > Get-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "ADifferentChannelName" -Count 60
+
+https://www.twitch.tv/videos/122333444?t=1h04m42s
+```
+
+This will search through ADifferentChannelName's 60 most recent broadcasts using a video URL with a timestamp as the source and return the corresponding URL that goes to the same moment from ADifferentChannelName's perspective.
 
 ## PARAMETERS
 
@@ -90,10 +117,8 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -ClientID
-Accepts your Twitch API client ID.
-
-(REQUIRED when run for the first time in a session, then optional.)
+### -ApiKey
+Accepts your API key (for Twitch this is the "Client ID"). Required when one hasn't already been provided.
 
 ```yaml
 Type: String

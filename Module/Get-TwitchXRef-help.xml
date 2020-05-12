@@ -11,7 +11,7 @@
     </command:details>
     <maml:description>
       <maml:para>Given a Twitch clip or video timestamp URL, get a URL to the same moment from the cross-referenced video or channel.</maml:para>
-      <maml:para>You must provide a Client ID the first time the function is run in a session.</maml:para>
+      <maml:para>You must provide your own API key.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -66,10 +66,9 @@
           <dev:defaultValue>0</dev:defaultValue>
         </command:parameter>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>ClientID</maml:name>
+          <maml:name>ApiKey</maml:name>
           <maml:Description>
-            <maml:para>Accepts your Twitch API client ID.</maml:para>
-            <maml:para>(REQUIRED when run for the first time in a session, then optional.)</maml:para>
+            <maml:para>Accepts your API key (for Twitch this is the "Client ID"). Required when one hasn't already been provided.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -131,10 +130,9 @@
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>ClientID</maml:name>
+        <maml:name>ApiKey</maml:name>
         <maml:Description>
-          <maml:para>Accepts your Twitch API client ID.</maml:para>
-          <maml:para>(REQUIRED when run for the first time in a session, then optional.)</maml:para>
+          <maml:para>Accepts your API key (for Twitch this is the "Client ID"). Required when one hasn't already been provided.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -151,7 +149,35 @@
         <maml:para>This uses the v5 Twitch API.</maml:para>
       </maml:alert>
     </maml:alertSet>
-    <command:examples />
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS &gt; Get-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -XRef "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
+
+https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
+        <dev:remarks>
+          <maml:para>This will search through ChannelName1's most recent broadcasts and return a URL that goes to the timestamp in their video at the same moment.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS &gt; Get-TwitchXRef -Source "NameOfTheClip" -XRef "twitch.tv/videos/123456789"
+
+https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
+        <dev:remarks>
+          <maml:para>This will get the same result as the previous example, but uses just the name of the clip and a specific video to check against.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 3 --------------------------</maml:title>
+        <dev:code>PS &gt; Get-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "ADifferentChannelName" -Count 60
+
+https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
+        <dev:remarks>
+          <maml:para>This will search through ADifferentChannelName's 60 most recent broadcasts using a video URL with a timestamp as the source and return the corresponding URL that goes to the same moment from ADifferentChannelName's perspective.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
     <command:relatedLinks />
   </command:command>
 </helpItems>
