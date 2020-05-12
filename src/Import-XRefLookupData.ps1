@@ -89,6 +89,11 @@ function Import-XRefLookupData {
             }
 
         }
+        else {
+
+            Write-Error "API key missing from import." -Category ObjectNotFound
+
+        }
 
         # Process UserIdCache
         if ($ConfigStaging.psobject.Properties.Name -contains "UserIdCache") {
@@ -131,7 +136,7 @@ function Import-XRefLookupData {
         }
         else {
 
-            Write-Warning "User ID data missing"
+            Write-Error "User lookup data missing from input." -Category ObjectNotFound
 
         }
 
@@ -171,6 +176,10 @@ function Import-XRefLookupData {
 
             Write-Verbose "(ClipInfoCache) Added $AddCount entries."
             Write-Verbose "(ClipInfoCache) Skipped $DupeCount duplicate entries."
+        }
+        else {
+
+            Write-Warning "Clip lookup data missing from input." -Category ObjectNotFound
 
         }
 
@@ -210,6 +219,10 @@ function Import-XRefLookupData {
 
             Write-Verbose "(VideoStartCache) Added $AddCount entries."
             Write-Verbose "(VideoStartCache) Skipped $DupeCount duplicate entries."
+        }
+        else {
+
+            Write-Error "Video lookup data missing from input." -Category ObjectNotFound
 
         }
 
