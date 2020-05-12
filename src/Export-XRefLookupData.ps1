@@ -17,6 +17,13 @@ function Export-XRefLookupData {
 
     Begin {
 
+        if (-not (Test-Path Variable:Script:TwitchData)) {
+
+            Write-Warning "No data to export."
+            return
+
+        }
+
         if ($PSCmdlet.ParameterSetName -eq "File") {
 
             $PathParent = Split-Path $Path -Parent
@@ -26,13 +33,6 @@ function Export-XRefLookupData {
                 $ConfirmPreference = "None"
     
             }
-
-        }
-
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            Write-Warning "No data to export."
-            return
 
         }
 

@@ -40,11 +40,22 @@ function Clear-XRefLookupData {
 
     Begin {
 
-        if (-not (Test-Path Variable:Script:TwitchData) -and $ResetAll) {
+        if (-not (Test-Path Variable:Script:TwitchData)) {
 
-            Write-Verbose "No data to clear. Initializing empty variable instead."
+            try {
 
-            Initialize-LookupCache -ErrorAction Stop
+                Write-Warning "Lookup data is missing. Reinitializing."
+
+                Initialize-LookupCache -ErrorAction Stop
+
+            }
+            catch {
+
+                # This also forces script to halt if the command isn't found,
+                # indicating the module wasn't loaded correctly
+                $PSCmdlet.ThrowTerminatingError($_)
+
+            }
 
             return
 
