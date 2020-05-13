@@ -74,7 +74,7 @@ function Import-XRefLookupData {
                 $script:TwitchData.ApiKey = $ConfigStaging.ApiKey
 
             }
-            elseif ($ReplaceData -and $PSCmdlet.ShouldProcess("Api key", "Replace")) {
+            elseif ($ReplaceData -and $PSCmdlet.ShouldProcess("Api key", "Clear")) {
 
                 # Perform ApiKey replacement within this block because
                 # it is not a collection that can be added to
@@ -98,40 +98,53 @@ function Import-XRefLookupData {
         # Process UserIdCache
         if ($ConfigStaging.psobject.Properties.Name -contains "UserIdCache") {
 
-            if ($ReplaceData -and $PSCmdlet.ShouldProcess("User ID lookup data", "Replace")) {
+            if ($ReplaceData -and $PSCmdlet.ShouldProcess("User ID lookup data", "Clear")) {
 
                 Clear-XRefLookupData -UserIdCache
                 Write-Verbose "(UserIdCache) Data cleared."
 
             }
 
-            $AddCount = 0
-            $DupeCount = 0
+            if ($PSCmdlet.ShouldProcess("User ID lookup data", "Import")) {
 
-            $ConfigStaging.UserIdCache.psobject.properties | ForEach-Object {
+                $AddCount = 0
+                $DupeCount = 0
+                $BadDataCount = 0
+    
+                $ConfigStaging.UserIdCache.psobject.properties | ForEach-Object {
+    
+                    try {
+    
+                        $script:TwitchData.UserIdCache.Add( $_.Name, $_.Value )
+                        $AddCount++
+    
+                    }
+                    catch [System.ArgumentException] {
+    
+                        # This should be an error from there already being an existing entry with the same key
+                        $DupeCount++
+    
+                    }
+                    catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
+                        [System.Management.Automation.PropertyNotFoundException] {
 
-                try {
-
-                    $script:TwitchData.UserIdCache.Add( $_.Name, $_.Value )
-                    $AddCount++
+                        Write-Error "(UserIdCache) $($_.Exception.Message)"
+                        $BadDataCount++
+    
+                    }
 
                 }
-                catch [System.ArgumentException] {
 
-                    # This should be an error from there already being an existing entry with the same key
-                    $DupeCount++
+                Write-Verbose "(UserIdCache) $AddCount entries added."
+                Write-Verbose "(UserIdCache) $DupeCount duplicate entries skipped."
 
-                }
-                catch [System.FormatException] {
+                if ($BadDataCount -gt 0) {
 
-                    Write-Error "(UserIdCache) Invalid data format -> $($_.Name), $($_.Value)"
+                    Write-Verbose "(UserIdCache) $BadDataCount entries could not be parsed."
 
                 }
 
             }
-
-            Write-Verbose "(UserIdCache) Added $AddCount entries."
-            Write-Verbose "(UserIdCache) Skipped $DupeCount duplicate entries."
 
         }
         else {
@@ -143,39 +156,58 @@ function Import-XRefLookupData {
         # Process ClipInfoCache
         if ($ConfigStaging.psobject.Properties.Name -contains "ClipInfoCache") {
 
-            if ($ReplaceData -and $PSCmdlet.ShouldProcess("Clip info lookup data", "Replace")) {
+            if ($ReplaceData -and $PSCmdlet.ShouldProcess("Clip info lookup data", "Clear")) {
 
                 Clear-XRefLookupData -ClipInfoCache
                 Write-Verbose "(ClipInfoCache) Data cleared."
 
             }
 
-            $AddCount = 0
-            $DupeCount = 0
+            if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Import")) {
 
-            $ConfigStaging.ClipInfoCache.psobject.properties | ForEach-Object {
+                $AddCount = 0
+                $DupeCount = 0
+                $BadDataCount = 0
+    
+                $ConfigStaging.ClipInfoCache.psobject.properties | ForEach-Object {
+    
+                    try {
 
-                try {
+                        # Enforce casting to [int]
+                        [int]$OffsetValue = $_.Value.Offset
+                        [int]$VideoIDValue = $_.Value.VideoID
 
-                    $script:TwitchData.ClipInfoCache.Add( $_.Name, @{ Offset = $_.Value.Offset; VideoID = $_.Value.VideoID } )
-                    $AddCount++
+                        $script:TwitchData.ClipInfoCache.Add( $_.Name, @{ Offset = $OffsetValue; VideoID = $VideoIDValue } )
+                        $AddCount++
+
+                    }
+                    catch [System.ArgumentException] {
+    
+                        # This should be an error from there already being an existing entry with the same key
+                        $DupeCount++
+    
+                    }
+                    catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
+                        [System.Management.Automation.PropertyNotFoundException] {
+
+                        Write-Error "(ClipInfoCache) $($_.Exception.Message)"
+                        $BadDataCount++
+    
+                    }
+    
                 }
-                catch [System.ArgumentException] {
 
-                    # This should be an error from there already being an existing entry with the same key
-                    $DupeCount++
+                Write-Verbose "(ClipInfoCache) $AddCount entries added."
+                Write-Verbose "(ClipInfoCache) $DupeCount duplicate entries skipped."
 
-                }
-                catch [System.FormatException] {
+                if ($BadDataCount -gt 0) {
 
-                    Write-Error "(ClipInfoCache) Invalid data format -> $($_.Name), @{ Offset = $($_.Value.Offset); VideoID = $($_.Value.VideoID) }"
+                    Write-Verbose "(ClipInfoCache) $BadDataCount entries could not be parsed."
 
                 }
 
             }
 
-            Write-Verbose "(ClipInfoCache) Added $AddCount entries."
-            Write-Verbose "(ClipInfoCache) Skipped $DupeCount duplicate entries."
         }
         else {
 
@@ -186,39 +218,54 @@ function Import-XRefLookupData {
         # Process VideoStartCache
         if ($ConfigStaging.psobject.Properties.Name -contains "VideoStartCache") {
 
-            if ($ReplaceData -and $PSCmdlet.ShouldProcess("Video timestamp lookup data", "Replace")) {
+            if ($ReplaceData -and $PSCmdlet.ShouldProcess("Video timestamp lookup data", "Clear")) {
 
                 Clear-XRefLookupData -VideoStartCache
                 Write-Verbose "(VideoStartCache) Data cleared."
 
             }
 
-            $AddCount = 0
-            $DupeCount = 0
+            if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Import")) {
 
-            $ConfigStaging.VideoStartCache.psobject.properties | ForEach-Object {
+                $AddCount = 0
+                $DupeCount = 0
+                $BadDataCount = 0
 
-                try {
+                $ConfigStaging.VideoStartCache.psobject.properties | ForEach-Object {
 
-                    $script:TwitchData.VideoStartCache.Add( $_.Name, ($_.Value | ConvertTo-UtcDatetime) )
-                    $AddCount++
+                    try {
+    
+                        $ConvertedDateTime = $_.Value | ConvertTo-UtcDateTime
+                        $script:TwitchData.VideoStartCache.Add( $_.Name, $ConvertedDateTime )
+                        $AddCount++
+                    }
+                    catch [System.ArgumentException] {
+    
+                        # This should be an error from there already being an existing entry with the same key
+                        $DupeCount++
+    
+                    }
+                    catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
+                        [System.Management.Automation.PropertyNotFoundException] {
+
+                        Write-Error "(VideoStartCache) $($_.Exception.Message)"
+                        $BadDataCount++
+    
+                    }
+
                 }
-                catch [System.ArgumentException] {
 
-                    # This should be an error from there already being an existing entry with the same key
-                    $DupeCount++
+                Write-Verbose "(VideoStartCache) $AddCount entries added."
+                Write-Verbose "(VideoStartCache) $DupeCount duplicate entries skipped."
 
-                }
-                catch [System.FormatException] {
+                if ($BadDataCount -gt 0) {
 
-                    Write-Error "(VideoStartCache) Invalid data format -> $($_.Name), $($_.Value)"
+                    Write-Verbose "(VideoStartCache) $BadDataCount entries could not be parsed."
 
                 }
 
             }
 
-            Write-Verbose "(VideoStartCache) Added $AddCount entries."
-            Write-Verbose "(VideoStartCache) Skipped $DupeCount duplicate entries."
         }
         else {
 
