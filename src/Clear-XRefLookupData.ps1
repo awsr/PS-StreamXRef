@@ -74,6 +74,8 @@ function Clear-XRefLookupData {
                 $script:TwitchData.ClipInfoCache.Clear()
                 $script:TwitchData.VideoStartCache.Clear()
 
+                Write-Verbose "All lookup data cleared"
+
             }
 
         }
@@ -84,7 +86,7 @@ function Clear-XRefLookupData {
                 if ($PSCmdlet.ShouldProcess("ApiKey", "Delete")) {
 
                     $script:TwitchData.ApiKey.Clear()
-                    Write-Verbose "API key cleared"
+                    Write-Verbose "(ApiKey) Data cleared"
 
                 }
 
@@ -95,7 +97,7 @@ function Clear-XRefLookupData {
                 if ($PSCmdlet.ShouldProcess("User ID lookup data", "Delete")) {
 
                     $script:TwitchData.UserIdCache.Clear()
-                    Write-Verbose "User ID cache entries cleared"
+                    Write-Verbose "(UserIdCache) data cleared"
 
                 }
 
@@ -106,7 +108,7 @@ function Clear-XRefLookupData {
                 if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Delete")) {
 
                     $script:TwitchData.ClipInfoCache.Clear()
-                    Write-Verbose "Clip cache entries cleared"
+                    Write-Verbose "(ClipInfoCache) Data cleared"
 
                 }
 
@@ -129,7 +131,7 @@ function Clear-XRefLookupData {
             
                         $EntriesRemoved = $PreviousVideoCacheCount - $script:TwitchData.VideoStartCache.Count
             
-                        Write-Host "Video cache entries removed: $EntriesRemoved"
+                        Write-Verbose "(VideoStartCache) Data entries removed: $EntriesRemoved"
 
                     }
 
@@ -139,7 +141,7 @@ function Clear-XRefLookupData {
                     if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Delete")) {
     
                         $script:TwitchData.VideoStartCache.Clear()
-                        Write-Verbose "Video cache entries cleared"
+                        Write-Verbose "(VideoStartCache) Data cleared"
     
                     }
     

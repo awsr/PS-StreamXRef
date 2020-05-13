@@ -101,7 +101,6 @@ function Import-XRefLookupData {
             if ($ReplaceData -and $PSCmdlet.ShouldProcess("User ID lookup data", "Clear")) {
 
                 Clear-XRefLookupData -UserIdCache
-                Write-Verbose "(UserIdCache) Data cleared."
 
             }
 
@@ -159,7 +158,6 @@ function Import-XRefLookupData {
             if ($ReplaceData -and $PSCmdlet.ShouldProcess("Clip info lookup data", "Clear")) {
 
                 Clear-XRefLookupData -ClipInfoCache
-                Write-Verbose "(ClipInfoCache) Data cleared."
 
             }
 
@@ -221,7 +219,6 @@ function Import-XRefLookupData {
             if ($ReplaceData -and $PSCmdlet.ShouldProcess("Video timestamp lookup data", "Clear")) {
 
                 Clear-XRefLookupData -VideoStartCache
-                Write-Verbose "(VideoStartCache) Data cleared."
 
             }
 
