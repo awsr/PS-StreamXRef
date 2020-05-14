@@ -307,6 +307,11 @@ function Import-XRefLookupData {
             return @($Counters.User, $Counters.Clip, $Counters.Video)
 
         }
+        else {
+
+            Write-Verbose "$(@($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table | Out-String)"
+
+        }
     }
 
 }
