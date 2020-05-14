@@ -7,7 +7,10 @@ function Import-XRefLookupData {
         [string]$InputObject,
 
         [Parameter()]
-        [switch]$ReplaceData = $false
+        [switch]$ReplaceData = $false,
+
+        [Parameter()]
+        [switch]$PassThru = $false
     )
 
     Begin {
@@ -65,6 +68,21 @@ function Import-XRefLookupData {
 
         $ConfigStaging = ConvertFrom-Json $InputObject -ErrorAction Stop
 
+        # Store as a hashtable for ease of access within the function.
+        $Counters = @{}
+        "User", "Clip", "Video" | ForEach-Object {
+
+            $tempobj = [pscustomobject]@{
+                Name = $_
+                Added = 0
+                Duplicate = 0
+                Error = 0
+            }
+            Add-Member -InputObject $tempobj -MemberType ScriptProperty -Name Total -Value {$this.Added + $this.Duplicate + $this.BadData}
+
+            $Counters.Add($_, $tempobj)
+        }
+
         # Process ApiKey
         if ($ConfigStaging.psobject.Properties.Name -contains "ApiKey") {
 
@@ -106,40 +124,36 @@ function Import-XRefLookupData {
 
             if ($PSCmdlet.ShouldProcess("User ID lookup data", "Import")) {
 
-                $AddCount = 0
-                $DupeCount = 0
-                $BadDataCount = 0
-    
                 $ConfigStaging.UserIdCache.psobject.properties | ForEach-Object {
     
                     try {
     
                         $script:TwitchData.UserIdCache.Add( $_.Name, $_.Value )
-                        $AddCount++
+                        $Counters.User.Added++
     
                     }
                     catch [System.ArgumentException] {
     
                         # This should be an error from there already being an existing entry with the same key
-                        $DupeCount++
+                        $Counters.User.Duplicate++
     
                     }
                     catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
                         [System.Management.Automation.PropertyNotFoundException] {
 
                         Write-Error "(UserIdCache) $($_.Exception.Message)"
-                        $BadDataCount++
+                        $Counters.User.Error++
     
                     }
 
                 }
 
-                Write-Verbose "(UserIdCache) $AddCount entries added."
-                Write-Verbose "(UserIdCache) $DupeCount duplicate entries skipped."
+                Write-Verbose "(UserIdCache) $($Counters.User.Added) entries added."
+                Write-Verbose "(UserIdCache) $($Counters.User.Duplicate) duplicate entries skipped."
 
-                if ($BadDataCount -gt 0) {
+                if ($Counters.User.Error -gt 0) {
 
-                    Write-Verbose "(UserIdCache) $BadDataCount entries could not be parsed."
+                    Write-Verbose "(UserIdCache) $($Counters.User.Error) entries could not be parsed."
 
                 }
 
@@ -163,10 +177,6 @@ function Import-XRefLookupData {
 
             if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Import")) {
 
-                $AddCount = 0
-                $DupeCount = 0
-                $BadDataCount = 0
-    
                 $ConfigStaging.ClipInfoCache.psobject.properties | ForEach-Object {
     
                     try {
@@ -176,31 +186,31 @@ function Import-XRefLookupData {
                         [int]$VideoIDValue = $_.Value.VideoID
 
                         $script:TwitchData.ClipInfoCache.Add( $_.Name, @{ Offset = $OffsetValue; VideoID = $VideoIDValue } )
-                        $AddCount++
+                        $Counters.Clip.Added++
 
                     }
                     catch [System.ArgumentException] {
     
                         # This should be an error from there already being an existing entry with the same key
-                        $DupeCount++
+                        $Counters.Clip.Duplicate++
     
                     }
                     catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
                         [System.Management.Automation.PropertyNotFoundException] {
 
                         Write-Error "(ClipInfoCache) $($_.Exception.Message)"
-                        $BadDataCount++
+                        $Counters.Clip.Error++
     
                     }
     
                 }
 
-                Write-Verbose "(ClipInfoCache) $AddCount entries added."
-                Write-Verbose "(ClipInfoCache) $DupeCount duplicate entries skipped."
+                Write-Verbose "(ClipInfoCache) $($Counters.Clip.Added) entries added."
+                Write-Verbose "(ClipInfoCache) $($Counters.Clip.Duplicate) duplicate entries skipped."
 
-                if ($BadDataCount -gt 0) {
+                if ($Counters.Clip.Error -gt 0) {
 
-                    Write-Verbose "(ClipInfoCache) $BadDataCount entries could not be parsed."
+                    Write-Verbose "(ClipInfoCache) $($Counters.Clip.Error) entries could not be parsed."
 
                 }
 
@@ -224,40 +234,36 @@ function Import-XRefLookupData {
 
             if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Import")) {
 
-                $AddCount = 0
-                $DupeCount = 0
-                $BadDataCount = 0
-
                 $ConfigStaging.VideoStartCache.psobject.properties | ForEach-Object {
 
                     try {
     
                         $ConvertedDateTime = $_.Value | ConvertTo-UtcDateTime
                         $script:TwitchData.VideoStartCache.Add( $_.Name, $ConvertedDateTime )
-                        $AddCount++
+                        $Counters.Video.Added++
                     }
                     catch [System.ArgumentException] {
     
                         # This should be an error from there already being an existing entry with the same key
-                        $DupeCount++
+                        $Counters.Video.Duplicate++
     
                     }
                     catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
                         [System.Management.Automation.PropertyNotFoundException] {
 
                         Write-Error "(VideoStartCache) $($_.Exception.Message)"
-                        $BadDataCount++
+                        $Counters.Video.Error++
     
                     }
 
                 }
 
-                Write-Verbose "(VideoStartCache) $AddCount entries added."
-                Write-Verbose "(VideoStartCache) $DupeCount duplicate entries skipped."
+                Write-Verbose "(VideoStartCache) $($Counters.Video.Added) entries added."
+                Write-Verbose "(VideoStartCache) $($Counters.Video.Duplicate) duplicate entries skipped."
 
-                if ($BadDataCount -gt 0) {
+                if ($Counters.Video.Error -gt 0) {
 
-                    Write-Verbose "(VideoStartCache) $BadDataCount entries could not be parsed."
+                    Write-Verbose "(VideoStartCache) $($Counters.Video.Error) entries could not be parsed."
 
                 }
 
@@ -270,6 +276,16 @@ function Import-XRefLookupData {
 
         }
 
+    }
+
+    End {
+
+        if ($PassThru) {
+
+            # Return as an array for better display formatting
+            return @($Counters.User, $Counters.Clip, $Counters.Video)
+
+        }
     }
 
 }
