@@ -67,7 +67,7 @@ function Clear-XRefLookupData {
 
         if ($ResetAll) {
 
-            if ($PSCmdlet.ShouldProcess("All cached lookup data", "Delete")) {
+            if ($PSCmdlet.ShouldProcess("All cached lookup data", "Clear")) {
 
                 $script:TwitchData.ApiKey = $null
                 $script:TwitchData.UserIdCache.Clear()
@@ -83,7 +83,7 @@ function Clear-XRefLookupData {
 
             if ($ApiKey) {
 
-                if ($PSCmdlet.ShouldProcess("ApiKey", "Delete")) {
+                if ($PSCmdlet.ShouldProcess("API key", "Clear")) {
 
                     $script:TwitchData.ApiKey.Clear()
                     Write-Verbose "(ApiKey) Data cleared"
@@ -94,7 +94,7 @@ function Clear-XRefLookupData {
 
             if ($UserIdCache) {
 
-                if ($PSCmdlet.ShouldProcess("User ID lookup data", "Delete")) {
+                if ($PSCmdlet.ShouldProcess("User ID lookup data", "Clear")) {
 
                     $script:TwitchData.UserIdCache.Clear()
                     Write-Verbose "(UserIdCache) data cleared"
@@ -105,7 +105,7 @@ function Clear-XRefLookupData {
 
             if ($ClipInfoCache) {
 
-                if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Delete")) {
+                if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Clear")) {
 
                     $script:TwitchData.ClipInfoCache.Clear()
                     Write-Verbose "(ClipInfoCache) Data cleared"
