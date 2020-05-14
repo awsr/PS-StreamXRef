@@ -1,20 +1,23 @@
 
 function Import-XRefLookupData {
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium")]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "General")]
     Param(
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = "General")]
         [ValidateNotNullOrEmpty()]
         [string]$InputObject,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = "General")]
         [switch]$ReplaceData = $false,
 
-        [Parameter()]
-        [switch]$PassThru = $false
+        [Parameter(ParameterSetName = "General")]
+        [switch]$PassThru = $false,
+
+        [Parameter(Mandatory = $true, ParameterSetName = "ApiKey")]
+        [string]$ApiKey
     )
 
     Begin {
-        
+
         # Initialize cache to import to if missing
         if (-not (Test-Path Variable:Script:TwitchData)) {
 
@@ -38,6 +41,14 @@ function Import-XRefLookupData {
     }
 
     Process {
+
+        # Importing just the ApiKey
+        if ($PSBoundParameters.ContainsKey("ApiKey")) {
+
+            $script:TwitchData.ApiKey = $ApiKey
+            return
+
+        }
 
         # Remove surrounding whitespaces from input
         $InputObject = $InputObject.Trim()
