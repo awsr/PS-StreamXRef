@@ -7,16 +7,23 @@ function Import-XRefLookupData {
         [string]$InputObject,
 
         [Parameter(ParameterSetName = "General")]
-        [switch]$ReplaceData = $false,
-
-        [Parameter(ParameterSetName = "General")]
         [switch]$PassThru = $false,
-
+        
+        [Parameter(ParameterSetName = "General")]
+        [Parameter(ParameterSetName = "ApiKey")]
+        [switch]$Force = $false,
+        
         [Parameter(Mandatory = $true, ParameterSetName = "ApiKey")]
         [string]$ApiKey
     )
 
     Begin {
+
+        if ($Force -and -not $Confirm) {
+
+            $ConfirmPreference = "none"
+
+        }
 
         # Initialize cache to import to if missing
         if (-not (Test-Path Variable:Script:TwitchData)) {
@@ -103,7 +110,7 @@ function Import-XRefLookupData {
                 $script:TwitchData.ApiKey = $ConfigStaging.ApiKey
 
             }
-            elseif ($ReplaceData -and $PSCmdlet.ShouldProcess("Api key", "Clear")) {
+            elseif ($PSCmdlet.ShouldProcess("API key", "Replace")) {
 
                 # Perform ApiKey replacement within this block because
                 # it is not a collection that can be added to
@@ -137,7 +144,7 @@ function Import-XRefLookupData {
         # Process UserIdCache
         if ($ConfigStaging.psobject.Properties.Name -contains "UserIdCache") {
 
-            if ($ReplaceData -and $PSCmdlet.ShouldProcess("User ID lookup data", "Clear")) {
+            if ($PSCmdlet.ShouldProcess("User ID lookup data", "Clear")) {
 
                 Clear-XRefLookupData -UserIdCache
 
@@ -190,7 +197,7 @@ function Import-XRefLookupData {
         # Process ClipInfoCache
         if ($ConfigStaging.psobject.Properties.Name -contains "ClipInfoCache") {
 
-            if ($ReplaceData -and $PSCmdlet.ShouldProcess("Clip info lookup data", "Clear")) {
+            if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Clear")) {
 
                 Clear-XRefLookupData -ClipInfoCache
 
@@ -247,7 +254,7 @@ function Import-XRefLookupData {
         # Process VideoStartCache
         if ($ConfigStaging.psobject.Properties.Name -contains "VideoStartCache") {
 
-            if ($ReplaceData -and $PSCmdlet.ShouldProcess("Video timestamp lookup data", "Clear")) {
+            if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Clear")) {
 
                 Clear-XRefLookupData -VideoStartCache
 
