@@ -1,6 +1,6 @@
 
 function Clear-XRefLookupData {
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low", DefaultParameterSetName = "All")]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "All")]
     Param(
         [Parameter(ParameterSetName = "All")]
         [switch]$ResetAll = $false,
