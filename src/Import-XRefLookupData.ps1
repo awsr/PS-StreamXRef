@@ -109,7 +109,17 @@ function Import-XRefLookupData {
         }
         else {
 
-            Write-Error "API key missing from import." -Category ObjectNotFound
+            if ($null, "" -contains $script:TwitchData.ApiKey) {
+
+                Write-Error "API key missing from input." -Category ObjectNotFound
+
+            }
+            else {
+
+                # Not an error if one is already set
+                Write-Warning "API key missing from input."
+
+            }
 
         }
 
