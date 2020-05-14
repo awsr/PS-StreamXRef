@@ -35,7 +35,7 @@ This will search through ChannelName1's most recent broadcasts and return a URL 
 
 ### Example 2
 ```powershell
-PS > Get-TwitchXRef -Source "NameOfTheClip" -XRef "twitch.tv/videos/123456789"
+PS > Get-TwitchXRef -Source "NameOfTheClip" -XRef "https://www.twitch.tv/videos/123456789"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s
 ```
@@ -44,12 +44,12 @@ This will get the same result as the previous example, but uses just the name of
 
 ### Example 3
 ```powershell
-PS > Get-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "ADifferentChannelName" -Count 60
+PS > Get-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "https://www.twitch.tv/ChannelName2" -Count 60
 
 https://www.twitch.tv/videos/122333444?t=1h04m42s
 ```
 
-This will search through ADifferentChannelName's 60 most recent broadcasts using a video URL with a timestamp as the source and return the corresponding URL that goes to the same moment from ADifferentChannelName's perspective.
+This will search through ChannelName2's 60 most recent broadcasts using a video URL with a timestamp as the source and return the corresponding URL that goes to the same moment from ChannelName2's perspective.
 
 ## PARAMETERS
 
