@@ -1,7 +1,7 @@
 ---
 external help file: Get-TwitchXRef-help.xml
 Module Name: Get-TwitchXRef
-online version:
+online version: https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Get-TwitchXRef.md
 schema: 2.0.0
 ---
 

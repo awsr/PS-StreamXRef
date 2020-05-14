@@ -161,7 +161,7 @@ https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
-        <dev:code>PS &gt; Get-TwitchXRef -Source "NameOfTheClip" -XRef "twitch.tv/videos/123456789"
+        <dev:code>PS &gt; Get-TwitchXRef -Source "NameOfTheClip" -XRef "https://www.twitch.tv/videos/123456789"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
         <dev:remarks>
@@ -170,14 +170,19 @@ https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
-        <dev:code>PS &gt; Get-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "ADifferentChannelName" -Count 60
+        <dev:code>PS &gt; Get-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "https://www.twitch.tv/ChannelName2" -Count 60
 
 https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <dev:remarks>
-          <maml:para>This will search through ADifferentChannelName's 60 most recent broadcasts using a video URL with a timestamp as the source and return the corresponding URL that goes to the same moment from ADifferentChannelName's perspective.</maml:para>
+          <maml:para>This will search through ChannelName2's 60 most recent broadcasts using a video URL with a timestamp as the source and return the corresponding URL that goes to the same moment from ChannelName2's perspective.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
-    <command:relatedLinks />
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Get-TwitchXRef.md</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
   </command:command>
 </helpItems>
