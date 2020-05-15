@@ -14,11 +14,17 @@ function Initialize-LookupCache {
         # @{ [string] User/channel name; [int] User/channel ID number }
         UserIdCache = [System.Collections.Generic.Dictionary[string, int]]::new()
 
-        # @{ [string] Clip slug name; @( [int] Time offset in seconds; [int] Video ID number ) }
+        # @{ [string] Clip slug name; @{ Offset = [int] Time offset in seconds; VideoID = [int] Video ID number } }
         ClipInfoCache = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
 
         # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
         VideoStartCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
+
+    }
+
+    $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -Value {
+
+        $this.UserIdCache.Count + $this.ClipInfoCache.Count + $this.VideoStartCache.Count
 
     }
 
