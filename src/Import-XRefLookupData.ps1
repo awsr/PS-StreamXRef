@@ -30,6 +30,7 @@ function Import-XRefLookupData {
 
             try {
 
+                # Not checking ShouldProcess because this is a required state
                 Write-Warning "Lookup data is missing. Reinitializing."
                 
                 Initialize-LookupCache -ErrorAction Stop
@@ -428,6 +429,7 @@ function Import-XRefLookupData {
             Write-Verbose "$(@($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-String)"
 
         }
+
     }
 
 }
