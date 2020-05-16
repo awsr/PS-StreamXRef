@@ -19,7 +19,7 @@ function Import-XRefLookupData {
 
     Begin {
 
-        if ($Force -and -not $Confirm) {
+        if ($Force -and -not ($PSBoundParameters.ContainsKey("Confirm") -and $Confirm)) {
 
             $ConfirmPreference = "none"
 

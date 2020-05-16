@@ -37,7 +37,7 @@ function Export-XRefLookupData {
 
             $PathParent = Split-Path $Path -Parent
 
-            if ($Force) {
+            if ($Force -and -not ($PSBoundParameters.ContainsKey("Confirm") -and $Confirm)) {
 
                 $ConfirmPreference = "None"
     
