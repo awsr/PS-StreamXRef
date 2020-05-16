@@ -92,11 +92,11 @@ function Import-XRefLookupData {
                 $tempobj = [pscustomobject]@{
                     Name      = $_
                     Imported  = 0
-                    Duplicate = 0
+                    Ignored = 0
                     Skipped   = 0
                     Error     = 0
                 }
-                Add-Member -InputObject $tempobj -MemberType ScriptProperty -Name Total -Value { $this.Imported + $this.Duplicate + $this.Skipped + $this.Error }
+                Add-Member -InputObject $tempobj -MemberType ScriptProperty -Name Total -Value { $this.Imported + $this.Ignored + $this.Skipped + $this.Error }
 
                 $Counters.Add($_, $tempobj)
 
@@ -193,7 +193,7 @@ function Import-XRefLookupData {
                             if ($script:TwitchData.UserIdCache[$_.Name] -eq $_.Value) {
 
                                 # Already exists and can be ignored
-                                $Counters.User.Duplicate++
+                                $Counters.User.Ignored++
 
                             }
                             else {
@@ -240,8 +240,8 @@ function Import-XRefLookupData {
                 }
 
                 Write-Verbose "(User Data) $($Counters.User.Imported) entries imported."
-                if ($Counters.User.Duplicate -gt 0) {
-                    Write-Verbose "(User Data) $($Counters.User.Duplicate) duplicate entries ignored."
+                if ($Counters.User.Ignored -gt 0) {
+                    Write-Verbose "(User Data) $($Counters.User.Ignored) duplicate entries ignored."
                 }
                 if ($Counters.User.Skipped -gt 0) {
                     Write-Verbose "(User Data) $($Counters.User.Skipped) conflicting entries skipped"
@@ -279,7 +279,7 @@ function Import-XRefLookupData {
 
                             if ($ExistingObject.Offset -eq $NewOffsetValue -and $ExistingObject.VideoID -eq $NewVideoIDValue) {
 
-                                $Counters.Clip.Duplicate++
+                                $Counters.Clip.Ignored++
 
                             }
                             else {
@@ -320,8 +320,8 @@ function Import-XRefLookupData {
                 }
 
                 Write-Verbose "(Clip Data) $($Counters.Clip.Imported) entries imported."
-                if ($Counters.Clip.Duplicate -gt 0) {
-                    Write-Verbose "(Clip Data) $($Counters.Clip.Duplicate) duplicate entries ignored."
+                if ($Counters.Clip.Ignored -gt 0) {
+                    Write-Verbose "(Clip Data) $($Counters.Clip.Ignored) duplicate entries ignored."
                 }
                 if ($Counters.Clip.Skipped -gt 0) {
                     Write-Verbose "(Clip Data) $($Counters.Clip.Skipped) conflicting entries skipped"
@@ -354,7 +354,7 @@ function Import-XRefLookupData {
 
                             if ($script:TwitchData.VideoStartCache[$_.Name] -eq $ConvertedDateTime) {
 
-                                $Counters.Video.Duplicate++
+                                $Counters.Video.Ignored++
 
                             }
                             else {
@@ -395,8 +395,8 @@ function Import-XRefLookupData {
                 }
 
                 Write-Verbose "(Video Data) $($Counters.Video.Imported) entries imported."
-                if ($Counters.Video.Duplicate -gt 0) {
-                    Write-Verbose "(Video Data) $($Counters.Video.Duplicate) duplicate entries ignored."
+                if ($Counters.Video.Ignored -gt 0) {
+                    Write-Verbose "(Video Data) $($Counters.Video.Ignored) duplicate entries ignored."
                 }
                 if ($Counters.Video.Skipped -gt 0) {
                     Write-Verbose "(Video Data) $($Counters.Video.Skipped) conflicting entries skipped"
