@@ -72,7 +72,7 @@ function Import-XRefLookupData {
                 $tempobj = [pscustomobject]@{
                     Name      = $_
                     Imported  = 0
-                    Ignored = 0
+                    Ignored   = 0
                     Skipped   = 0
                     Error     = 0
                 }
