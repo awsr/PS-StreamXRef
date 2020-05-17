@@ -22,7 +22,7 @@ function Initialize-LookupCache {
 
     }
 
-    $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -Value -ErrorAction Stop {
+    $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -ErrorAction Stop -Value {
 
         $this.UserIdCache.Count + $this.ClipInfoCache.Count + $this.VideoStartCache.Count
 
@@ -62,7 +62,7 @@ try {
 }
 catch {
 
-    $PSCmdlet.ThrowTerminatingError($_)
+    throw $_
 
 }
 
