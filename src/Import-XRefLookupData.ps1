@@ -25,27 +25,6 @@ function Import-XRefLookupData {
 
         }
 
-        # Initialize cache to import to if missing
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            try {
-
-                # Not checking ShouldProcess because this is a required state
-                Write-Warning "Lookup data is missing. Reinitializing."
-                
-                Initialize-LookupCache -ErrorAction Stop
-
-            }
-            catch {
-
-                # This also forces script to halt if the command isn't found,
-                # indicating the module wasn't loaded correctly
-                $PSCmdlet.ThrowTerminatingError($_)
-
-            }
-
-        }
-
         # Initial states for ShouldContinue
         $YesToAll = $false
         $NoToAll = $false

@@ -37,31 +37,6 @@ function Clear-XRefLookupData {
             return $paramDictionary
         }
     }
-
-    Begin {
-
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            try {
-
-                Write-Warning "Lookup data is missing. Reinitializing."
-
-                Initialize-LookupCache -ErrorAction Stop
-
-            }
-            catch {
-
-                # This also forces script to halt if the command isn't found,
-                # indicating the module wasn't loaded correctly
-                $PSCmdlet.ThrowTerminatingError($_)
-
-            }
-
-            return
-
-        }
-
-    }
     
     Process {
 

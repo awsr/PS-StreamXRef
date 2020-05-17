@@ -22,7 +22,7 @@ function Initialize-LookupCache {
 
     }
 
-    $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -Value {
+    $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -Value -ErrorAction Stop {
 
         $this.UserIdCache.Count + $this.ClipInfoCache.Count + $this.VideoStartCache.Count
 
@@ -55,7 +55,16 @@ filter ConvertTo-UtcDateTime {
 
 #region Initialize variables ===================
 
-Initialize-LookupCache
+try {
+
+    Initialize-LookupCache -ErrorAction Stop
+
+}
+catch {
+
+    $PSCmdlet.ThrowTerminatingError($_)
+
+}
 
 #endregion Initialize variables ----------------
 

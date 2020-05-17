@@ -17,19 +17,10 @@ function Export-XRefLookupData {
 
     Begin {
 
-        if (-not (Test-Path Variable:Script:TwitchData)) {
+        if ($null, "" -contains $script:TwitchData.ApiKey -and $script:TwitchData.GetTotalCount() -eq 0) {
 
-            throw "Lookup data not initialized"
-
-        }
-        else {
-
-            if ($null, "" -contains $script:TwitchData.ApiKey -and $script:TwitchData.GetTotalCount() -eq 0) {
-
-                Write-Error "No data exists to export"
-                return
-
-            }
+            Write-Error "No data exists to export"
+            return $null
 
         }
 
