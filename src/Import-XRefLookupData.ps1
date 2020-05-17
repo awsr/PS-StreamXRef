@@ -9,12 +9,13 @@ function Import-XRefLookupData {
         [Parameter(ParameterSetName = "General")]
         [switch]$PassThru = $false,
 
+        [Parameter(Mandatory = $true, ParameterSetName = "ApiKey")]
+        [string]$ApiKey,
+
         [Parameter(ParameterSetName = "General")]
         [Parameter(ParameterSetName = "ApiKey")]
-        [switch]$Force = $false,
+        [switch]$Force = $false
 
-        [Parameter(Mandatory = $true, ParameterSetName = "ApiKey")]
-        [string]$ApiKey
     )
 
     Begin {
