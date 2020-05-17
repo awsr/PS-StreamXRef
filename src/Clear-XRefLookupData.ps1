@@ -2,8 +2,8 @@
 function Clear-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "All")]
     Param(
-        [Parameter(ParameterSetName = "All")]
-        [switch]$ResetAll = $false,
+        [Parameter(Mandatory = $true, ParameterSetName = "All")]
+        [switch]$ResetAll,
 
         [Parameter(ParameterSetName = "Selection")]
         [switch]$ApiKey = $false,
@@ -40,7 +40,7 @@ function Clear-XRefLookupData {
     
     Process {
 
-        if ($ResetAll) {
+        if ($PSCmdlet.ParameterSetName -eq "All" -and $ResetAll) {
 
             if ($PSCmdlet.ShouldProcess("All cached lookup data", "Clear")) {
 
