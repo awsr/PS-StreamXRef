@@ -2,16 +2,18 @@
 function Export-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "Object")]
     Param(
-        [Parameter(Mandatory = $true, Position = 0, ParameterSetName = "File", ValueFromPipeline = $true)]
+        [Parameter(Mandatory = $true, Position = 0, ParameterSetName = "File",
+                   ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Alias("PSPath")]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({ Test-Path $_ -IsValid })]
         [string]$Path,
 
-        [Parameter(ParameterSetName = "File")]
+        [Parameter(ParameterSetName = "File", ValueFromPipelineByPropertyName = $true)]
         [switch]$Force = $false,
 
-        [Parameter(ParameterSetName = "Object")]
-        [Parameter(ParameterSetName = "File")]
+        [Parameter(ParameterSetName = "Object", ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = "File", ValueFromPipelineByPropertyName = $true)]
         [switch]$Compress = $false
     )
 
