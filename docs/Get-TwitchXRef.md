@@ -22,7 +22,7 @@ Given a Twitch clip or video timestamp URL, get a URL to the same moment from th
 
 You must provide your own API key.
 
-An event with a `SourceIdentifier` of "XRefNewDataAdded" will be sent after running if new data was added to the lookup data cache and an event subscriber has been registered with `Register-EngineEvent`.
+An event with a `SourceIdentifier` of "**XRefNewDataAdded**" will be sent after running if new data was added to the lookup data cache and an event subscriber has been registered with `Register-EngineEvent`.
 
 ## EXAMPLES
 
@@ -141,11 +141,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.String
 
-Used for *Source*, *XRef*, and *ClientID* parameters. Can be pipelined by property name.
+Used for `Source`, `XRef`, and `ClientID` parameters. Can be pipelined by property name.
 
 ### System.Int32
 
-Used for *Count* and *Offset* parameters. Can be pipelined by property name.
+Used for `Count` and `Offset` parameters. Can be pipelined by property name.
 
 ## OUTPUTS
 
