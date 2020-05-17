@@ -1,4 +1,4 @@
-
+#.ExternalHelp Get-TwitchXRef-help.xml
 function Import-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "General")]
     Param(

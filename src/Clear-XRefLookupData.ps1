@@ -1,4 +1,4 @@
-
+#.ExternalHelp Get-TwitchXRef-help.xml
 function Clear-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "All")]
     Param(
