@@ -59,7 +59,7 @@ function Export-XRefLookupData {
         }
 
         # Save Json string
-        $DataAsJson = $TXRConfigData | ConvertTo-Json -Compress:$Compress
+        [string]$DataAsJson = $TXRConfigData | ConvertTo-Json -Compress:$Compress
 
         if ($PSCmdlet.ParameterSetName -eq "File") {
 
