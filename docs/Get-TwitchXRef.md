@@ -22,7 +22,7 @@ Given a Twitch clip or video timestamp URL, get a URL to the same moment from th
 
 You must provide your own API key.
 
-An event with a SourceIdentifier of "XRefNewDataAdded" will be sent after running if new data was added to the lookup data cache and an event subscriber has been registered with `Register-EngineEvent`.
+An event with a `SourceIdentifier` of "XRefNewDataAdded" will be sent after running if new data was added to the lookup data cache and an event subscriber has been registered with `Register-EngineEvent`.
 
 ## EXAMPLES
 
@@ -120,7 +120,7 @@ Accept wildcard characters: False
 ```
 
 ### -ApiKey
-Accepts your API key (for Twitch this is the "Client ID"). Required when one hasn't already been provided.
+Accepts your API key (for Twitch this is the "Client ID"). Required when one hasn't already been provided. Obtained from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/).
 
 ```yaml
 Type: String
@@ -139,7 +139,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
+
+Used for *Source*, *XRef*, and *ClientID* parameters. Can be pipelined by property name.
+
+### System.Int32
+
+Used for *Count* and *Offset* parameters. Can be pipelined by property name.
+
 ## OUTPUTS
+
+### System.String
+
+If a result is found, the URL will be returned as a string.
 
 ## NOTES
 This uses the v5 Twitch API.
