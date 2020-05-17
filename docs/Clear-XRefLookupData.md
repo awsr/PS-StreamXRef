@@ -1,6 +1,6 @@
 ---
-external help file: Get-TwitchXRef-help.xml
-Module Name: Get-TwitchXRef
+external help file: StreamXRef-help.xml
+Module Name: StreamXRef
 online version: https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Clear-XRefLookupData.md
 schema: 2.0.0
 ---

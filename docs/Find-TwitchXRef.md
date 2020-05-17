@@ -1,7 +1,7 @@
 ---
-external help file: Get-TwitchXRef-help.xml
-Module Name: Get-TwitchXRef
-online version: https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Get-TwitchXRef.md
+external help file: StreamXRef-help.xml
+Module Name: StreamXRef
+online version: https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Find-TwitchXRef.md
 schema: 2.0.0
 ---
 
@@ -13,12 +13,12 @@ Cross-reference Twitch clips and video timestamps between different channels/use
 ## SYNTAX
 
 ```
-Get-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] -ApiKey <String>
+Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] -ApiKey <String>
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Given a Twitch clip or video timestamp URL, get a URL to the same moment from the cross-referenced video or channel.
+Given a Twitch clip or video timestamp URL, find the same moment from the cross-referenced video or channel and return it as a URL.
 
 You must provide your own API key.
 
@@ -28,7 +28,7 @@ An event with a `SourceIdentifier` of "**XRefNewDataAdded**" will be sent after 
 
 ### Example 1
 ```powershell
-PS > Get-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -XRef "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
+PS > Find-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -XRef "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s
 ```
@@ -37,7 +37,7 @@ This will search through ChannelName1's most recent broadcasts and return a URL 
 
 ### Example 2
 ```powershell
-PS > Get-TwitchXRef -Source "NameOfTheClip" -XRef "https://www.twitch.tv/videos/123456789"
+PS > Find-TwitchXRef -Source "NameOfTheClip" -XRef "https://www.twitch.tv/videos/123456789"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s
 ```
@@ -46,7 +46,7 @@ This will get the same result as the previous example, but uses just the name of
 
 ### Example 3
 ```powershell
-PS > Get-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "https://www.twitch.tv/ChannelName2" -Count 60
+PS > Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "https://www.twitch.tv/ChannelName2" -Count 60
 
 https://www.twitch.tv/videos/122333444?t=1h04m42s
 ```
@@ -154,6 +154,9 @@ Used for `Count` and `Offset` parameters. Can be pipelined by property name.
 If a result is found, the URL will be returned as a string.
 
 ## NOTES
+
+Default alias is `txr`.
+
 This uses the v5 Twitch API.
 
 ## RELATED LINKS

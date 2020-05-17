@@ -440,7 +440,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Given a Twitch clip or video timestamp URL, get a URL to the same moment from the cross-referenced video or channel.</maml:para>
+      <maml:para>Given a Twitch clip or video timestamp URL, find the same moment from the cross-referenced video or channel and return it as a URL.</maml:para>
       <maml:para>You must provide your own API key.</maml:para>
       <maml:para>An event with a `SourceIdentifier` of " XRefNewDataAdded " will be sent after running if new data was added to the lookup data cache and an event subscriber has been registered with `Register-EngineEvent`.</maml:para>
     </maml:description>
@@ -609,7 +609,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS &gt; Get-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -XRef "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
+        <dev:code>PS &gt; Find-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -XRef "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
         <dev:remarks>
@@ -618,7 +618,7 @@ https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
-        <dev:code>PS &gt; Get-TwitchXRef -Source "NameOfTheClip" -XRef "https://www.twitch.tv/videos/123456789"
+        <dev:code>PS &gt; Find-TwitchXRef -Source "NameOfTheClip" -XRef "https://www.twitch.tv/videos/123456789"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
         <dev:remarks>
@@ -627,7 +627,7 @@ https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
-        <dev:code>PS &gt; Get-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "https://www.twitch.tv/ChannelName2" -Count 60
+        <dev:code>PS &gt; Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "https://www.twitch.tv/ChannelName2" -Count 60
 
 https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <dev:remarks>
@@ -638,7 +638,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Get-TwitchXRef.md</maml:uri>
+        <maml:uri>https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Find-TwitchXRef.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -652,7 +652,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This lets you import data into the local lookup cache using either a path to a file with JSON-formatted data or with a JSON string itself. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Get-TwitchXRef` command.</maml:para>
+      <maml:para>This lets you import data into the local lookup cache using either a path to a file with JSON-formatted data or with a JSON string itself. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -855,7 +855,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <maml:description>
           <maml:para>No output will be returned unless `PassThru` is specified. If the `PassThru` parameter is given, an array object showing the results of the import will be returned. The statistics are given for "User", "Clip", and "Video" lookup caches.</maml:para>
           <maml:para>Each object in the array has a `Name` property, as well as counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.</maml:para>
-          <maml:para>* Imported: Number of entries sucessfully imported.</maml:para>
+          <maml:para>* Imported: Number of entries successfully imported.</maml:para>
           <maml:para>* Ignored: Number of duplicate entries ignored.</maml:para>
           <maml:para>* Skipped: Number of entries that had different data than what was already in the cache and were skipped by user.</maml:para>
           <maml:para>* Error: Number of entries that could not be parsed.</maml:para>

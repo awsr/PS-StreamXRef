@@ -1,6 +1,6 @@
 ---
-external help file: Get-TwitchXRef-help.xml
-Module Name: Get-TwitchXRef
+external help file: StreamXRef-help.xml
+Module Name: StreamXRef
 online version: https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Import-XRefLookupData.md
 schema: 2.0.0
 ---
@@ -23,7 +23,7 @@ Import-XRefLookupData -ApiKey <String> [-Force] [-WhatIf] [-Confirm] [<CommonPar
 ```
 
 ## DESCRIPTION
-This lets you import data into the local lookup cache using either a path to a file with JSON-formatted data or with a JSON string itself. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Get-TwitchXRef` command.
+This lets you import data into the local lookup cache using either a path to a file with JSON-formatted data or with a JSON string itself. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.
 
 ## EXAMPLES
 
@@ -144,7 +144,7 @@ No output will be returned unless `PassThru` is specified. If the `PassThru` par
 
 Each object in the array has a `Name` property, as well as counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.
 
-* Imported: Number of entries sucessfully imported.
+* Imported: Number of entries successfully imported.
 * Ignored: Number of duplicate entries ignored.
 * Skipped: Number of entries that had different data than what was already in the cache and were skipped by user.
 * Error: Number of entries that could not be parsed.

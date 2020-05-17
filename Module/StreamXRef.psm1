@@ -97,7 +97,7 @@ $FunctionNames = $AllFunctions | ForEach-Object {
     $_.Name.Split('.')[0]
 }
 
-Set-Alias -Name gtxr -Value Get-TwitchXRef
+Set-Alias -Name txr -Value Find-TwitchXRef
 
-Export-ModuleMember -Alias "gtxr"
+Export-ModuleMember -Alias "txr"
 Export-ModuleMember -Function $FunctionNames

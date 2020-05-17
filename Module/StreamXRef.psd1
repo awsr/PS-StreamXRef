@@ -1,12 +1,12 @@
 @{
 
-    RootModule = 'Get-TwitchXRef.psm1'
+    RootModule = 'StreamXRef.psm1'
 
     Author = 'Alex Wiser'
 
     CompanyName = 'Unknown'
 
-    ModuleVersion = '2.9.9'
+    ModuleVersion = '3.0.0'
 
     GUID = '8c89ef10-5110-4406-a876-82b8eadf5bb2'
 
@@ -18,9 +18,9 @@
 
     CompatiblePSEditions = @('Desktop', 'Core')
 
-    FunctionsToExport = @('Get-TwitchXRef', 'Export-XRefLookupData', 'Import-XRefLookupData', 'Clear-XRefLookupData')
+    FunctionsToExport = @('Find-TwitchXRef', 'Export-XRefLookupData', 'Import-XRefLookupData', 'Clear-XRefLookupData')
 
-    AliasesToExport = @('gtxr')
+    AliasesToExport = @('txr')
 
     VariablesToExport = @('')
 
@@ -28,7 +28,7 @@
     PrivateData = @{
         PSData = @{
 
-            Tags = @('Twitch', 'Stream', 'Cross-Reference', 'Reference', 'Rest', 'API', 'Find', 'Search',
+            Tags = @('Stream', 'Twitch', 'Cross-Reference', 'Reference', 'Rest', 'API', 'Find', 'Search',
                 'PSEdition_Desktop', 'PSEdition_Core', 'Windows', 'Linux', 'Mac')
 
             LicenseUri = 'https://github.com/awsr/Get-TwitchXRef/blob/master/LICENSE'
@@ -42,8 +42,13 @@
 
 First version released as a full PowerShell Module.
 
+* Renamed module to "StreamXRef" due to Twitch's limitiations on project names
+* Renamed `Get-TwitchXRef` to `Find-TwitchXRef`
+* Changed alias from `gtxr` to `txr`
 * Added `Export-XRefLookupData`, `Import-XRefLookupData`, and `Clear-XRefLookupData`
 '@
+
+            Prerelease = 'alpha1'
         }
     }
 
