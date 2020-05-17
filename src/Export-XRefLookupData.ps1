@@ -26,8 +26,6 @@ function Export-XRefLookupData {
 
         if ($PSCmdlet.ParameterSetName -eq "File") {
 
-            $PathParent = Split-Path $Path -Parent
-
             if ($Force -and -not ($PSBoundParameters.ContainsKey("Confirm") -and $Confirm)) {
 
                 $ConfirmPreference = "None"
@@ -63,21 +61,28 @@ function Export-XRefLookupData {
 
         if ($PSCmdlet.ParameterSetName -eq "File") {
 
-            # Check if path directory exists and create if it doesn't
-            if (-not (Test-Path $PathParent)) {
+            # Check if path exists
+            if (Test-Path $Path) {
 
-                if ($PSCmdlet.ShouldProcess($ParentPath, "Create Directory")) {
+                if ($PSCmdlet.ShouldProcess($Path, "Write File")) {
 
-                    New-Item $PathParent -ItemType Directory -ErrorAction Stop
-    
+                    $DataAsJson | Out-File $Path
+
                 }
-    
+
             }
+            else {
 
-            # Write file
-            if ($PSCmdlet.ShouldProcess($Path, "Write File")) {
+                # Path doesn't exist
 
-                $DataAsJson | Out-File $Path
+                if ($PSCmdlet.ShouldProcess($Path, "Create File")) {
+
+                    # Create placeholder file, including any missing directories
+                    # Override ErrorAction preferences because Out-File does not create missing directories and will fail anyway
+                    New-Item $Path -ItemType File -Force:$Force -ErrorAction Stop
+                    $DataAsJson | Out-File $Path
+
+                }
 
             }
 
