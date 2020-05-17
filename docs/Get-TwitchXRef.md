@@ -22,6 +22,8 @@ Given a Twitch clip or video timestamp URL, get a URL to the same moment from th
 
 You must provide your own API key.
 
+An event with a SourceIdentifier of "XRefNewDataAdded" will be sent after running if new data was added to the lookup data cache and an event subscriber has been registered with `Register-EngineEvent`.
+
 ## EXAMPLES
 
 ### Example 1

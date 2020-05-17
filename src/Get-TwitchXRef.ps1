@@ -95,9 +95,13 @@ function Get-TwitchXRef {
             "Client-ID" = $ClientID
             "Accept"    = "application/vnd.twitchtv.v5+json"
         }
+
+        $NewDataAdded = $false
+
     }
 
     Process {
+
         trap [Microsoft.PowerShell.Commands.HttpResponseException] {
             # API Responded with error status
             if ($_.Exception.Response.StatusCode -eq 404) {
@@ -165,6 +169,7 @@ function Get-TwitchXRef {
             [int]$VideoID = $Source | Get-LastUrlSegment
 
             $RestArgs["Uri"] = "$API/videos/$VideoID"
+
         }
         else {
             # Clip provided
@@ -202,15 +207,21 @@ function Get-TwitchXRef {
                     VideoID = $VideoID
                 }
                 $script:TwitchData.ClipInfoCache.Add($Slug, $obj)
+                $NewDataAdded = $true
+
             }
+
         }
 
         # Set absolute timestamp of event
         if ($script:TwitchData.VideoStartCache.ContainsKey($VideoID)) {
+
             # Use start time from cache
             [datetime]$EventTimestamp = $script:TwitchData.VideoStartCache[$VideoID] + $TimeOffset
+
         }
         else {
+
             # Get information about main video
             $VodResponse = Invoke-RestMethod @RestArgs
 
@@ -224,6 +235,8 @@ function Get-TwitchXRef {
 
             # Add data to Vod cache
             $script:TwitchData.VideoStartCache.Add($VideoID, $VodResponse.recorded_at)
+            $NewDataAdded = $true
+
         }
 
         #endregion Source Lookup =======================
@@ -237,6 +250,7 @@ function Get-TwitchXRef {
             $RestArgs["Uri"] = "$API/videos/$XRefID"
 
             $Multi = $false
+
         }
         else {
             # Using username/channel
@@ -266,6 +280,8 @@ function Get-TwitchXRef {
 
                 # Save ID number in cache hashtable
                 $script:TwitchData.UserIdCache.Add($XRef, $UserIdNum)
+                $NewDataAdded = $true
+
             }
 
             # Set args using ID number
@@ -278,6 +294,7 @@ function Get-TwitchXRef {
             }
 
             $Multi = $true
+
         }
 
         $XRefResponse = Invoke-RestMethod @RestArgs
@@ -287,18 +304,22 @@ function Get-TwitchXRef {
         #endregion @{ PSCodeSet = Current }
         #region @{ PSCodeSet = Legacy }
         if ($Multi) {
+
             $XRefSet = $XRefResponse.videos
 
             # Manual conversion to UTC datetime
             for ($i = 0; $i -lt $XRefSet.length; $i++) {
                 $XRefSet[$i].recorded_at = $XRefSet[$i].recorded_at | ConvertTo-UtcDateTime
             }
+
         }
         else {
+
             $XRefSet = $XRefResponse
 
             # Manual conversion to UTC datetime
             $XRefSet.recorded_at = $XRefSet.recorded_at | ConvertTo-UtcDateTime
+
         }
         #endregion @{ PSCodeSet = Legacy }
 
@@ -308,19 +329,43 @@ function Get-TwitchXRef {
         $VideoToCompare = $null
         $VideoToCompare = $XRefSet | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
         if ($null -contains $VideoToCompare) {
+
             Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
             return $null
+
         }
         elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
+
             # Event timestamp is after the end of stream
             Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
             return $null
+
         }
         else {
+
             $NewOffset = $EventTimestamp - $VideoToCompare.recorded_at
             $NewUrl = "$($VideoToCompare.url)?t=$($NewOffset.Hours)h$($NewOffset.Minutes)m$($NewOffset.Seconds)s"
+
         }
 
         return $NewUrl
     }
+
+    End {
+
+        try {
+
+            if ((Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force) -and $NewDataAdded) {
+
+                New-Event -SourceIdentifier XRefNewDataAdded -Sender $MyInvocation.Mycommand.Name
+
+            }
+
+        }
+        catch {
+            # No subscriber, so nothing to do
+        }
+
+    }
+
 }
