@@ -1,4 +1,4 @@
-# Get-TwitchXRef
+# StreamXRef
 
 Have you ever seen a clip from several people streaming together and wanted to see what it looked like from other perspectives?
 
@@ -8,9 +8,11 @@ You will need to have a valid API key (Client ID), which you can obtain from the
 
 ---
 
-Alias: `gtxr`
+## Find-TwitchXRef
 
-`Get-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] [-ApiKey <String>]`
+Alias: `txr`
+
+`Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] [-ApiKey <String>]`
 
 **-Source** accepts Twitch clip URLs (either format), Twitch clip IDs, and video URLs that include a timestamp parameter.
 
