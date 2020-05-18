@@ -10,18 +10,18 @@ function Clear-XRefLookupData {
         [switch]$ApiKey = $false,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$UserIdCache = $false,
+        [switch]$UserInfoCache = $false,
 
         [Parameter(ParameterSetName = "Selection")]
         [switch]$ClipInfoCache = $false,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$VideoStartCache = $false
+        [switch]$VideoInfoCache = $false
     )
 
     DynamicParam {
-        # If VideoStartCache is specified, add DaysToKeep parameter
-        if ($PSBoundParameters.ContainsKey("VideoStartCache")) {
+        # If VideoInfoCache is specified, add DaysToKeep parameter
+        if ($PSBoundParameters.ContainsKey("VideoInfoCache")) {
             $psnAttr = [System.Management.Automation.ParameterAttribute]::new()
             $psnAttr.ParameterSetName = "Selection"
             $vnnoeAttr = [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
@@ -46,9 +46,9 @@ function Clear-XRefLookupData {
             if ($PSCmdlet.ShouldProcess("All cached lookup data", "Clear")) {
 
                 $script:TwitchData.ApiKey = $null
-                $script:TwitchData.UserIdCache.Clear()
+                $script:TwitchData.UserInfoCache.Clear()
                 $script:TwitchData.ClipInfoCache.Clear()
-                $script:TwitchData.VideoStartCache.Clear()
+                $script:TwitchData.VideoInfoCache.Clear()
 
                 Write-Verbose "All lookup data cleared"
 
@@ -68,12 +68,12 @@ function Clear-XRefLookupData {
 
             }
 
-            if ($UserIdCache) {
+            if ($UserInfoCache) {
 
                 if ($PSCmdlet.ShouldProcess("User ID lookup data", "Clear")) {
 
-                    $script:TwitchData.UserIdCache.Clear()
-                    Write-Verbose "(UserIdCache) data cleared"
+                    $script:TwitchData.UserInfoCache.Clear()
+                    Write-Verbose "(UserInfoCache) data cleared"
 
                 }
 
@@ -90,7 +90,7 @@ function Clear-XRefLookupData {
 
             }
 
-            if ($VideoStartCache) {
+            if ($VideoInfoCache) {
 
                 if ($PSBoundParameters.ContainsKey("DaysToKeep")) {
 
@@ -98,16 +98,16 @@ function Clear-XRefLookupData {
 
                         $Cutoff = [datetime]::UtcNow - (New-TimeSpan -Days $DaysToKeep)
     
-                        $PreviousVideoCacheCount = $script:TwitchData.VideoStartCache.Count
+                        $PreviousVideoCacheCount = $script:TwitchData.VideoInfoCache.Count
         
-                        [string[]]$PurgeList = $script:TwitchData.VideoStartCache.GetEnumerator() |
+                        [string[]]$PurgeList = $script:TwitchData.VideoInfoCache.GetEnumerator() |
                             Where-Object { $_.Value -lt $Cutoff } | Select-Object -ExpandProperty Key
             
-                        $PurgeList | ForEach-Object { $script:TwitchData.VideoStartCache.Remove($_) } | Out-Null
+                        $PurgeList | ForEach-Object { $script:TwitchData.VideoInfoCache.Remove($_) } | Out-Null
             
-                        $EntriesRemoved = $PreviousVideoCacheCount - $script:TwitchData.VideoStartCache.Count
+                        $EntriesRemoved = $PreviousVideoCacheCount - $script:TwitchData.VideoInfoCache.Count
             
-                        Write-Verbose "(VideoStartCache) Data entries removed: $EntriesRemoved"
+                        Write-Verbose "(VideoInfoCache) Data entries removed: $EntriesRemoved"
 
                     }
 
@@ -116,8 +116,8 @@ function Clear-XRefLookupData {
     
                     if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Delete")) {
     
-                        $script:TwitchData.VideoStartCache.Clear()
-                        Write-Verbose "(VideoStartCache) Data cleared"
+                        $script:TwitchData.VideoInfoCache.Clear()
+                        Write-Verbose "(VideoInfoCache) Data cleared"
     
                     }
     

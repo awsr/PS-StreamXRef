@@ -17,7 +17,7 @@ function Get-TwitchXRef {
                 $fakeBoundParameters
             )
 
-            $script:TwitchData.UserIdCache.Keys | Where-Object {
+            $script:TwitchData.UserInfoCache.Keys | Where-Object {
                 $_ -like "$wordToComplete*"
             }
         })]
@@ -189,10 +189,10 @@ function Get-TwitchXRef {
         }
 
         # Set absolute timestamp of event
-        if ($script:TwitchData.VideoStartCache.ContainsKey($VideoID)) {
+        if ($script:TwitchData.VideoInfoCache.ContainsKey($VideoID)) {
 
             # Use start time from cache
-            [datetime]$EventTimestamp = $script:TwitchData.VideoStartCache[$VideoID] + $TimeOffset
+            [datetime]$EventTimestamp = $script:TwitchData.VideoInfoCache[$VideoID] + $TimeOffset
 
         }
         else {
@@ -204,7 +204,7 @@ function Get-TwitchXRef {
             [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
 
             # Add data to Vod cache
-            $script:TwitchData.VideoStartCache.Add($VideoID, $VodResponse.recorded_at)
+            $script:TwitchData.VideoInfoCache.Add($VideoID, $VodResponse.recorded_at)
             $NewDataAdded = $true
 
         }
@@ -229,9 +229,9 @@ function Get-TwitchXRef {
             $XRef = $XRef | Get-LastUrlSegment
 
             # Check ID cache for user
-            if ($script:TwitchData.UserIdCache.ContainsKey($XRef)) {
+            if ($script:TwitchData.UserInfoCache.ContainsKey($XRef)) {
                 # Use cached ID number
-                [int]$UserIdNum = $script:TwitchData.UserIdCache[$XRef]
+                [int]$UserIdNum = $script:TwitchData.UserInfoCache[$XRef]
             }
             else {
                 # Get ID number for username using API
@@ -249,7 +249,7 @@ function Get-TwitchXRef {
                 [int]$UserIdNum = $UserLookup.users[0]._id
 
                 # Save ID number in cache hashtable
-                $script:TwitchData.UserIdCache.Add($XRef, $UserIdNum)
+                $script:TwitchData.UserInfoCache.Add($XRef, $UserIdNum)
                 $NewDataAdded = $true
 
             }

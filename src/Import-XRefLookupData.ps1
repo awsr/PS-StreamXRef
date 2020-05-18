@@ -157,21 +157,21 @@ function Import-XRefLookupData {
 
         }
 
-        # Process UserIdCache
-        if ($ConfigStaging.psobject.Properties.Name -contains "UserIdCache") {
+        # Process UserInfoCache
+        if ($ConfigStaging.psobject.Properties.Name -contains "UserInfoCache") {
 
             # Check for confirm status here instead of for every single entry
             if ($PSCmdlet.ShouldProcess("User ID lookup data", "Import")) {
 
-                $ConfigStaging.UserIdCache.psobject.properties | ForEach-Object {
+                $ConfigStaging.UserInfoCache.psobject.properties | ForEach-Object {
 
                     try {
 
                         # Check if entry already exists
-                        if ($script:TwitchData.UserIdCache.ContainsKey($_.Name)) {
+                        if ($script:TwitchData.UserInfoCache.ContainsKey($_.Name)) {
 
                             # If so, is the data the same?
-                            if ($script:TwitchData.UserIdCache[$_.Name] -eq $_.Value) {
+                            if ($script:TwitchData.UserInfoCache[$_.Name] -eq $_.Value) {
 
                                 # Already exists and can be ignored
                                 $Counters.User.Ignored++
@@ -179,14 +179,14 @@ function Import-XRefLookupData {
                             }
                             else {
 
-                                Write-Warning "For $($_.Name): $($_.Value) -> $($script:TwitchData.UserIdCache[$_.Name])"
+                                Write-Warning "For $($_.Name): $($_.Value) -> $($script:TwitchData.UserInfoCache[$_.Name])"
 
                                 # Exists, but data is different
                                 # Unless -Force is specified, ask how to continue becuase this should only occur due to data corruption
                                 if ($Force -or $PSCmdlet.ShouldContinue("Input data entry differs from existing data", "Overwrite with new value?", [ref]$YesToAll, [ref]$NoToAll)) {
 
                                     # Overwrite
-                                    $script:TwitchData.UserIdCache[$_.Name] = $_.Value
+                                    $script:TwitchData.UserInfoCache[$_.Name] = $_.Value
                                     $Counters.User.Imported++
 
                                 }
@@ -203,7 +203,7 @@ function Import-XRefLookupData {
                         else {
 
                             # New data to add
-                            $script:TwitchData.UserIdCache[$_.Name] = $_.Value
+                            $script:TwitchData.UserInfoCache[$_.Name] = $_.Value
                             $Counters.User.Imported++
 
                         }
@@ -320,31 +320,31 @@ function Import-XRefLookupData {
 
         }
 
-        # Process VideoStartCache
-        if ($ConfigStaging.psobject.Properties.Name -contains "VideoStartCache") {
+        # Process VideoInfoCache
+        if ($ConfigStaging.psobject.Properties.Name -contains "VideoInfoCache") {
 
             if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Import")) {
 
-                $ConfigStaging.VideoStartCache.psobject.properties | ForEach-Object {
+                $ConfigStaging.VideoInfoCache.psobject.properties | ForEach-Object {
 
                     try {
 
                         $ConvertedDateTime = $_.Value | ConvertTo-UtcDateTime
 
-                        if ($script:TwitchData.VideoStartCache.ContainsKey($_.Name)) {
+                        if ($script:TwitchData.VideoInfoCache.ContainsKey($_.Name)) {
 
-                            if ($script:TwitchData.VideoStartCache[$_.Name] -eq $ConvertedDateTime) {
+                            if ($script:TwitchData.VideoInfoCache[$_.Name] -eq $ConvertedDateTime) {
 
                                 $Counters.Video.Ignored++
 
                             }
                             else {
 
-                                Write-Warning "For $($_.Name): $ConvertedDateTime -> $($script:TwitchData.VideoStartCache[$_.Name])"
+                                Write-Warning "For $($_.Name): $ConvertedDateTime -> $($script:TwitchData.VideoInfoCache[$_.Name])"
 
                                 if ($Force -or $PSCmdlet.ShouldContinue("Input data entry differs from existing data", "Overwrite with new value?", [ref]$YesToAll, [ref]$NoToAll)) {
 
-                                    $script:TwitchData.VideoStartCache[$_.Name] = $ConvertedDateTime
+                                    $script:TwitchData.VideoInfoCache[$_.Name] = $ConvertedDateTime
                                     $Counters.Video.Imported++
 
                                 }
@@ -359,7 +359,7 @@ function Import-XRefLookupData {
                         }
                         else {
 
-                            $script:TwitchData.VideoStartCache[$_.Name] = $ConvertedDateTime
+                            $script:TwitchData.VideoInfoCache[$_.Name] = $ConvertedDateTime
                             $Counters.Video.Imported++
 
                         }

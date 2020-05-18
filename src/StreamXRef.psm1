@@ -9,22 +9,22 @@ function Initialize-LookupCache {
     $script:TwitchData = [pscustomobject]@{
 
         # [string] Client ID for API access
-        ApiKey = $null
+        ApiKey         = $null
 
         # @{ [string] User/channel name; [int] User/channel ID number }
-        UserIdCache = [System.Collections.Generic.Dictionary[string, int]]::new()
+        UserInfoCache  = [System.Collections.Generic.Dictionary[string, int]]::new()
 
         # @{ [string] Clip slug name; @{ Offset = [int] Time offset in seconds; VideoID = [int] Video ID number } }
-        ClipInfoCache = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
+        ClipInfoCache  = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
 
         # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
-        VideoStartCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
+        VideoInfoCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
 
     }
 
     $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -ErrorAction Stop -Value {
 
-        $this.UserIdCache.Count + $this.ClipInfoCache.Count + $this.VideoStartCache.Count
+        $this.UserInfoCache.Count + $this.ClipInfoCache.Count + $this.VideoInfoCache.Count
 
     }
 

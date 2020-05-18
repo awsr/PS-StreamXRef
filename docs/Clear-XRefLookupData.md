@@ -19,7 +19,7 @@ Clear-XRefLookupData [-ResetAll] [-WhatIf] [-Confirm] [<CommonParameters>]
 
 ### Selection
 ```
-Clear-XRefLookupData [-ApiKey] [-UserIdCache] [-ClipInfoCache] [-VideoStartCache] [-WhatIf] [-Confirm]
+Clear-XRefLookupData [-ApiKey] [-UserInfoCache] [-ClipInfoCache] [-VideoInfoCache] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -97,8 +97,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -UserIdCache
-{{ Fill UserIdCache Description }}
+### -UserInfoCache
+{{ Fill UserInfoCache Description }}
 
 ```yaml
 Type: SwitchParameter
@@ -112,8 +112,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -VideoStartCache
-{{ Fill VideoStartCache Description }}
+### -VideoInfoCache
+{{ Fill VideoInfoCache Description }}
 
 ```yaml
 Type: SwitchParameter

@@ -49,9 +49,9 @@
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>UserIdCache</maml:name>
+          <maml:name>UserInfoCache</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill UserIdCache Description }}</maml:para>
+            <maml:para>{{ Fill UserInfoCache Description }}</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -60,9 +60,9 @@
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>VideoStartCache</maml:name>
+          <maml:name>VideoInfoCache</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill VideoStartCache Description }}</maml:para>
+            <maml:para>{{ Fill VideoInfoCache Description }}</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -169,9 +169,9 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>UserIdCache</maml:name>
+        <maml:name>UserInfoCache</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill UserIdCache Description }}</maml:para>
+          <maml:para>{{ Fill UserInfoCache Description }}</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -181,9 +181,9 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>VideoStartCache</maml:name>
+        <maml:name>VideoInfoCache</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill VideoStartCache Description }}</maml:para>
+          <maml:para>{{ Fill VideoInfoCache Description }}</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -218,7 +218,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Object</maml:name>
+          <maml:name>None</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -603,6 +603,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
+        <maml:para>Default alias is `txr`.</maml:para>
         <maml:para>This uses the v5 Twitch API.</maml:para>
       </maml:alert>
     </maml:alertSet>
@@ -850,7 +851,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>None or System.Object</maml:name>
+          <maml:name>None or System.Array[PSCustomObject]</maml:name>
         </dev:type>
         <maml:description>
           <maml:para>No output will be returned unless `PassThru` is specified. If the `PassThru` parameter is given, an array object showing the results of the import will be returned. The statistics are given for "User", "Clip", and "Video" lookup caches.</maml:para>

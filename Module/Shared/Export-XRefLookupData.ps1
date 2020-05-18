@@ -38,26 +38,26 @@ function Export-XRefLookupData {
 
         }
 
-        $ConvertedVideoStartCache = [System.Collections.Generic.Dictionary[string, string]]::new()
+        $ConvertedVideoInfoCache = [System.Collections.Generic.Dictionary[string, string]]::new()
 
     }
 
     Process {
 
-        # Convert VideoStartCache to a valid format for serializing
-        $script:TwitchData.VideoStartCache.GetEnumerator() | ForEach-Object {
+        # Convert VideoInfoCache to a valid format for serializing
+        $script:TwitchData.VideoInfoCache.GetEnumerator() | ForEach-Object {
 
             # ToString("o") specifies format like "2020-05-09T05:35:45.5032152Z"
-            $ConvertedVideoStartCache.Add($_.Key.ToString(), $_.Value.ToString("o"))
+            $ConvertedVideoInfoCache.Add($_.Key.ToString(), $_.Value.ToString("o"))
 
         }
 
         # Bundle data together for converting to JSON (for compatibility with potential Javascript-based version)
         $TXRConfigData = [pscustomobject]@{
-            ApiKey          = $script:TwitchData.ApiKey
-            UserIdCache     = $script:TwitchData.UserIdCache
-            ClipInfoCache   = $script:TwitchData.ClipInfoCache
-            VideoStartCache = $ConvertedVideoStartCache
+            ApiKey         = $script:TwitchData.ApiKey
+            UserInfoCache  = $script:TwitchData.UserInfoCache
+            ClipInfoCache  = $script:TwitchData.ClipInfoCache
+            VideoInfoCache = $ConvertedVideoInfoCache
         }
 
         # Save Json string
