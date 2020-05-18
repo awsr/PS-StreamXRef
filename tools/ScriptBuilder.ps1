@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.0
+.VERSION 2.0
 
 .GUID e8807dc8-6efa-4a7c-a205-7d14a794f374
 
@@ -32,6 +32,8 @@
 
 #>
 
+#Requires -Version 6
+
 <# 
 
 .DESCRIPTION 
@@ -50,57 +52,89 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $true, Position = 0)]
-    [ValidateScript({ (Test-Path $_ -IsValid) -and ($_ -match '.*\.ps1$') })]
+    [ValidateScript({ (Test-Path $_ -IsValid) -and ($_ -match '.*\.ps[dm]?1$') })]
     [string]$File,
 
-    [Parameter(Position = 1, ValueFromRemainingArguments)]
-    [string[]]$LabelDefinitions,
-
-    [Parameter()]
+    [Parameter(Mandatory = $true, Position = 1)]
     [ValidateScript({ Test-Path $_ -IsValid })]
-    [string]$SharedPath
+    [string]$MainDirectory,
+
+    [Parameter(Mandatory = $true, Position = 2)]
+    [ValidateScript({ Test-Path $_ -IsValid })]
+    [string]$CommonPath,
+
+    [Parameter(ValueFromRemainingArguments)]
+    [string[]]$LabelDefinitions
+
 )
 
 Set-StrictMode -Version Latest
 
-#region Quick bypass check #############
+# Create output directory if missing
+if (-not (Test-Path $MainDirectory)) {
+
+    New-Item $MainDirectory -ItemType Directory -ErrorAction Stop
+
+}
+
+$FileName = Split-Path $File -Leaf
+$RelativeFilePath = [System.IO.Path]::GetRelativePath($PWD.Path, $File)
+
+# Handle main module and manifest files
+if ($File.EndsWith("psd1") -or $File.EndsWith("psm1")) {
+
+    # Get new path for output file
+    $NewPath = Join-Path $MainDirectory $FileName
+
+    Copy-Item $File $NewPath -Force -ErrorAction Stop
+
+    Write-Verbose "$RelativeFilePath copied to $NewPath"
+
+    return
+
+}
+
+#region Fast bypass check ##############
 
 # If not flagged, copy directly to output directories
 if ((Get-Content $File -TotalCount 1) -notlike "#.EnablePSCodeSets*") {
 
     Write-Verbose "EnablePSCodeSets flag not found"
 
-    # Make sure a path was given for shared files
-    if ($PSBoundParameters.ContainsKey("SharedPath")) {
+    # Make sure a path was given for common files
+    if ($PSBoundParameters.ContainsKey("CommonPath")) {
+
+        $FullCommonPath = Join-Path $MainDirectory $CommonPath
 
         # Check if path doesn't exist
-        if (-not (Test-Path $SharedPath)) {
+        if (-not (Test-Path $FullCommonPath)) {
 
             # Create placeholder file and directories if missing
-            New-Item -Path $SharedPath -ItemType File -Force -ErrorAction Stop | Out-Null
+            New-Item -Path $FullCommonPath -ItemType File -Force -ErrorAction Stop | Out-Null
 
         }
 
-        Copy-Item $File $SharedPath -Force
+        Copy-Item $File $FullCommonPath -Force
 
-        Write-Verbose "$(Split-Path $File -Leaf) copied to $SharedPath"
+        Write-Verbose "$RelativeFilePath copied to $FullCommonPath"
 
         return
 
     }
     else {
 
-        throw "No output path given for shared file $File"
+        throw "No output path given for non-versioned file $RelativeFilePath"
 
     }
 
 }
 
-#endregion Quick bypass check ==========
+#endregion Fast bypass check ===========
 
 #region Setup ##########################
 
 $Mappings = @{}
+$private:tempMaps = @{}
 $ScriptDataSets = @{}
 $OutputKeys = @()
 
@@ -108,34 +142,7 @@ $OutputKeys = @()
 # Capture group saved to $Matches.Instruction
 $RegionStartRegex = "^\s*(?:<|(?:<#\s*))?#region\s*@\{\s*(?<Instruction>.*=.*)\s*\}.*$"
 
-function ToAllOutputs {
-    [CmdletBinding()]
-    Param (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [AllowEmptyString()]
-        [string]$ToWrite
-    )
-
-    # Process for all outputs
-    $OutputKeys | ForEach-Object {
-
-        try {
-
-            # Try adding line
-            $ScriptDataSets.$_ += $ToWrite
-
-        }
-        catch {
-
-            throw "Unable to add string to object.`n$_"
-
-        }
-
-    }
-
-}
-
-Write-Verbose "Parsing $File"
+Write-Verbose "Parsing $RelativeFilePath"
 
 # Read in the main source file
 $Source = Get-Content $File -ErrorAction Stop
@@ -145,7 +152,7 @@ $Offset = 1
 
 # Skip blank lines after the initial flag
 # Only skip lines that are actually empty so that whitespaces can keep line padding if desired
-while ($Source[$script:Offset] -eq "") {
+while ($Source[$Offset] -eq "") {
 
     $Offset++
 
@@ -156,7 +163,7 @@ foreach ($Entry in $LabelDefinitions) {
 
     try {
 
-        $Mappings += ConvertFrom-StringData $Entry.Replace('\', '\\')
+        $tempMaps += ConvertFrom-StringData $Entry.Replace('\', '\\')
 
     }
     catch {
@@ -166,6 +173,32 @@ foreach ($Entry in $LabelDefinitions) {
     }
 
 }
+
+# Join target paths with main path unless full path is specified
+try {
+
+    $tempMaps.GetEnumerator() | ForEach-Object {
+
+        if ([System.IO.Path]::IsPathFullyQualified($_.Value)) {
+
+            $Mappings.Add($_.Key, $_.Value)
+
+        }
+        else {
+
+            $Mappings.Add($_.Key, (Join-Path $MainDirectory $_.Value))
+
+        }
+    
+    }
+
+}
+catch [System.Management.Automation.MethodInvocationException] {
+
+    $PSCmdlet.ThrowTerminatingError($_)
+
+}
+
 
 # Make sure we actually have something to do
 if ($Mappings.Count -eq 0) {
@@ -185,10 +218,37 @@ $Mappings.GetEnumerator() | ForEach-Object {
 
 }
 
+function ToAllOutputs {
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [AllowEmptyString()]
+        [string]$ToWrite
+    )
+
+    # Process for all outputs
+    $OutputKeys | ForEach-Object {
+
+        try {
+
+            # Try adding line
+            $script:ScriptDataSets.$_ += $ToWrite
+
+        }
+        catch {
+
+            throw "Unable to add string to object.`n$_"
+
+        }
+
+    }
+
+}
+
 #endregion Setup =======================
 
 # Begin main loop for processing source file
-for ($Index = $script:Offset; $Index -lt $Source.Count; $Index++) {
+for ($Index = $Offset; $Index -lt $Source.Count; $Index++) {
 
     # Look for marker indicating an instruction to act upon
     if ($Source[$Index] -match $RegionStartRegex) {
@@ -301,14 +361,14 @@ $Mappings.GetEnumerator() | ForEach-Object {
         if (-not (Test-Path $_.Value)) {
 
             # Create placeholder file and directories if missing
-            New-Item -Path $_.Value -ItemType File -Force -ErrorAction Stop
+            New-Item -Path $_.Value -ItemType File -Force -ErrorAction Stop | Out-Null
 
         }
 
         # Use mapping key to get corresponding script data and output to mapped location
         $ScriptDataSets[$_.Key] | Out-File $_.Value
 
-        Write-Verbose "$(Split-Path $File -Leaf) parsed and written to $($_.Value)"
+        Write-Verbose "$RelativeFilePath parsed and written to $($_.Value)"
 
     }
 
