@@ -138,7 +138,7 @@ You can supply the value from the pipeline for `InputObject` only.
 
 ## OUTPUTS
 
-### None or System.Object
+### None or System.Array[PSCustomObject]
 
 No output will be returned unless `PassThru` is specified. If the `PassThru` parameter is given, an array object showing the results of the import will be returned. The statistics are given for "User", "Clip", and "Video" lookup caches.
 
