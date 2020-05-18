@@ -31,24 +31,36 @@ function Initialize-LookupCache {
 }
 
 filter Get-LastUrlSegment {
+
     $Url = $_ -split "/" | Select-Object -Last 1
     return $Url -split "\?" | Select-Object -First 1
+
 }
 
 filter ConvertTo-UtcDateTime {
+
     if (($_ -is [datetime]) -and ($_.Kind -eq [System.DateTimeKind]::Utc)) {
+
         # Already formatted correctly
         return $_
+
     }
     elseif ($_ -is [datetime]) {
+
         return $_.ToUniversalTime()
+
     }
     elseif ($_ -is [string]) {
+
         return ([datetime]::Parse($_)).ToUniversalTime()
+
     }
     else {
+
         throw "Unable to convert to UTC: $_"
+
     }
+
 }
 
 #endregion Shared helper functions -------------
@@ -71,10 +83,14 @@ catch {
 # If not running at least PowerShell 7.0, get the "PSLegacy" version of the functions
 # Otherwise, load the "PSCurrent" version of the functions
 if ($PSVersionTable.PSVersion.Major -lt 7) {
+
     $VersionedFunctions = @( Get-ChildItem $PSScriptRoot/PSLegacy/*.ps1 -ErrorAction SilentlyContinue )
+
 }
 else {
+
     $VersionedFunctions = @( Get-ChildItem $PSScriptRoot/PSCurrent/*.ps1 -ErrorAction SilentlyContinue )
+
 }
 
 $SharedFunctions = @( Get-ChildItem $PSScriptRoot/Shared/*.ps1 -ErrorAction SilentlyContinue )
@@ -82,19 +98,27 @@ $SharedFunctions = @( Get-ChildItem $PSScriptRoot/Shared/*.ps1 -ErrorAction Sile
 $AllFunctions = $VersionedFunctions + $SharedFunctions
 
 foreach ($FunctionFile in $AllFunctions) {
+
     try {
+
         # Dot source the file to load in function
         . $FunctionFile.FullName
+
     }
     catch {
+
         Write-Error "Failed to load $($FunctionFile.Directory.Name)/$($FunctionFile.BaseName): $_"
+
     }
+
 }
 
 $FunctionNames = $AllFunctions | ForEach-Object {
+
     # Use the name of the file to specify function(s) to be exported
     # Filter out potential ".Legacy" from name
     $_.Name.Split('.')[0]
+
 }
 
 Set-Alias -Name txr -Value Find-TwitchXRef
