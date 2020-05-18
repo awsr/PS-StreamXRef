@@ -1,6 +1,7 @@
 #.ExternalHelp StreamXRef-help.xml
 function Import-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "General")]
+    [OutputType([System.Void], [System.Array])]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = "General")]
         [ValidateNotNullOrEmpty()]

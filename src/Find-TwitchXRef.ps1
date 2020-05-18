@@ -2,6 +2,7 @@
 #.ExternalHelp StreamXRef-help.xml
 function Get-TwitchXRef {
     [CmdletBinding()]
+    [OutputType([System.String])]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]

@@ -1,6 +1,7 @@
 #.ExternalHelp StreamXRef-help.xml
 function Clear-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "All")]
+    [OutputType([System.Void])]
     Param(
         [Parameter(Mandatory = $true, ParameterSetName = "All")]
         [switch]$ResetAll,

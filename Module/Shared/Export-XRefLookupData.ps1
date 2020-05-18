@@ -1,6 +1,8 @@
 #.ExternalHelp StreamXRef-help.xml
 function Export-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "Object")]
+    [OutputType([System.Void], ParameterSetName = "File")]
+    [OutputType([System.String], ParameterSetName = "Object")]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ParameterSetName = "File",
                    ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
