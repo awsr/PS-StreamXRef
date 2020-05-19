@@ -1,6 +1,6 @@
 #.ExternalHelp StreamXRef-help.xml
 function Clear-XRefLookupData {
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "All")]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High", DefaultParameterSetName = "All")]
     [OutputType([System.Void])]
     Param(
         [Parameter(Mandatory = $true, ParameterSetName = "All")]
@@ -16,7 +16,10 @@ function Clear-XRefLookupData {
         [switch]$ClipInfoCache = $false,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$VideoInfoCache = $false
+        [switch]$VideoInfoCache = $false,
+
+        [Parameter()]
+        [switch]$Force = $false
     )
 
     DynamicParam {
@@ -37,6 +40,16 @@ function Clear-XRefLookupData {
             $paramDictionary.Add("DaysToKeep", $dynParam2Keep)
             return $paramDictionary
         }
+    }
+
+    Begin {
+
+        if ($Force -and -not ($PSBoundParameters.ContainsKey("Confirm") -and $Confirm)) {
+
+            $ConfirmPreference = "none"
+
+        }
+
     }
     
     Process {

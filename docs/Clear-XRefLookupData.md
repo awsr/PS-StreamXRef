@@ -14,13 +14,13 @@ schema: 2.0.0
 
 ### All (Default)
 ```
-Clear-XRefLookupData [-ResetAll] [-WhatIf] [-Confirm] [<CommonParameters>]
+Clear-XRefLookupData [-ResetAll] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Selection
 ```
-Clear-XRefLookupData [-ApiKey] [-UserInfoCache] [-ClipInfoCache] [-VideoInfoCache] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Clear-XRefLookupData [-ApiKey] [-UserInfoCache] [-ClipInfoCache] [-VideoInfoCache] [-Force] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -123,6 +123,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+{{ Fill Force Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
