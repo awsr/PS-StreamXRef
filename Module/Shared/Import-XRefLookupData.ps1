@@ -16,7 +16,6 @@ function Import-XRefLookupData {
         [Parameter(ParameterSetName = "General")]
         [Parameter(ParameterSetName = "ApiKey")]
         [switch]$Force = $false
-
     )
 
     Begin {
@@ -37,6 +36,10 @@ function Import-XRefLookupData {
 
         if ($PSCmdlet.ParameterSetName -eq "General") {
 
+            # Temporarily override ErrorActionPreference during required setup
+            $EAPrefSetting = $ErrorActionPreference
+            $ErrorActionPreference = "Stop"
+
             # Remove surrounding whitespaces from input
             $InputObject = $InputObject.Trim()
 
@@ -45,17 +48,8 @@ function Import-XRefLookupData {
 
                 Write-Verbose "Parsing input as file path"
 
-                if (Test-Path $InputObject) {
-
-                    # Get content from file and use -Raw to keep together as a single string
-                    $InputObject = Get-Content $InputObject -Raw
-
-                }
-                else {
-
-                    throw "Input file not found or invalid data: $InputObject"
-
-                }
+                # This will now terminate the script if it fails
+                $InputObject = Get-Content $InputObject -Raw
 
             }
             else {
@@ -64,7 +58,7 @@ function Import-XRefLookupData {
 
             }
 
-            $ConfigStaging = ConvertFrom-Json $InputObject -ErrorAction Stop
+            $ConfigStaging = ConvertFrom-Json $InputObject
 
             # Store counters as a hashtable for ease of access within the function.
             $Counters = @{ }
@@ -82,6 +76,9 @@ function Import-XRefLookupData {
                 $Counters.Add($_, $tempobj)
 
             }
+
+            # Restore ErrorActionPreference
+            $ErrorActionPreference = $EAPrefSetting
 
         }
 
