@@ -70,6 +70,17 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:Description>
+            <maml:para>{{ Fill Force Description }}</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
           <maml:name>WhatIf</maml:name>
           <maml:Description>
@@ -99,6 +110,17 @@
           <maml:name>ResetAll</maml:name>
           <maml:Description>
             <maml:para>{{ Fill ResetAll Description }}</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:Description>
+            <maml:para>{{ Fill Force Description }}</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -192,6 +214,18 @@
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:Description>
+          <maml:para>{{ Fill Force Description }}</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
         <maml:name>WhatIf</maml:name>
         <maml:Description>
@@ -256,7 +290,8 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Exports the contents of the lookup data cache as JSON to a specified file. If no path is specified, it will be returned as a string instead.</maml:para>
+      <maml:para>Exports the contents of the lookup data cache as JSON to a specified file.</maml:para>
+      <maml:para>The files created by this command can be used with `Import-XRefLookupData`.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -276,7 +311,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>Compress</maml:name>
           <maml:Description>
-            <maml:para>Removes unnecessary whitespace from the JSON string output.</maml:para>
+            <maml:para>Removes unnecessary whitespace from the JSON string output. This results in smaller files at the expense of readability.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -323,7 +358,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>Compress</maml:name>
         <maml:Description>
-          <maml:para>Removes unnecessary whitespace from the JSON string output.</maml:para>
+          <maml:para>Removes unnecessary whitespace from the JSON string output. This results in smaller files at the expense of readability.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -387,7 +422,7 @@
           <maml:name>System.String</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>You can pipe a value for `Path` either as a string or by property name in an object.</maml:para>
+          <maml:para>You can pipeline a value for `Path` either as a string or by property name.</maml:para>
         </maml:description>
       </command:inputType>
       <command:inputType>
@@ -395,17 +430,17 @@
           <maml:name>System.Management.Automation.SwitchParameter</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>Used for `Force` and `Compress` parameters. Supports piping by property name in an object.</maml:para>
+          <maml:para>Used for `Force` and `Compress` parameters. You can pipeline a boolean to these values by property name.</maml:para>
         </maml:description>
       </command:inputType>
     </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>None or System.String</maml:name>
+          <maml:name>None</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>If `Path` is specified, no output will be returned. Otherwise, the JSON data will be returned as a string.</maml:para>
+          <maml:para></maml:para>
         </maml:description>
       </command:returnValue>
     </command:returnValues>
@@ -417,7 +452,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; {{ Add example code here }}</dev:code>
+        <dev:code>PS &gt; {{ Add example code here }}</dev:code>
         <dev:remarks>
           <maml:para>{{ Add example description here }}</maml:para>
         </dev:remarks>
@@ -653,15 +688,16 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This lets you import data into the local lookup cache using either a path to a file with JSON-formatted data or with a JSON string itself. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.</maml:para>
+      <maml:para>This command lets you import data into the lookup cache from a file with JSON formatted data. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.</maml:para>
+      <maml:para>This command is meant to be used with files created using `Export-XRefLookupData`.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Import-XRefLookupData</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
           <maml:name>ApiKey</maml:name>
           <maml:Description>
-            <maml:para>Accepts your API key (for Twitch this is the "Client ID"). Obtained from the Twitch Developer Dashboard (https://dev.twitch.tv/console/apps/).</maml:para>
+            <maml:para>Specifies your API key (for Twitch this is the "Client ID"). Obtained from the Twitch Developer Dashboard (https://dev.twitch.tv/console/apps/).</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -706,10 +742,10 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Import-XRefLookupData</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
-          <maml:name>InputObject</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+          <maml:name>Path</maml:name>
           <maml:Description>
-            <maml:para>Either a JSON string containing lookup data or a path to a file containing the JSON string.</maml:para>
+            <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefLookupData`.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -741,9 +777,9 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>PassThru</maml:name>
+          <maml:name>Quiet</maml:name>
           <maml:Description>
-            <maml:para>Returns an array object showing the results of the import.</maml:para>
+            <maml:para>Suppresses returning the results of the input.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -765,10 +801,10 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
         <maml:name>ApiKey</maml:name>
         <maml:Description>
-          <maml:para>Accepts your API key (for Twitch this is the "Client ID"). Obtained from the Twitch Developer Dashboard (https://dev.twitch.tv/console/apps/).</maml:para>
+          <maml:para>Specifies your API key (for Twitch this is the "Client ID"). Obtained from the Twitch Developer Dashboard (https://dev.twitch.tv/console/apps/).</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -801,10 +837,10 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
-        <maml:name>InputObject</maml:name>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+        <maml:name>Path</maml:name>
         <maml:Description>
-          <maml:para>Either a JSON string containing lookup data or a path to a file containing the JSON string.</maml:para>
+          <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefLookupData`.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -814,9 +850,9 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>PassThru</maml:name>
+        <maml:name>Quiet</maml:name>
         <maml:Description>
-          <maml:para>Returns an array object showing the results of the import.</maml:para>
+          <maml:para>Suppresses returning the results of the input.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -844,17 +880,17 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           <maml:name>System.String</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>You can supply the value from the pipeline for `InputObject` only.</maml:para>
+          <maml:para>Only the `Path` parameter supports accepting a value from the pipeline.</maml:para>
         </maml:description>
       </command:inputType>
     </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>None or System.Array[PSCustomObject]</maml:name>
+          <maml:name>System.Array[PSCustomObject] or None</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>No output will be returned unless `PassThru` is specified. If the `PassThru` parameter is given, an array object showing the results of the import will be returned. The statistics are given for "User", "Clip", and "Video" lookup caches.</maml:para>
+          <maml:para>Returns an array object showing the results of the import operation unless the `Quiet` parameter is set. The statistics are given for "User", "Clip", and "Video" lookup caches.</maml:para>
           <maml:para>Each object in the array has a `Name` property, as well as counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.</maml:para>
           <maml:para>* Imported: Number of entries successfully imported.</maml:para>
           <maml:para>* Ignored: Number of duplicate entries ignored.</maml:para>
@@ -872,9 +908,16 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; {{ Add example code here }}</dev:code>
+        <dev:code>PS &gt; Import-XRefLookupData -Path JsonFile.json</dev:code>
         <dev:remarks>
-          <maml:para>{{ Add example description here }}</maml:para>
+          <maml:para>Import previously-exported data from a file.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS &gt; Import-XRefLookupData -ApiKey "1234567890abcdefghijklmnopqrst"</dev:code>
+        <dev:remarks>
+          <maml:para>Set your API key without invoking the main `Find-TwitchXRef` command.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

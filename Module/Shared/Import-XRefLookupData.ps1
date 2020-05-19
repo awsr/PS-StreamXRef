@@ -1,28 +1,29 @@
 #.ExternalHelp StreamXRef-help.xml
 function Import-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "General")]
-    [OutputType([System.Void], [System.Array])]
+    [OutputType([System.Array], [System.Void])]
     Param(
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = "General")]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true,
+                   ValueFromPipelineByPropertyName = $true, ParameterSetName = "General")]
+        [Alias("PSPath")]
         [ValidateNotNullOrEmpty()]
-        [string]$InputObject,
+        [string]$Path,
 
         [Parameter(ParameterSetName = "General")]
         [switch]$Quiet = $false,
 
-        [Parameter(Mandatory = $true, ParameterSetName = "ApiKey")]
+        [Parameter(Mandatory = $true, Position = 0, ParameterSetName = "ApiKey")]
         [string]$ApiKey,
 
-        [Parameter(ParameterSetName = "General")]
-        [Parameter(ParameterSetName = "ApiKey")]
+        [Parameter()]
         [switch]$Force = $false
     )
-
+    
     Begin {
 
         if ($Force -and -not ($PSBoundParameters.ContainsKey("Confirm") -and $Confirm)) {
 
-            $ConfirmPreference = "none"
+            $ConfirmPreference = "None"
 
         }
 
@@ -40,25 +41,8 @@ function Import-XRefLookupData {
             $EAPrefSetting = $ErrorActionPreference
             $ErrorActionPreference = "Stop"
 
-            # Remove surrounding whitespaces from input
-            $InputObject = $InputObject.Trim()
-
-            # Check if not a JSON string
-            if (-not ($InputObject.StartsWith('{') -and $InputObject.EndsWith('}'))) {
-
-                Write-Verbose "Parsing input as file path"
-
-                # This will now terminate the script if it fails
-                $InputObject = Get-Content $InputObject -Raw
-
-            }
-            else {
-
-                Write-Verbose "Parsing input as JSON string"
-
-            }
-
-            $ConfigStaging = ConvertFrom-Json $InputObject
+            # This will now terminate the script if it fails
+            $ConfigStaging = Get-Content $Path -Raw | ConvertFrom-Json
 
             # Store counters as a hashtable for ease of access within the function.
             $Counters = @{ }

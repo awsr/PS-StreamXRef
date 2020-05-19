@@ -23,13 +23,15 @@ Export-XRefLookupData [-Path] <String> [-Force] [-Compress] [-WhatIf] [-Confirm]
 ```
 
 ## DESCRIPTION
-Exports the contents of the lookup data cache as JSON to a specified file. If no path is specified, it will be returned as a string instead.
+Exports the contents of the lookup data cache as JSON to a specified file.
+
+The files created by this command can be used with `Import-XRefLookupData`.
 
 ## EXAMPLES
 
 ### Example 1
 ```
-PS C:\> {{ Add example code here }}
+PS > {{ Add example code here }}
 ```
 
 {{ Add example description here }}
@@ -37,7 +39,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Compress
-Removes unnecessary whitespace from the JSON string output.
+Removes unnecessary whitespace from the JSON string output. This results in smaller files at the expense of readability.
 
 ```yaml
 Type: SwitchParameter
@@ -119,17 +121,15 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.String
 
-You can pipe a value for `Path` either as a string or by property name in an object.
+You can pipeline a value for `Path` either as a string or by property name.
 
 ### System.Management.Automation.SwitchParameter
 
-Used for `Force` and `Compress` parameters. Supports piping by property name in an object.
+Used for `Force` and `Compress` parameters. You can pipeline a boolean to these values by property name.
 
 ## OUTPUTS
 
-### None or System.String
-
-If `Path` is specified, no output will be returned. Otherwise, the JSON data will be returned as a string.
+### None
 
 ## NOTES
 

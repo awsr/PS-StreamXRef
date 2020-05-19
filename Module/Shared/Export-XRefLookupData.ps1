@@ -1,21 +1,18 @@
 #.ExternalHelp StreamXRef-help.xml
 function Export-XRefLookupData {
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "Object")]
-    [OutputType([System.Void], ParameterSetName = "File")]
-    [OutputType([System.String], ParameterSetName = "Object")]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium")]
+    [OutputType([System.Void])]
     Param(
-        [Parameter(Mandatory = $true, Position = 0, ParameterSetName = "File",
-                   ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("PSPath")]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({ Test-Path $_ -IsValid })]
         [string]$Path,
 
-        [Parameter(ParameterSetName = "File", ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [switch]$Force = $false,
 
-        [Parameter(ParameterSetName = "Object", ValueFromPipelineByPropertyName = $true)]
-        [Parameter(ParameterSetName = "File", ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [switch]$Compress = $false
     )
 
@@ -28,13 +25,9 @@ function Export-XRefLookupData {
 
         }
 
-        if ($PSCmdlet.ParameterSetName -eq "File") {
+        if ($Force -and -not ($PSBoundParameters.ContainsKey("Confirm") -and $Confirm)) {
 
-            if ($Force -and -not ($PSBoundParameters.ContainsKey("Confirm") -and $Confirm)) {
-
-                $ConfirmPreference = "None"
-    
-            }
+            $ConfirmPreference = "None"
 
         }
 
@@ -63,37 +56,28 @@ function Export-XRefLookupData {
         # Save Json string
         [string]$DataAsJson = $TXRConfigData | ConvertTo-Json -Compress:$Compress
 
-        if ($PSCmdlet.ParameterSetName -eq "File") {
+        # Check if path exists
+        if (Test-Path $Path) {
 
-            # Check if path exists
-            if (Test-Path $Path) {
+            if ($PSCmdlet.ShouldProcess($Path, "Write File")) {
 
-                if ($PSCmdlet.ShouldProcess($Path, "Write File")) {
-
-                    $DataAsJson | Out-File $Path
-
-                }
-
-            }
-            else {
-
-                # Path doesn't exist
-
-                if ($PSCmdlet.ShouldProcess($Path, "Create File")) {
-
-                    # Create placeholder file, including any missing directories
-                    # Override ErrorAction preferences because Out-File does not create missing directories and will fail anyway
-                    New-Item $Path -ItemType File -Force:$Force -ErrorAction Stop
-                    $DataAsJson | Out-File $Path
-
-                }
+                $DataAsJson | Out-File $Path
 
             }
 
         }
         else {
 
-            return $DataAsJson
+            # Path doesn't exist
+
+            if ($PSCmdlet.ShouldProcess($Path, "Create File")) {
+
+                # Create placeholder file, including any missing directories
+                # Override ErrorAction preferences because Out-File does not create missing directories and will fail anyway
+                New-Item $Path -ItemType File -Force:$Force -ErrorAction Stop
+                $DataAsJson | Out-File $Path
+
+            }
 
         }
 

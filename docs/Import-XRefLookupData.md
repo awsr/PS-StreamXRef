@@ -14,30 +14,39 @@ Import data to the lookup cache. Can also set the API key without invoking a ful
 
 ### General (Default)
 ```
-Import-XRefLookupData [-InputObject] <String> [-Quiet] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-XRefLookupData [-Path] <String> [-Quiet] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ApiKey
 ```
-Import-XRefLookupData -ApiKey <String> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-XRefLookupData [-ApiKey] <String> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This lets you import data into the local lookup cache using either a path to a file with JSON-formatted data or with a JSON string itself. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.
+This command lets you import data into the lookup cache from a file with JSON formatted data. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.
+
+This command is meant to be used with files created using `Export-XRefLookupData`.
 
 ## EXAMPLES
 
 ### Example 1
-```
-PS C:\> {{ Add example code here }}
+```powershell
+PS > Import-XRefLookupData -Path JsonFile.json
 ```
 
-{{ Add example description here }}
+Import previously-exported data from a file.
+
+### Example 2
+```powershell
+PS > Import-XRefLookupData -ApiKey "1234567890abcdefghijklmnopqrst"
+```
+
+Set your API key without invoking the main `Find-TwitchXRef` command.
 
 ## PARAMETERS
 
 ### -ApiKey
-Accepts your API key (for Twitch this is the "Client ID"). Obtained from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/).
+Specifies your API key (for Twitch this is the "Client ID"). Obtained from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/).
 
 ```yaml
 Type: String
@@ -45,7 +54,7 @@ Parameter Sets: ApiKey
 Aliases:
 
 Required: True
-Position: Named
+Position: 0
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -81,8 +90,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -InputObject
-Either a JSON string containing lookup data or a path to a file containing the JSON string.
+### -Path
+Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefLookupData`.
 
 ```yaml
 Type: String
@@ -92,7 +101,7 @@ Aliases:
 Required: True
 Position: 0
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -134,7 +143,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.String
 
-You can supply the value from the pipeline for `InputObject` only.
+Only the `Path` parameter supports accepting a value from the pipeline.
 
 ## OUTPUTS
 
