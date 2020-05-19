@@ -17,9 +17,7 @@ function Get-TwitchXRef {
                 $fakeBoundParameters
             )
 
-            $script:TwitchData.UserInfoCache.Keys | Where-Object {
-                $_ -like "$wordToComplete*"
-            }
+            $script:TwitchData.UserInfoCache.Keys | Where-Object { $_ -like "$wordToComplete*" }
         })]
         [ValidateNotNullOrEmpty()]
         [string]$XRef,
@@ -275,7 +273,7 @@ function Get-TwitchXRef {
 
         # Look for first video that starts before the timestamp
         $VideoToCompare = $null
-        $VideoToCompare = $XRefSet | Where-Object -Property "recorded_at" -LT $EventTimestamp | Select-Object -First 1
+        $VideoToCompare = $XRefSet | Where-Object { $_.recorded_at -lt $EventTimestamp } | Select-Object -First 1
         if ($null -contains $VideoToCompare) {
 
             Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
