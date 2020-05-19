@@ -8,7 +8,7 @@ function Import-XRefLookupData {
         [string]$InputObject,
 
         [Parameter(ParameterSetName = "General")]
-        [switch]$PassThru = $false,
+        [switch]$Quiet = $false,
 
         [Parameter(Mandatory = $true, ParameterSetName = "ApiKey")]
         [string]$ApiKey,
@@ -396,15 +396,15 @@ function Import-XRefLookupData {
 
     End {
 
-        if ($PassThru) {
+        if ($Quiet) {
 
-            # Return as an array for better display formatting
-            return @($Counters.User, $Counters.Clip, $Counters.Video)
+            Write-Verbose "$(@($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-String)"
 
         }
         else {
 
-            Write-Verbose "$(@($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-String)"
+            # Return as an array for better display formatting
+            return @($Counters.User, $Counters.Clip, $Counters.Video)
 
         }
 

@@ -14,7 +14,7 @@ Import data to the lookup cache. Can also set the API key without invoking a ful
 
 ### General (Default)
 ```
-Import-XRefLookupData [-InputObject] <String> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-XRefLookupData [-InputObject] <String> [-Quiet] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ApiKey
@@ -96,8 +96,8 @@ Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
-### -PassThru
-Returns an array object showing the results of the import.
+### -Quiet
+Suppresses returning the results of the input.
 
 ```yaml
 Type: SwitchParameter
@@ -138,9 +138,9 @@ You can supply the value from the pipeline for `InputObject` only.
 
 ## OUTPUTS
 
-### None or System.Array[PSCustomObject]
+### System.Array[PSCustomObject] or None
 
-No output will be returned unless `PassThru` is specified. If the `PassThru` parameter is given, an array object showing the results of the import will be returned. The statistics are given for "User", "Clip", and "Video" lookup caches.
+Returns an array object showing the results of the import operation unless the `Quiet` parameter is set. The statistics are given for "User", "Clip", and "Video" lookup caches.
 
 Each object in the array has a `Name` property, as well as counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.
 
