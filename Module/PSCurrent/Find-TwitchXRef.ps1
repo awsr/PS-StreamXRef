@@ -299,17 +299,10 @@ function Find-TwitchXRef {
 
     End {
 
-        try {
+        if ((Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) -and $NewDataAdded) {
 
-            if ((Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force) -and $NewDataAdded) {
+            New-Event -SourceIdentifier XRefNewDataAdded -Sender $MyInvocation.Mycommand.Name
 
-                New-Event -SourceIdentifier XRefNewDataAdded -Sender $MyInvocation.Mycommand.Name
-
-            }
-
-        }
-        catch {
-            # No subscriber, so nothing to do
         }
 
     }
