@@ -380,15 +380,19 @@ function Import-XRefLookupData {
 
     End {
 
-        if ($Quiet) {
+        if ($PSCmdlet.ParameterSetName -eq "General") {
 
-            Write-Verbose "$(@($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-String)"
+            if ($Quiet) {
 
-        }
-        else {
-
-            # Return as an array for better display formatting
-            return @($Counters.User, $Counters.Clip, $Counters.Video)
+                Write-Verbose "$(@($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-String)"
+    
+            }
+            else {
+    
+                # Return as an array for better display formatting
+                return @($Counters.User, $Counters.Clip, $Counters.Video)
+    
+            }
 
         }
 
