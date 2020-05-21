@@ -61,7 +61,7 @@ function Export-XRefLookupData {
 
             if ($PSCmdlet.ShouldProcess($Path, "Write File")) {
 
-                $DataAsJson | Out-File $Path
+                $DataAsJson | Out-File $Path -Force:$Force
 
             }
 
@@ -75,7 +75,7 @@ function Export-XRefLookupData {
                 # Create placeholder file, including any missing directories
                 # Override ErrorAction preferences because Out-File does not create missing directories and will fail anyway
                 New-Item $Path -ItemType File -Force:$Force -ErrorAction Stop
-                $DataAsJson | Out-File $Path
+                $DataAsJson | Out-File $Path -Force:$Force
 
             }
 
