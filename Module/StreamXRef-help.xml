@@ -467,8 +467,8 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Get-TwitchXRef</command:name>
-      <command:verb>Get</command:verb>
+      <command:name>Find-TwitchXRef</command:name>
+      <command:verb>Find</command:verb>
       <command:noun>TwitchXRef</command:noun>
       <maml:description>
         <maml:para>Cross-reference Twitch clips and video timestamps between different channels/users.</maml:para>
@@ -481,7 +481,7 @@
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Get-TwitchXRef</maml:name>
+        <maml:name>Find-TwitchXRef</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="none">
           <maml:name>Source</maml:name>
           <maml:Description>

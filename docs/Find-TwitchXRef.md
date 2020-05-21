@@ -5,7 +5,7 @@ online version: https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Find-Twi
 schema: 2.0.0
 ---
 
-# Get-TwitchXRef
+# Find-TwitchXRef
 
 ## SYNOPSIS
 Cross-reference Twitch clips and video timestamps between different channels/users.
