@@ -61,7 +61,7 @@ function Export-XRefLookupData {
 
             if ($PSCmdlet.ShouldProcess($Path, "Write File")) {
 
-                $DataAsJson | Out-File $Path
+                $DataAsJson | Out-File $Path -Force:$Force
 
             }
 
