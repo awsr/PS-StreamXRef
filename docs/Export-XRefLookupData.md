@@ -8,22 +8,17 @@ schema: 2.0.0
 # Export-XRefLookupData
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Export the contents of the lookup data cache to a file.
 
 ## SYNTAX
 
-### Object (Default)
 ```
-Export-XRefLookupData [-Compress] [-WhatIf] [-Confirm] [<CommonParameters>]
-```
-
-### File
-```
-Export-XRefLookupData [-Path] <String> [-Force] [-Compress] [-WhatIf] [-Confirm] [<CommonParameters>]
+Export-XRefLookupData [-Path] <String> [-Force] [-NoClobber] [-Compress] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Exports the contents of the lookup data cache as JSON to a specified file.
+This command exports the contents of the lookup data cache as JSON to a specified file.
 
 The files created by this command can be used with `Import-XRefLookupData`.
 
@@ -31,15 +26,15 @@ The files created by this command can be used with `Import-XRefLookupData`.
 
 ### Example 1
 ```
-PS > {{ Add example code here }}
+PS > Export-XRefLookupData -Path XRefData.json
 ```
 
-{{ Add example description here }}
+This will export the contents of the lookup data cache to a file.
 
 ## PARAMETERS
 
 ### -Compress
-Removes unnecessary whitespace from the JSON string output. This results in smaller files at the expense of readability.
+Removes unnecessary whitespace from the JSON string. This results in smaller files at the expense of readability.
 
 ```yaml
 Type: SwitchParameter
@@ -50,6 +45,51 @@ Required: False
 Position: Named
 Default value: False
 Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -Force
+Forces overwriting of read-only files.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -NoClobber
+Prevents overwriting an existing file. Default: False.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -Path
+Specifies the path to the file where the JSON formatted data will be stored.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: PSPath
+
+Required: True
+Position: 0
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -65,36 +105,6 @@ Required: False
 Position: Named
 Default value: False
 Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Force
-{{ Fill Force Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: File
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: True (ByPropertyName)
-Accept wildcard characters: False
-```
-
-### -Path
-{{ Fill Path Description }}
-
-```yaml
-Type: String
-Parameter Sets: File
-Aliases: PSPath
-
-Required: True
-Position: 0
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 

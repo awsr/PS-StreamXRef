@@ -286,11 +286,11 @@
       <command:verb>Export</command:verb>
       <command:noun>XRefLookupData</command:noun>
       <maml:description>
-        <maml:para>{{ Fill in the Synopsis }}</maml:para>
+        <maml:para>Export the contents of the lookup data cache to a file.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Exports the contents of the lookup data cache as JSON to a specified file.</maml:para>
+      <maml:para>This command exports the contents of the lookup data cache as JSON to a specified file.</maml:para>
       <maml:para>The files created by this command can be used with `Import-XRefLookupData`.</maml:para>
     </maml:description>
     <command:syntax>
@@ -299,7 +299,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="PSPath">
           <maml:name>Path</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill Path Description }}</maml:para>
+            <maml:para>Specifies the path to the file where the JSON formatted data will be stored.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -311,7 +311,29 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>Compress</maml:name>
           <maml:Description>
-            <maml:para>Removes unnecessary whitespace from the JSON string output. This results in smaller files at the expense of readability.</maml:para>
+            <maml:para>Removes unnecessary whitespace from the JSON string. This results in smaller files at the expense of readability.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:Description>
+            <maml:para>Forces overwriting of read-only files.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+          <maml:name>NoClobber</maml:name>
+          <maml:Description>
+            <maml:para>Prevents overwriting an existing file. Default: False.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -323,17 +345,6 @@
           <maml:name>Confirm</maml:name>
           <maml:Description>
             <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
-          <maml:name>Force</maml:name>
-          <maml:Description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -358,7 +369,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>Compress</maml:name>
         <maml:Description>
-          <maml:para>Removes unnecessary whitespace from the JSON string output. This results in smaller files at the expense of readability.</maml:para>
+          <maml:para>Removes unnecessary whitespace from the JSON string. This results in smaller files at the expense of readability.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -366,6 +377,42 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:Description>
+          <maml:para>Forces overwriting of read-only files.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <maml:name>NoClobber</maml:name>
+        <maml:Description>
+          <maml:para>Prevents overwriting an existing file. Default: False.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="PSPath">
+        <maml:name>Path</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the path to the file where the JSON formatted data will be stored.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
         <maml:name>Confirm</maml:name>
@@ -378,30 +425,6 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
-        <maml:name>Force</maml:name>
-        <maml:Description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="PSPath">
-        <maml:name>Path</maml:name>
-        <maml:Description>
-          <maml:para>{{ Fill Path Description }}</maml:para>
-        </maml:Description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
         <maml:name>WhatIf</maml:name>
@@ -452,9 +475,9 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS &gt; {{ Add example code here }}</dev:code>
+        <dev:code>PS &gt; Export-XRefLookupData -Path XRefData.json</dev:code>
         <dev:remarks>
-          <maml:para>{{ Add example description here }}</maml:para>
+          <maml:para>This will export the contents of the lookup data cache to a file.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -485,7 +508,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="none">
           <maml:name>Source</maml:name>
           <maml:Description>
-            <maml:para>Accepts Twitch clip URLs (either format), Twitch clip IDs, or video URLs that include a timestamp parameter.</maml:para>
+            <maml:para>Specifies either a Twitch clip URL (or just the ID) or a video URL that includes a timestamp.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -509,7 +532,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>Count</maml:name>
           <maml:Description>
-            <maml:para>Number of videos to search when -XRef is a name. Default: 10</maml:para>
+            <maml:para>Specifies the number of most recent broadcasts to search when -XRef is a name. (1-100) Default: 10</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -549,7 +572,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="none">
         <maml:name>Source</maml:name>
         <maml:Description>
-          <maml:para>Accepts Twitch clip URLs (either format), Twitch clip IDs, or video URLs that include a timestamp parameter.</maml:para>
+          <maml:para>Specifies either a Twitch clip URL (or just the ID) or a video URL that includes a timestamp.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -573,7 +596,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>Count</maml:name>
         <maml:Description>
-          <maml:para>Number of videos to search when -XRef is a name. Default: 10</maml:para>
+          <maml:para>Specifies the number of most recent broadcasts to search when -XRef is a name. (1-100) Default: 10</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -638,8 +661,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Default alias is `txr`.</maml:para>
-        <maml:para>This uses the v5 Twitch API.</maml:para>
+        <maml:para>The `Source` parameter works with both styles of clip URL that Twitch uses.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>

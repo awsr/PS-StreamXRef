@@ -56,7 +56,7 @@ This will search through ChannelName2's 60 most recent broadcasts using a video 
 ## PARAMETERS
 
 ### -Source
-Accepts Twitch clip URLs (either format), Twitch clip IDs, or video URLs that include a timestamp parameter.
+Specifies either a Twitch clip URL (or just the ID) or a video URL that includes a timestamp.
 
 ```yaml
 Type: String
@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -Count
-Number of videos to search when -XRef is a name.
+Specifies the number of most recent broadcasts to search when -XRef is a name. (1-100)
 Default: 10
 
 ```yaml
@@ -155,8 +155,6 @@ If a result is found, the URL will be returned as a string.
 
 ## NOTES
 
-Default alias is `txr`.
-
-This uses the v5 Twitch API.
+The `Source` parameter works with both styles of clip URL that Twitch uses.
 
 ## RELATED LINKS
