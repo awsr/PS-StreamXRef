@@ -1,5 +1,5 @@
 #.ExternalHelp StreamXRef-help.xml
-function Get-TwitchXRef {
+function Find-TwitchXRef {
     [CmdletBinding()]
     [OutputType([System.String])]
     Param(
