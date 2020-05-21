@@ -13,6 +13,9 @@ function Export-XRefLookupData {
         [switch]$Force = $false,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [switch]$NoClobber = $false,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [switch]$Compress = $false
     )
 
@@ -61,7 +64,7 @@ function Export-XRefLookupData {
 
             if ($PSCmdlet.ShouldProcess($Path, "Write File")) {
 
-                $DataAsJson | Out-File $Path -Force:$Force
+                $DataAsJson | Out-File $Path -Force:$Force -NoClobber:$NoClobber
 
             }
 
