@@ -77,7 +77,7 @@ function Export-XRefLookupData {
 
                 # Create placeholder file, including any missing directories
                 # Override ErrorAction preferences because Out-File does not create missing directories and will fail anyway
-                New-Item $Path -ItemType File -Force:$Force -ErrorAction Stop
+                New-Item $Path -ItemType File -Force:$Force -ErrorAction Stop | Out-Null
                 $DataAsJson | Out-File $Path
 
             }
