@@ -33,9 +33,9 @@ function Clear-XRefLookupData {
             $attributeCollection.Add($psnAttr)
             $attributeCollection.Add($vnnoeAttr)
             $attributeCollection.Add($valScriptAttr)
-    
+
             $dynParam2Keep = [System.Management.Automation.RuntimeDefinedParameter]::new("DaysToKeep", [int], $attributeCollection)
-    
+
             $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
             $paramDictionary.Add("DaysToKeep", $dynParam2Keep)
             return $paramDictionary
@@ -51,7 +51,7 @@ function Clear-XRefLookupData {
         }
 
     }
-    
+
     Process {
 
         if ($PSCmdlet.ParameterSetName -eq "All" -and $ResetAll) {
@@ -110,30 +110,30 @@ function Clear-XRefLookupData {
                     if ($PSCmdlet.ShouldProcess("Video lookup data", "Trim entries")) {
 
                         $Cutoff = [datetime]::UtcNow - (New-TimeSpan -Days $DaysToKeep)
-    
+
                         $PreviousVideoCacheCount = $script:TwitchData.VideoInfoCache.Count
-        
+
                         [string[]]$PurgeList = $script:TwitchData.VideoInfoCache.GetEnumerator() |
                             Where-Object { $_.Value -lt $Cutoff } | Select-Object -ExpandProperty Key
-            
+
                         $PurgeList | ForEach-Object { $script:TwitchData.VideoInfoCache.Remove($_) } | Out-Null
-            
+
                         $EntriesRemoved = $PreviousVideoCacheCount - $script:TwitchData.VideoInfoCache.Count
-            
+
                         Write-Verbose "(VideoInfoCache) Data entries removed: $EntriesRemoved"
 
                     }
 
                 }
                 else {
-    
+
                     if ($PSCmdlet.ShouldProcess("Video lookup data", "Delete entries")) {
-    
+
                         $script:TwitchData.VideoInfoCache.Clear()
                         Write-Verbose "(VideoInfoCache) Data cleared"
-    
+
                     }
-    
+
                 }
 
             }

@@ -58,7 +58,7 @@ function Find-TwitchXRef {
             try {
 
                 Write-Warning "Lookup data is missing. Reinitializing."
-                
+
                 Initialize-LookupCache -ErrorAction Stop
 
             }
@@ -116,7 +116,7 @@ function Find-TwitchXRef {
             Headers     = $v5Headers
             ErrorAction = "Stop"
         }
-        
+
         #region Source Lookup ##########################
 
         if ($Source -match ".*twitch\.tv/videos/.+") {
@@ -154,7 +154,7 @@ function Find-TwitchXRef {
 
                 [timespan]$TimeOffset = New-TimeSpan -Seconds $script:TwitchData.ClipInfoCache[$Slug].Offset
                 [int]$VideoID = $script:TwitchData.ClipInfoCache[$Slug].VideoID
-                
+
                 # Set REST arguments
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
             }
@@ -164,16 +164,16 @@ function Find-TwitchXRef {
                 # Get information about clip
                 $RestArgs["Uri"] = "$API/clips/$Slug"
                 $ClipResponse = Invoke-RestMethod @RestArgs
-    
+
                 # Get offset from API response
                 [timespan]$TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
-    
+
                 # Get Video ID from API response
                 [int]$VideoID = $ClipResponse.vod.id
 
                 # Set REST arguments
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
-                
+
                 # Add data to clip cache (StrictMode will have thrown an error by now if it wasn't found)
                 $obj = [PSCustomObject]@{
                     Offset  = $ClipResponse.vod.offset
@@ -243,7 +243,7 @@ function Find-TwitchXRef {
                     Write-Error "(XRef Channel/User) `"$XRef`" not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
                     return $null
                 }
-                
+
                 [int]$UserIdNum = $UserLookup.users[0]._id
 
                 # Save ID number in cache hashtable
