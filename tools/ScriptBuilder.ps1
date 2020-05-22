@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.0
+.VERSION 2.1.0
 
 .GUID e8807dc8-6efa-4a7c-a205-7d14a794f374
 
@@ -42,11 +42,14 @@
 .PARAMETER File
  Input source file to read from.
 
+.PARAMETER OutputRootPath
+ Path to the main output directory.
+
+.PARAMETER CommonPath
+ Output directory for shared files that skip processing.
+
 .PARAMETER LabelDefinitions
  Output file mappings for labels.
-
-.PARAMETER SharedPath
- Output path for shared files that skip processing.
 
 #> 
 [CmdletBinding()]
@@ -57,7 +60,7 @@ Param (
 
     [Parameter(Mandatory = $true, Position = 1)]
     [ValidateScript({ Test-Path $_ -IsValid })]
-    [string]$MainDirectory,
+    [string]$OutputRootPath,
 
     [Parameter(Mandatory = $true, Position = 2)]
     [ValidateScript({ Test-Path $_ -IsValid })]
@@ -70,10 +73,29 @@ Param (
 
 Set-StrictMode -Version Latest
 
-# Create output directory if missing
-if (-not (Test-Path $MainDirectory)) {
+#region Setup ##########################
 
-    New-Item $MainDirectory -ItemType Directory -ErrorAction Stop
+# Create output directory if missing
+if (-not (Test-Path $OutputRootPath)) {
+
+    New-Item $OutputRootPath -ItemType Directory -ErrorAction Stop
+
+}
+
+# Read in the main source file
+$Source = Get-Content $File -ErrorAction Stop | ForEach-Object {
+
+    # Standardize blank lines
+    if ([string]::IsNullOrWhiteSpace($_)) {
+
+        Write-Output ([string]::Empty)
+
+    }
+    else {
+
+        Write-Output $_
+
+    }
 
 }
 
@@ -84,57 +106,50 @@ $RelativeFilePath = [System.IO.Path]::GetRelativePath($PWD.Path, $File)
 if ($File.EndsWith("psd1") -or $File.EndsWith("psm1")) {
 
     # Get new path for output file
-    $NewPath = Join-Path $MainDirectory $FileName
+    $NewPath = Join-Path $OutputRootPath $FileName
 
-    Copy-Item $File $NewPath -Force -ErrorAction Stop
+    $Source | Out-File $NewPath -Force -ErrorAction Stop
 
-    Write-Verbose "$RelativeFilePath copied to $NewPath"
+    Write-Verbose "$RelativeFilePath written to $NewPath"
 
     return
 
 }
 
-#region Fast bypass check ##############
-
-# If not flagged, copy directly to output directories
-if ((Get-Content $File -TotalCount 1) -notlike "#.EnablePSCodeSets*") {
+# If not flagged, write to CommonPath directory
+if ($Source[0] -notlike "#.EnablePSCodeSets*") {
 
     Write-Verbose "EnablePSCodeSets flag not found"
 
-    # Make sure a path was given for common files
-    if ($PSBoundParameters.ContainsKey("CommonPath")) {
+    if ([System.IO.Path]::IsPathFullyQualified($CommonPath)) {
 
-        $FullCommonPath = Join-Path $MainDirectory $CommonPath
-
-        # Check if path doesn't exist
-        if (-not (Test-Path $FullCommonPath)) {
-
-            # Create placeholder file and directories if missing
-            New-Item -Path $FullCommonPath -ItemType File -Force -ErrorAction Stop | Out-Null
-
-        }
-
-        Copy-Item $File $FullCommonPath -Force
-
-        Write-Verbose "$RelativeFilePath copied to $FullCommonPath"
-
-        return
+        $FullCommonPath = $CommonPath
 
     }
     else {
 
-        throw "No output path given for non-versioned file $RelativeFilePath"
+        $FullCommonPath = Join-Path $OutputRootPath $CommonPath
 
     }
 
+    # Check if path doesn't exist
+    if (-not (Test-Path $FullCommonPath)) {
+
+        # Create placeholder file and directories if missing
+        New-Item -Path $FullCommonPath -ItemType File -Force -ErrorAction Stop | Out-Null
+
+    }
+
+    $Source | Out-File $FullCommonPath -Force -ErrorAction Stop
+
+    Write-Verbose "$RelativeFilePath written to $FullCommonPath"
+
+    return
+
 }
 
-#endregion Fast bypass check ===========
-
-#region Setup ##########################
-
 $Mappings = @{}
-$private:tempMaps = @{}
+$TempMaps = @{}
 $ScriptDataSets = @{}
 $OutputKeys = @()
 
@@ -144,15 +159,11 @@ $RegionStartRegex = "^\s*(?:<|(?:<#\s*))?#region\s*@\{\s*(?<Instruction>.*=.*)\s
 
 Write-Verbose "Parsing $RelativeFilePath"
 
-# Read in the main source file
-$Source = Get-Content $File -ErrorAction Stop
-
 # Start with 1 since index 0 was the flag
 $Offset = 1
 
 # Skip blank lines after the initial flag
-# Only skip lines that are actually empty so that whitespaces can keep line padding if desired
-while ($Source[$Offset] -eq "") {
+while ([string]::IsNullOrWhiteSpace($Source[$Offset])) {
 
     $Offset++
 
@@ -163,7 +174,7 @@ foreach ($Entry in $LabelDefinitions) {
 
     try {
 
-        $tempMaps += ConvertFrom-StringData $Entry.Replace('\', '\\')
+        $TempMaps += ConvertFrom-StringData $Entry.Replace('\', '\\')
 
     }
     catch {
@@ -177,7 +188,7 @@ foreach ($Entry in $LabelDefinitions) {
 # Join target paths with main path unless full path is specified
 try {
 
-    $tempMaps.GetEnumerator() | ForEach-Object {
+    $TempMaps.GetEnumerator() | ForEach-Object {
 
         if ([System.IO.Path]::IsPathFullyQualified($_.Value)) {
 
@@ -186,10 +197,10 @@ try {
         }
         else {
 
-            $Mappings.Add($_.Key, (Join-Path $MainDirectory $_.Value))
+            $Mappings.Add($_.Key, (Join-Path $OutputRootPath $_.Value))
 
         }
-    
+
     }
 
 }
@@ -198,7 +209,6 @@ catch [System.Management.Automation.MethodInvocationException] {
     $PSCmdlet.ThrowTerminatingError($_)
 
 }
-
 
 # Make sure we actually have something to do
 if ($Mappings.Count -eq 0) {
