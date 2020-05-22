@@ -18,7 +18,7 @@ function Import-XRefLookupData {
         [Parameter()]
         [switch]$Force = $false
     )
-    
+
     Begin {
 
         if ($Force -and -not $PSBoundParameters.ContainsKey("Confirm")) {
@@ -206,7 +206,7 @@ function Import-XRefLookupData {
                     Write-Verbose "(User Data) $($Counters.User.Ignored) duplicate entries ignored."
                 }
                 if ($Counters.User.Skipped -gt 0) {
-                    Write-Verbose "(User Data) $($Counters.User.Skipped) conflicting entries skipped"
+                    Write-Verbose "(User Data) $($Counters.User.Skipped) conflicting entries skipped."
                 }
                 if ($Counters.User.Error -gt 0) {
                     Write-Verbose "(User Data) $($Counters.User.Error) entries could not be parsed."
@@ -246,7 +246,11 @@ function Import-XRefLookupData {
                             }
                             else {
 
-                                Write-Warning "For $($_.Name): $NewOffsetValue, $NewVideoIDValue -> $($script:TwitchData.ClipInfoCache[$_.Name].Offset), $($script:TwitchData.ClipInfoCache[$_.Name].VideoID)"
+                                Write-Warning (
+                                    "For $($_.Name): $NewOffsetValue",
+                                    "$NewVideoIDValue -> $($script:TwitchData.ClipInfoCache[$_.Name].Offset)",
+                                    "$($script:TwitchData.ClipInfoCache[$_.Name].VideoID)" -join ", "
+                                )
 
                                 if ($Force -or $PSCmdlet.ShouldContinue("Input data entry differs from existing data", "Overwrite with new value?", [ref]$YesToAll, [ref]$NoToAll)) {
 
