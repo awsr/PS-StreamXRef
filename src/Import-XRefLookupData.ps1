@@ -217,7 +217,7 @@ function Import-XRefLookupData {
         }
         else {
 
-            Write-Error "User lookup data missing from input." -Category ObjectNotFound
+            Write-Error "User lookup data missing from input."
 
         }
 
@@ -301,7 +301,7 @@ function Import-XRefLookupData {
         }
         else {
 
-            Write-Warning "Clip lookup data missing from input." -Category ObjectNotFound
+            Write-Error "Clip lookup data missing from input."
 
         }
 
@@ -376,7 +376,7 @@ function Import-XRefLookupData {
         }
         else {
 
-            Write-Error "Video lookup data missing from input." -Category ObjectNotFound
+            Write-Error "Video lookup data missing from input."
 
         }
 
