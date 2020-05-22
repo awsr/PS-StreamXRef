@@ -34,27 +34,59 @@ function Export-XRefLookupData {
 
         }
 
-        $ConvertedVideoInfoCache = [System.Collections.Generic.Dictionary[string, string]]::new()
+        $ConvertedUserInfoCache = [System.Collections.ArrayList]::new()
+        $ConvertedClipInfoCache = [System.Collections.ArrayList]::new()
+        $ConvertedVideoInfoCache = [System.Collections.ArrayList]::new()
 
-    }
+        # Convert UserInfoCache to ArrayList
+        $script:TwitchData.UserInfoCache.GetEnumerator() | ForEach-Object {
 
-    Process {
+            [void]$ConvertedUserInfoCache.Add(
+                [pscustomobject]@{
+                    name = $_.Key
+                    id   = $_.Value
+                }
+            )
 
-        # Convert VideoInfoCache to a valid format for serializing
+        }
+
+        # Convert ClipInfoCache to ArrayList
+        $script:TwitchData.ClipInfoCache.GetEnumerator() | ForEach-Object {
+
+            [void]$ConvertedClipInfoCache.Add(
+                [pscustomobject]@{
+                    slug   = $_.Key
+                    offset = $_.Value.Offset
+                    video  = $_.Value.VideoID
+                }
+            )
+
+        }
+
+        # Convert VideoInfoCache to ArrayList
         $script:TwitchData.VideoInfoCache.GetEnumerator() | ForEach-Object {
 
             # ToString("o") specifies format like "2020-05-09T05:35:45.5032152Z"
-            $ConvertedVideoInfoCache.Add($_.Key.ToString(), $_.Value.ToString("o"))
+            [void]$ConvertedVideoInfoCache.Add(
+                [pscustomobject]@{
+                    video     = $_.Key
+                    timestamp = $_.Value.ToString("o")
+                }
+            )
 
         }
 
         # Bundle data together for converting to JSON (for compatibility with potential Javascript-based version)
         $TXRConfigData = [pscustomobject]@{
             ApiKey         = $script:TwitchData.ApiKey
-            UserInfoCache  = $script:TwitchData.UserInfoCache
-            ClipInfoCache  = $script:TwitchData.ClipInfoCache
+            UserInfoCache  = $ConvertedUserInfoCache
+            ClipInfoCache  = $ConvertedClipInfoCache
             VideoInfoCache = $ConvertedVideoInfoCache
         }
+
+    }
+
+    Process {
 
         # Save Json string
         [string]$DataAsJson = $TXRConfigData | ConvertTo-Json -Compress:$Compress
