@@ -28,7 +28,7 @@ function Export-XRefLookupData {
 
         }
 
-        if ($Force -and -not ($PSBoundParameters.ContainsKey("Confirm") -and $Confirm)) {
+        if ($Force -and -not $PSBoundParameters.ContainsKey("Confirm")) {
 
             $ConfirmPreference = "None"
 
