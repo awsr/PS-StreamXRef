@@ -121,20 +121,18 @@ function Import-XRefLookupData {
             }
 
         }
+        elseif ($null, "" -contains $script:TwitchData.ApiKey -and $script:TwitchData.GetTotalCount() -eq 0) {
+
+            # Lookup data cache is empty
+            # Assume user is trying to restore from a full export
+            Write-Error "API key missing from input."
+
+        }
         else {
 
-            if ($null, "" -contains $script:TwitchData.ApiKey -and $script:TwitchData.GetTotalCount() -eq 0) {
-
-                # Lookup data cache is empty
-                # Assume user is trying to restore from a full export
-                Write-Error "API key missing from input." -Category ObjectNotFound
-
-            }
-            else {
-
-                Write-Warning "API key missing from input."
-
-            }
+            # Already contains API key
+            # User may have wanted to not keep the key in the JSON file, so not an error
+            Write-Warning "API key missing from input."
 
         }
 
