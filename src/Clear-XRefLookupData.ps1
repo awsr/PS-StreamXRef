@@ -56,7 +56,7 @@ function Clear-XRefLookupData {
 
         if ($PSCmdlet.ParameterSetName -eq "All" -and $ResetAll) {
 
-            if ($PSCmdlet.ShouldProcess("All cached lookup data", "Clear")) {
+            if ($PSCmdlet.ShouldProcess("All lookup data", "Delete entries")) {
 
                 $script:TwitchData.ApiKey = $null
                 $script:TwitchData.UserInfoCache.Clear()
@@ -72,7 +72,7 @@ function Clear-XRefLookupData {
 
             if ($ApiKey) {
 
-                if ($PSCmdlet.ShouldProcess("API key", "Clear")) {
+                if ($PSCmdlet.ShouldProcess("API key", "Delete")) {
 
                     $script:TwitchData.ApiKey.Clear()
                     Write-Verbose "(ApiKey) Data cleared"
@@ -83,10 +83,10 @@ function Clear-XRefLookupData {
 
             if ($UserInfoCache) {
 
-                if ($PSCmdlet.ShouldProcess("User ID lookup data", "Clear")) {
+                if ($PSCmdlet.ShouldProcess("User lookup data", "Delete entries")) {
 
                     $script:TwitchData.UserInfoCache.Clear()
-                    Write-Verbose "(UserInfoCache) data cleared"
+                    Write-Verbose "(UserInfoCache) Data cleared"
 
                 }
 
@@ -94,7 +94,7 @@ function Clear-XRefLookupData {
 
             if ($ClipInfoCache) {
 
-                if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Clear")) {
+                if ($PSCmdlet.ShouldProcess("Clip lookup data", "Delete entries")) {
 
                     $script:TwitchData.ClipInfoCache.Clear()
                     Write-Verbose "(ClipInfoCache) Data cleared"
@@ -107,7 +107,7 @@ function Clear-XRefLookupData {
 
                 if ($PSBoundParameters.ContainsKey("DaysToKeep")) {
 
-                    if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Trim")) {
+                    if ($PSCmdlet.ShouldProcess("Video lookup data", "Trim entries")) {
 
                         $Cutoff = [datetime]::UtcNow - (New-TimeSpan -Days $DaysToKeep)
     
@@ -127,7 +127,7 @@ function Clear-XRefLookupData {
                 }
                 else {
     
-                    if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Delete")) {
+                    if ($PSCmdlet.ShouldProcess("Video lookup data", "Delete entries")) {
     
                         $script:TwitchData.VideoInfoCache.Clear()
                         Write-Verbose "(VideoInfoCache) Data cleared"
