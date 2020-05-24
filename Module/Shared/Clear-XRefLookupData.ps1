@@ -4,43 +4,29 @@ function Clear-XRefLookupData {
     [OutputType([System.Void])]
     Param(
         [Parameter(Mandatory = $true, ParameterSetName = "All")]
-        [switch]$ResetAll,
+        [switch]$RemoveAll,
 
         [Parameter(ParameterSetName = "Selection")]
         [switch]$ApiKey = $false,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$UserInfoCache = $false,
+        [switch]$User = $false,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$ClipInfoCache = $false,
+        [switch]$Clip = $false,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$VideoInfoCache = $false,
+        [switch]$Video = $false,
+
+        [Parameter(ParameterSetName = "Selection")]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript({ $_ -gt 0 })]
+        [Alias("Keep")]
+        [int]$DaysToKeep,
 
         [Parameter()]
         [switch]$Force = $false
     )
-
-    DynamicParam {
-        # If VideoInfoCache is specified, add DaysToKeep parameter
-        if ($PSBoundParameters.ContainsKey("VideoInfoCache")) {
-            $psnAttr = [System.Management.Automation.ParameterAttribute]::new()
-            $psnAttr.ParameterSetName = "Selection"
-            $vnnoeAttr = [System.Management.Automation.ValidateNotNullOrEmptyAttribute]::new()
-            $valScriptAttr = [System.Management.Automation.ValidateScriptAttribute]::new({ $_ -ge 0 })
-            $attributeCollection = [System.Collections.ObjectModel.Collection[System.Attribute]]::new()
-            $attributeCollection.Add($psnAttr)
-            $attributeCollection.Add($vnnoeAttr)
-            $attributeCollection.Add($valScriptAttr)
-
-            $dynParam2Keep = [System.Management.Automation.RuntimeDefinedParameter]::new("DaysToKeep", [int], $attributeCollection)
-
-            $paramDictionary = [System.Management.Automation.RuntimeDefinedParameterDictionary]::new()
-            $paramDictionary.Add("DaysToKeep", $dynParam2Keep)
-            return $paramDictionary
-        }
-    }
 
     Begin {
 
@@ -54,7 +40,7 @@ function Clear-XRefLookupData {
 
     Process {
 
-        if ($PSCmdlet.ParameterSetName -eq "All" -and $ResetAll) {
+        if ($PSCmdlet.ParameterSetName -eq "All" -and $RemoveAll) {
 
             if ($PSCmdlet.ShouldProcess("All lookup data", "Delete entries")) {
 
@@ -81,29 +67,29 @@ function Clear-XRefLookupData {
 
             }
 
-            if ($UserInfoCache) {
+            if ($User) {
 
                 if ($PSCmdlet.ShouldProcess("User lookup data", "Delete entries")) {
 
                     $script:TwitchData.UserInfoCache.Clear()
-                    Write-Verbose "(UserInfoCache) Data cleared"
+                    Write-Verbose "(User) Data cleared"
 
                 }
 
             }
 
-            if ($ClipInfoCache) {
+            if ($Clip) {
 
                 if ($PSCmdlet.ShouldProcess("Clip lookup data", "Delete entries")) {
 
                     $script:TwitchData.ClipInfoCache.Clear()
-                    Write-Verbose "(ClipInfoCache) Data cleared"
+                    Write-Verbose "(Clip) Data cleared"
 
                 }
 
             }
 
-            if ($VideoInfoCache) {
+            if ($Video) {
 
                 if ($PSBoundParameters.ContainsKey("DaysToKeep")) {
 
@@ -120,7 +106,7 @@ function Clear-XRefLookupData {
 
                         $EntriesRemoved = $PreviousVideoCacheCount - $script:TwitchData.VideoInfoCache.Count
 
-                        Write-Verbose "(VideoInfoCache) Data entries removed: $EntriesRemoved"
+                        Write-Verbose "(Video) Data entries removed: $EntriesRemoved"
 
                     }
 
@@ -130,7 +116,7 @@ function Clear-XRefLookupData {
                     if ($PSCmdlet.ShouldProcess("Video lookup data", "Delete entries")) {
 
                         $script:TwitchData.VideoInfoCache.Clear()
-                        Write-Verbose "(VideoInfoCache) Data cleared"
+                        Write-Verbose "(Video) Data cleared"
 
                     }
 
