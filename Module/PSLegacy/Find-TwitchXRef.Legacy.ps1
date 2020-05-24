@@ -93,6 +93,9 @@ function Find-TwitchXRef {
 
     Process {
 
+        <#  This trap is used for making all "404 Not Found" errors a non-terminating error
+            because, for some reason, Twitch also uses that with some (but not all...) API
+            endpoints to indicate that no results were found. #>
         trap [Microsoft.PowerShell.Commands.HttpResponseException] {
             # API Responded with error status
             if ($_.Exception.Response.StatusCode -eq 404) {
@@ -104,11 +107,6 @@ function Find-TwitchXRef {
                 # Other error status codes
                 $PSCmdlet.ThrowTerminatingError($_)
             }
-        }
-        trap [System.Net.Http.HttpRequestException] {
-            # Other http request errors
-            # Parent to HttpResponseException so it must go after
-            $PSCmdlet.ThrowTerminatingError($_)
         }
 
         $RestArgs = @{
@@ -124,7 +122,7 @@ function Find-TwitchXRef {
 
             # Check if missing timestamp
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
-                Write-Error "Video URL missing timestamp parameter" -ErrorID MissingTimestamp -Category SyntaxError -CategoryTargetName "Source" -TargetObject $Source
+                Write-Error "(Video) URL missing timestamp parameter" -ErrorID MissingTimestamp -Category InvalidArgument -CategoryTargetName Source -TargetObject $Source
                 return $null
             }
 
@@ -175,16 +173,26 @@ function Find-TwitchXRef {
                 $RestArgs["Uri"] = "$API/clips/$Slug"
                 $ClipResponse = Invoke-RestMethod @RestArgs
 
-                # Get offset from API response
-                [timespan]$TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
+                try {
 
-                # Get Video ID from API response
-                [int]$VideoID = $ClipResponse.vod.id
+                    # Get offset from API response
+                    [timespan]$TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
+
+                    # Get Video ID from API response
+                    [int]$VideoID = $ClipResponse.vod.id
+
+                }
+                catch [System.Management.Automation.PropertyNotFoundException] {
+
+                    Write-Error "(Clip) Source video unavailable or deleted" -ErrorId VideoNotFound -Category ObjectNotFound -CategoryTargetName Source -TargetObject $Source
+                    return $null
+
+                }
 
                 # Set REST arguments
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
 
-                # Add data to clip cache (StrictMode will have thrown an error by now if it wasn't found)
+                # Add data to clip cache
                 $obj = [PSCustomObject]@{
                     Offset  = $ClipResponse.vod.offset
                     VideoID = $VideoID
@@ -240,10 +248,13 @@ function Find-TwitchXRef {
 
             # Check ID cache for user
             if ($script:TwitchData.UserInfoCache.ContainsKey($XRef)) {
-                # Use cached ID number
+
+                # Get cached ID number
                 [int]$UserIdNum = $script:TwitchData.UserInfoCache[$XRef]
+
             }
             else {
+
                 # Get ID number for username using API
                 $RestArgs["Uri"] = "$API/users"
                 $RestArgs["Body"] = @{
@@ -251,9 +262,13 @@ function Find-TwitchXRef {
                 }
 
                 $UserLookup = Invoke-RestMethod @RestArgs
+
+                # Unlike other API requests, this doesn't return a 404 error if not found
                 if ($UserLookup._total -eq 0) {
-                    Write-Error "(XRef Channel/User) `"$XRef`" not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName "XRef" -TargetObject $XRef
+
+                    Write-Error "(XRef Channel/User) `"$XRef`" not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef
                     return $null
+
                 }
 
                 [int]$UserIdNum = $UserLookup.users[0]._id
@@ -305,14 +320,14 @@ function Find-TwitchXRef {
         $VideoToCompare = $XRefSet | Where-Object { $_.recorded_at -lt $EventTimestamp } | Select-Object -First 1
         if ($null -contains $VideoToCompare) {
 
-            Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
+            Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source
             return $null
 
         }
         elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
 
             # Event timestamp is after the end of stream
-            Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName "EventTimestamp" -TargetObject $Source
+            Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source
             return $null
 
         }
