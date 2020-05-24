@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -Count
-Specifies the number of most recent broadcasts to search when -XRef is a name. (1-100)
+Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100)
 Default: 10
 
 ```yaml
@@ -141,7 +141,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.String
 
-Used for `Source`, `XRef`, and `ClientID` parameters. Can be pipelined by property name.
+Used for `Source`, `XRef`, and `ApiKey` parameters. Can be pipelined by property name.
 
 ### System.Int32
 
