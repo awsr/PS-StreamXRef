@@ -130,7 +130,7 @@ function Find-TwitchXRef {
 
             # Check if missing timestamp
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
-                Write-Error "(Video) URL missing timestamp parameter" -ErrorID MissingTimestamp -Category InvalidArgument -CategoryTargetName Source -TargetObject $Source
+                Write-Error "(Video) URL missing timestamp parameter" -ErrorId MissingTimestamp -Category InvalidArgument -CategoryTargetName Source -TargetObject $Source
                 return $null
             }
 
@@ -310,7 +310,7 @@ function Find-TwitchXRef {
                 # Unlike other API requests, this doesn't return a 404 error if not found
                 if ($UserLookup._total -eq 0) {
 
-                    Write-Error "(XRef Channel/User) `"$XRef`" not found" -ErrorID UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef
+                    Write-Error "(XRef Channel/User) `"$XRef`" not found" -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef
                     return $null
 
                 }
@@ -382,7 +382,7 @@ function Find-TwitchXRef {
         $VideoToCompare = $XRefSet | Where-Object { $_.recorded_at -lt $EventTimestamp } | Select-Object -First 1
         if ($null -contains $VideoToCompare) {
 
-            Write-Error "Event occurs before search range" -ErrorID EventNotInRange -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source
+            Write-Error "Event occurs before search range" -ErrorId EventNotInRange -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source
             return $null
 
         }
