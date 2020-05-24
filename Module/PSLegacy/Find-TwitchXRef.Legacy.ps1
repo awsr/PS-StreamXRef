@@ -216,6 +216,26 @@ function Find-TwitchXRef {
             # Get information about main video
             $VodResponse = Invoke-RestMethod @RestArgs
 
+            # Check for incorrect video type
+            if ($VodResponse.broadcast_type -ne "archive") {
+
+                # Set error message based on Source type
+                if (Test-Path "Variable:Local:ClipResponse") {
+
+                    $ErrSrc = "(Clip) Referenced"
+
+                }
+                else {
+
+                    $ErrSrc = "(Video) Source"
+
+                }
+
+                Write-Error "$ErrSrc video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation
+                return $null
+
+            }
+
             # Manual conversion to UTC datetime <!Legacy>
             $VodResponse.recorded_at = $VodResponse.recorded_at | ConvertTo-UtcDateTime
             # Use start time from API response
@@ -293,6 +313,19 @@ function Find-TwitchXRef {
         }
 
         $XRefResponse = Invoke-RestMethod @RestArgs
+
+        # $Multi will be $false if XRef is a video URL
+        if (-not $Multi) {
+
+            # Check for incorrect video type
+            if ($XRefResponse.broadcast_type -ne "archive") {
+
+                Write-Error "(XRef Video) Video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName XRef -TargetObject $XRef
+                return $null
+
+            }
+
+        }
 
         if ($Multi) {
 
