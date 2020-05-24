@@ -6,19 +6,19 @@
       <command:verb>Clear</command:verb>
       <command:noun>XRefLookupData</command:noun>
       <maml:description>
-        <maml:para>{{ Fill in the Synopsis }}</maml:para>
+        <maml:para>Clears data from the internal lookup caches for the StreamXRef module.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>{{ Fill in the Description }}</maml:para>
+      <maml:para>Clears either all data or any combination of the following for the StreamXRef module: Api key, User lookup cache, Clip lookup cache, Video lookup cache.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Clear-XRefLookupData</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>ApiKey</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>RemoveAll</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill ApiKey Description }}</maml:para>
+            <maml:para>Removes the API key and all data from the caches.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -27,9 +27,9 @@
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>ClipInfoCache</maml:name>
+          <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill ClipInfoCache Description }}</maml:para>
+            <maml:para>Force clearing data.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -41,39 +41,6 @@
           <maml:name>Confirm</maml:name>
           <maml:Description>
             <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>UserInfoCache</maml:name>
-          <maml:Description>
-            <maml:para>{{ Fill UserInfoCache Description }}</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>VideoInfoCache</maml:name>
-          <maml:Description>
-            <maml:para>{{ Fill VideoInfoCache Description }}</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Force</maml:name>
-          <maml:Description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -95,21 +62,10 @@
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Clear-XRefLookupData</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-          <maml:name>Confirm</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ApiKey</maml:name>
           <maml:Description>
-            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>ResetAll</maml:name>
-          <maml:Description>
-            <maml:para>{{ Fill ResetAll Description }}</maml:para>
+            <maml:para>Clear the API key.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -118,9 +74,65 @@
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Clip</maml:name>
+          <maml:Description>
+            <maml:para>Clear the clip lookup cache.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>User</maml:name>
+          <maml:Description>
+            <maml:para>Clear the user lookup cache.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Video</maml:name>
+          <maml:Description>
+            <maml:para>Clear the video lookup cache.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Keep">
+          <maml:name>DaysToKeep</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the number of days to keep when using the `Video` Parameter. If used without `Video` it will have no effect.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>{{ Fill Force Description }}</maml:para>
+            <maml:para>Force clearing data.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:Description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -142,10 +154,10 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>ApiKey</maml:name>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>RemoveAll</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill ApiKey Description }}</maml:para>
+          <maml:para>Removes the API key and all data from the caches.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -155,9 +167,69 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>ClipInfoCache</maml:name>
+        <maml:name>ApiKey</maml:name>
         <maml:Description>
-          <maml:para>{{ Fill ClipInfoCache Description }}</maml:para>
+          <maml:para>Clear the API key.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Clip</maml:name>
+        <maml:Description>
+          <maml:para>Clear the clip lookup cache.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>User</maml:name>
+        <maml:Description>
+          <maml:para>Clear the user lookup cache.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Video</maml:name>
+        <maml:Description>
+          <maml:para>Clear the video lookup cache.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Keep">
+        <maml:name>DaysToKeep</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the number of days to keep when using the `Video` Parameter. If used without `Video` it will have no effect.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:Description>
+          <maml:para>Force clearing data.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -170,54 +242,6 @@
         <maml:name>Confirm</maml:name>
         <maml:Description>
           <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>ResetAll</maml:name>
-        <maml:Description>
-          <maml:para>{{ Fill ResetAll Description }}</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>UserInfoCache</maml:name>
-        <maml:Description>
-          <maml:para>{{ Fill UserInfoCache Description }}</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>VideoInfoCache</maml:name>
-        <maml:Description>
-          <maml:para>{{ Fill VideoInfoCache Description }}</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Force</maml:name>
-        <maml:Description>
-          <maml:para>{{ Fill Force Description }}</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -267,9 +291,9 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; {{ Add example code here }}</dev:code>
+        <dev:code>PS &gt; Clear-XRefLookupData -Clip -Video -DaysToKeep 30 -Force</dev:code>
         <dev:remarks>
-          <maml:para>{{ Add example description here }}</maml:para>
+          <maml:para>This will clear all data from the `Clip` cache and all but those recorded in the last 30 days from the `Video` cache. `Force` is also used prevent being asked to confirm these actions.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -498,7 +522,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Given a Twitch clip or video timestamp URL, find the same moment from the cross-referenced video or channel and return it as a URL.</maml:para>
+      <maml:para>Given a Twitch clip or video timestamp URL, find the same moment from the cross-referenced video or channel and return it as a URL. This only works with stream archives because Twitch returns incorrect data for highlights and etc.</maml:para>
       <maml:para>You must provide your own API key.</maml:para>
       <maml:para>An event with a `SourceIdentifier` of " XRefNewDataAdded " will be sent after running if new data was added to the lookup data cache and an event subscriber has been registered with `Register-EngineEvent`.</maml:para>
     </maml:description>
@@ -532,7 +556,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>Count</maml:name>
           <maml:Description>
-            <maml:para>Specifies the number of most recent broadcasts to search when -XRef is a name. (1-100) Default: 10</maml:para>
+            <maml:para>Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100) Default: 10</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -596,7 +620,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>Count</maml:name>
         <maml:Description>
-          <maml:para>Specifies the number of most recent broadcasts to search when -XRef is a name. (1-100) Default: 10</maml:para>
+          <maml:para>Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100) Default: 10</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -637,7 +661,7 @@
           <maml:name>System.String</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>Used for `Source`, `XRef`, and `ClientID` parameters. Can be pipelined by property name.</maml:para>
+          <maml:para>Used for `Source`, `XRef`, and `ApiKey` parameters. Can be pipelined by property name.</maml:para>
         </maml:description>
       </command:inputType>
       <command:inputType>
@@ -728,10 +752,10 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-          <maml:name>Confirm</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+            <maml:para>Forces overwriting of existing data with imported data if there are differences (except for ones that can't be parsed).</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -739,10 +763,10 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Force</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
           <maml:Description>
-            <maml:para>Forces overwriting of existing data with imported data if there are differences (except for ones that can't be parsed).</maml:para>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -776,17 +800,6 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-          <maml:name>Confirm</maml:name>
-          <maml:Description>
-            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
@@ -802,6 +815,17 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           <maml:name>Quiet</maml:name>
           <maml:Description>
             <maml:para>Suppresses returning the results of the input.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:Description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -835,18 +859,6 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-        <maml:name>Confirm</maml:name>
-        <maml:Description>
-          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:Description>
@@ -875,6 +887,18 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <maml:name>Quiet</maml:name>
         <maml:Description>
           <maml:para>Suppresses returning the results of the input.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+        <maml:name>Confirm</maml:name>
+        <maml:Description>
+          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>

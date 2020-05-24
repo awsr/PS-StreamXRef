@@ -8,37 +8,52 @@ schema: 2.0.0
 # Clear-XRefLookupData
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Clears data from the internal lookup caches for the StreamXRef module.
 
 ## SYNTAX
 
 ### All (Default)
 ```
-Clear-XRefLookupData [-ResetAll] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Clear-XRefLookupData [-RemoveAll] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Selection
 ```
-Clear-XRefLookupData [-ApiKey] [-UserInfoCache] [-ClipInfoCache] [-VideoInfoCache] [-Force] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Clear-XRefLookupData [-ApiKey] [-User] [-Clip] [-Video] [-DaysToKeep <Int32>] [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Clears either all data or any combination of the following for the StreamXRef module: Api key, User lookup cache, Clip lookup cache, Video lookup cache.
 
 ## EXAMPLES
 
 ### Example 1
 ```
-PS C:\> {{ Add example code here }}
+PS > Clear-XRefLookupData -Clip -Video -DaysToKeep 30 -Force
 ```
 
-{{ Add example description here }}
+This will clear all data from the `Clip` cache and all but those recorded in the last 30 days from the `Video` cache. `Force` is also used prevent being asked to confirm these actions.
 
 ## PARAMETERS
 
+### -RemoveAll
+Removes the API key and all data from the caches.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: All
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ApiKey
-{{ Fill ApiKey Description }}
+Clear the API key.
 
 ```yaml
 Type: SwitchParameter
@@ -52,8 +67,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ClipInfoCache
-{{ Fill ClipInfoCache Description }}
+### -Clip
+Clear the clip lookup cache.
 
 ```yaml
 Type: SwitchParameter
@@ -63,6 +78,66 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -User
+Clear the user lookup cache.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Selection
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Video
+Clear the video lookup cache.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Selection
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DaysToKeep
+Specifies the number of days to keep when using the `Video` Parameter. If used without `Video` it will have no effect.
+
+```yaml
+Type: Int32
+Parameter Sets: Selection
+Aliases: Keep
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+Force clearing data.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -78,66 +153,6 @@ Aliases: cf
 Required: False
 Position: Named
 Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ResetAll
-{{ Fill ResetAll Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: All
-Aliases:
-
-Required: True
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -UserInfoCache
-{{ Fill UserInfoCache Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: Selection
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -VideoInfoCache
-{{ Fill VideoInfoCache Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: Selection
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Force
-{{ Fill Force Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
