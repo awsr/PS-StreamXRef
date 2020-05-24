@@ -137,7 +137,7 @@ function Import-XRefLookupData {
         }
 
         # Process UserInfoCache
-        if ($ConfigStaging.psobject.Properties.Name -contains "UserInfoCache") {
+        if ($ConfigStaging.psobject.Properties.Name -contains "UserInfoCache" -and $ConfigStaging.UserInfoCache.Count -gt 0) {
 
             # Check for confirm status here instead of for every single entry
             if ($PSCmdlet.ShouldProcess("User ID lookup data", "Import")) {
@@ -220,7 +220,7 @@ function Import-XRefLookupData {
         }
 
         # Process ClipInfoCache
-        if ($ConfigStaging.psobject.Properties.Name -contains "ClipInfoCache") {
+        if ($ConfigStaging.psobject.Properties.Name -contains "ClipInfoCache" -and $ConfigStaging.ClipInfoCache.Count -gt 0) {
 
             if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Import")) {
 
@@ -305,7 +305,7 @@ function Import-XRefLookupData {
         }
 
         # Process VideoInfoCache
-        if ($ConfigStaging.psobject.Properties.Name -contains "VideoInfoCache") {
+        if ($ConfigStaging.psobject.Properties.Name -contains "VideoInfoCache" -and $ConfigStaging.VideoInfoCache.Count -gt 0) {
 
             if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Import")) {
 
