@@ -9,13 +9,13 @@ function Export-XRefLookupData {
         [ValidateScript({ Test-Path $_ -IsValid })]
         [string]$Path,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [switch]$Force = $false,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [switch]$NoClobber = $false,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [switch]$Compress = $false
     )
 

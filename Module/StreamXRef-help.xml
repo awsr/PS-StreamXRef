@@ -308,7 +308,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Compress</maml:name>
           <maml:Description>
             <maml:para>Removes unnecessary whitespace from the JSON string. This results in smaller files at the expense of readability.</maml:para>
@@ -319,7 +319,7 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
             <maml:para>Forces overwriting of read-only files.</maml:para>
@@ -330,7 +330,7 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NoClobber</maml:name>
           <maml:Description>
             <maml:para>Prevents overwriting an existing file. Default: False.</maml:para>
@@ -366,7 +366,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Compress</maml:name>
         <maml:Description>
           <maml:para>Removes unnecessary whitespace from the JSON string. This results in smaller files at the expense of readability.</maml:para>
@@ -378,7 +378,7 @@
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:Description>
           <maml:para>Forces overwriting of read-only files.</maml:para>
@@ -390,7 +390,7 @@
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>NoClobber</maml:name>
         <maml:Description>
           <maml:para>Prevents overwriting an existing file. Default: False.</maml:para>
@@ -453,7 +453,7 @@
           <maml:name>System.Management.Automation.SwitchParameter</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>Used for `Force` and `Compress` parameters. You can pipeline a boolean to these values by property name.</maml:para>
+          <maml:para>Used for `Force`, `NoClobber`, and `Compress` parameters.</maml:para>
         </maml:description>
       </command:inputType>
     </command:inputTypes>

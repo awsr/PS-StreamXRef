@@ -44,7 +44,7 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -59,7 +59,7 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -74,7 +74,7 @@ Aliases:
 Required: False
 Position: Named
 Default value: None
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -135,7 +135,7 @@ You can pipeline a value for `Path` either as a string or by property name.
 
 ### System.Management.Automation.SwitchParameter
 
-Used for `Force` and `Compress` parameters. You can pipeline a boolean to these values by property name.
+Used for `Force`, `NoClobber`, and `Compress` parameters.
 
 ## OUTPUTS
 
