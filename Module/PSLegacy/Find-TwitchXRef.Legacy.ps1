@@ -216,30 +216,56 @@ function Find-TwitchXRef {
             # Get information about main video
             $VodResponse = Invoke-RestMethod @RestArgs
 
-            # Check for incorrect video type
-            if ($VodResponse.broadcast_type -ne "archive") {
+            try {
 
-                # Set error message based on Source type
-                if (Test-Path "Variable:Local:ClipResponse") {
+                # Check for incorrect video type
+                if ($VodResponse.broadcast_type -ne "archive") {
 
-                    $ErrSrc = "(Clip) Referenced"
+                    # Set error message based on Source type
+                    if (Test-Path "Variable:Local:ClipResponse") {
+
+                        $ErrSrc = "(Clip) Referenced"
+
+                    }
+                    else {
+
+                        $ErrSrc = "(Video) Source"
+
+                    }
+
+                    # Use "ErrorAction Stop" with specific catch block for forwarding
+                    Write-Error "$ErrSrc video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -ErrorAction Stop
 
                 }
-                else {
 
-                    $ErrSrc = "(Video) Source"
+            }
+            catch [Microsoft.PowerShell.Commands.WriteErrorException] {
 
-                }
-
-                Write-Error "$ErrSrc video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation
+                # Write-Error forwarding
+                $PSCmdlet.WriteError($_)
                 return $null
 
             }
+            catch {
 
-            # Manual conversion to UTC datetime <!Legacy>
-            $VodResponse.recorded_at = $VodResponse.recorded_at | ConvertTo-UtcDateTime
-            # Use start time from API response
-            [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+                throw 'Twitch API did not return expected parameter "broadcast_type"'
+
+            }
+
+            try {
+
+                # Manual conversion to UTC datetime
+                $VodResponse.recorded_at = $VodResponse.recorded_at | ConvertTo-UtcDateTime
+                # Use start time from API response
+                [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+
+            }
+            catch {
+
+                $PSCmdlet.ThrowTerminatingError($_)
+
+            }
+
 
             # Add data to Vod cache
             $script:TwitchData.VideoInfoCache.Add($VideoID, $VodResponse.recorded_at)

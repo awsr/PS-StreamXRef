@@ -232,38 +232,64 @@ function Find-TwitchXRef {
             # Get information about main video
             $VodResponse = Invoke-RestMethod @RestArgs
 
-            # Check for incorrect video type
-            if ($VodResponse.broadcast_type -ne "archive") {
+            try {
 
-                # Set error message based on Source type
-                #region @{ PSCodeSet = Current }
-                $ErrSrc = (Test-Path "Variable:Local:ClipResponse") ? "(Clip) Referenced" : "(Video) Source"
-                #endregion @{ PSCodeSet = Current }
-                #region @{ PSCodeSet = Legacy }
-                if (Test-Path "Variable:Local:ClipResponse") {
+                # Check for incorrect video type
+                if ($VodResponse.broadcast_type -ne "archive") {
 
-                    $ErrSrc = "(Clip) Referenced"
+                    # Set error message based on Source type
+                    #region @{ PSCodeSet = Current }
+                    $ErrSrc = (Test-Path "Variable:Local:ClipResponse") ? "(Clip) Referenced" : "(Video) Source"
+                    #endregion @{ PSCodeSet = Current }
+                    #region @{ PSCodeSet = Legacy }
+                    if (Test-Path "Variable:Local:ClipResponse") {
+
+                        $ErrSrc = "(Clip) Referenced"
+
+                    }
+                    else {
+
+                        $ErrSrc = "(Video) Source"
+
+                    }
+                    #endregion @{ PSCodeSet = Legacy }
+
+                    # Use "ErrorAction Stop" with specific catch block for forwarding
+                    Write-Error "$ErrSrc video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -ErrorAction Stop
 
                 }
-                else {
 
-                    $ErrSrc = "(Video) Source"
+            }
+            catch [Microsoft.PowerShell.Commands.WriteErrorException] {
 
-                }
-                #endregion @{ PSCodeSet = Legacy }
-
-                Write-Error "$ErrSrc video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation
+                # Write-Error forwarding
+                $PSCmdlet.WriteError($_)
                 return $null
 
             }
+            catch {
 
-            #region @{ PSCodeSet = Legacy }
-            # Manual conversion to UTC datetime <!Legacy>
-            $VodResponse.recorded_at = $VodResponse.recorded_at | ConvertTo-UtcDateTime
-            #endregion @{ PSCodeSet = Legacy }
+                throw 'Twitch API did not return expected parameter "broadcast_type"'
 
-            # Use start time from API response
-            [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+            }
+
+            try {
+
+                #region @{ PSCodeSet = Legacy }
+                # Manual conversion to UTC datetime
+                $VodResponse.recorded_at = $VodResponse.recorded_at | ConvertTo-UtcDateTime
+                #endregion @{ PSCodeSet = Legacy }
+
+                # Use start time from API response
+                [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+
+            }
+            catch {
+
+                $PSCmdlet.ThrowTerminatingError($_)
+
+            }
+
 
             # Add data to Vod cache
             $script:TwitchData.VideoInfoCache.Add($VideoID, $VodResponse.recorded_at)
