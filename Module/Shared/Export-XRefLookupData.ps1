@@ -23,8 +23,7 @@ function Export-XRefLookupData {
 
         if ($null, "" -contains $script:TwitchData.ApiKey -and $script:TwitchData.GetTotalCount() -eq 0) {
 
-            Write-Error "No data exists to export"
-            return $null
+            throw "No data exists to export"
 
         }
 
