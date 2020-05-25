@@ -422,11 +422,10 @@ function Find-TwitchXRef {
         else {
 
             $NewOffset = $EventTimestamp - $VideoToCompare.recorded_at
-            $NewUrl = "$($VideoToCompare.url)?t=$($NewOffset.Hours)h$($NewOffset.Minutes)m$($NewOffset.Seconds)s"
+            return "$($VideoToCompare.url)?t=$($NewOffset.Hours)h$($NewOffset.Minutes)m$($NewOffset.Seconds)s"
 
         }
 
-        return $NewUrl
     }
 
     End {
