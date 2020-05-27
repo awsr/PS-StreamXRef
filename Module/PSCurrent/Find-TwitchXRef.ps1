@@ -93,6 +93,9 @@ function Find-TwitchXRef {
 
     Process {
 
+        # Remove variables that may still be set from previous pipeline entries since their presence will be tested for
+        Remove-Variable ClipResponse, TimeOffset, VideoID -ErrorAction Ignore
+
         <#  This trap is used for making all "404 Not Found" errors a non-terminating error
             because, for some reason, Twitch also uses that with some (but not all...) API
             endpoints to indicate that no results were found. #>
@@ -150,13 +153,25 @@ function Find-TwitchXRef {
             if ($script:TwitchData.ClipInfoCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
-                [timespan]$TimeOffset = New-TimeSpan -Seconds $script:TwitchData.ClipInfoCache[$Slug].Offset
-                [int]$VideoID = $script:TwitchData.ClipInfoCache[$Slug].VideoID
+                try {
 
-                # Set REST arguments
-                $RestArgs["Uri"] = "$API/videos/$VideoID"
+                    [timespan]$TimeOffset = New-TimeSpan -Seconds $script:TwitchData.ClipInfoCache[$Slug].Offset
+                    [int]$VideoID = $script:TwitchData.ClipInfoCache[$Slug].VideoID
+
+                    # Set REST arguments
+                    $RestArgs["Uri"] = "$API/videos/$VideoID"
+
+                }
+                catch {
+
+                    # Suppress error because the fallback will be to just look up the value again
+                    [void] $_
+
+                }
+
             }
-            else {
+
+            if (-not (Test-Path "Variable:Local:TimeOffset") -or -not (Test-Path "Variable:Local:VideoID")) {
                 # New uncached source ---- needs additional API call
 
                 # Get information about clip
@@ -165,6 +180,13 @@ function Find-TwitchXRef {
 
                 try {
 
+                    # Ensure source video was not removed
+                    if ($ClipResponse.ContainsKey("vod") -and $null -contains $ClipResponse.vod) {
+
+                        Write-Error "(Clip) Source video unavailable or deleted" -ErrorId VideoNotFound -Category ObjectNotFound -CategoryTargetName Source -TargetObject $Source -ErrorAction Stop
+
+                    }
+
                     # Get offset from API response
                     [timespan]$TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
@@ -172,11 +194,17 @@ function Find-TwitchXRef {
                     [int]$VideoID = $ClipResponse.vod.id
 
                 }
+                catch [Microsoft.PowerShell.Commands.WriteErrorException] {
+
+                    # Write-Error forwarding and skip to next object in pipeline (if any)
+                    $PSCmdlet.WriteError($_)
+                    return $null
+
+                }
                 catch [System.Management.Automation.PropertyNotFoundException] {
 
-                    # Send error message and skip to next object in pipeline (if any)
-                    Write-Error "(Clip) Source video unavailable or deleted" -ErrorId VideoNotFound -Category ObjectNotFound -CategoryTargetName Source -TargetObject $Source
-                    return $null
+                    Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
+                    $PSCmdlet.ThrowTerminatingError($_)
 
                 }
 
@@ -188,7 +216,7 @@ function Find-TwitchXRef {
                     Offset  = $ClipResponse.vod.offset
                     VideoID = $VideoID
                 }
-                $script:TwitchData.ClipInfoCache.Add($Slug, $obj)
+                $script:TwitchData.ClipInfoCache[$Slug] = $obj
                 $NewDataAdded = $true
 
             }
@@ -198,7 +226,7 @@ function Find-TwitchXRef {
         # Set absolute timestamp of event
 
         # Check cache to see if this video is already known
-        if ($script:TwitchData.VideoInfoCache.ContainsKey($VideoID)) {
+        if ($script:TwitchData.VideoInfoCache.ContainsKey($VideoID) -and $script:TwitchData.VideoInfoCache[$VideoID] -is [datetime]) {
 
             # Use start time from cache
             [datetime]$EventTimestamp = $script:TwitchData.VideoInfoCache[$VideoID] + $TimeOffset
@@ -225,6 +253,10 @@ function Find-TwitchXRef {
                 # Use start time from API response
                 [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
 
+                # Add data to Vod cache
+                $script:TwitchData.VideoInfoCache[$VideoID] = $VodResponse.recorded_at
+                $NewDataAdded = $true
+
             }
             catch [Microsoft.PowerShell.Commands.WriteErrorException] {
 
@@ -244,10 +276,6 @@ function Find-TwitchXRef {
                 $PSCmdlet.ThrowTerminatingError($_)
 
             }
-
-            # Add data to Vod cache
-            $script:TwitchData.VideoInfoCache.Add($VideoID, $VodResponse.recorded_at)
-            $NewDataAdded = $true
 
         }
 
@@ -271,7 +299,7 @@ function Find-TwitchXRef {
             $XRef = $XRef | Get-LastUrlSegment
 
             # Check ID cache for user
-            if ($script:TwitchData.UserInfoCache.ContainsKey($XRef)) {
+            if ($script:TwitchData.UserInfoCache.ContainsKey($XRef) -and $script:TwitchData.UserInfoCache[$XRef] -is [int]) {
 
                 # Get cached ID number
                 [int]$UserIdNum = $script:TwitchData.UserInfoCache[$XRef]
@@ -308,7 +336,7 @@ function Find-TwitchXRef {
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
 
-                    Write-Host -BackgroundColor Black -ForegroundColor Red "(XRef) Expected data missing from Twitch API response! Halting:`n"
+                    Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
                     $PSCmdlet.ThrowTerminatingError($_)
 
                 }
@@ -319,7 +347,7 @@ function Find-TwitchXRef {
                 }
 
                 # Save ID number in cache hashtable
-                $script:TwitchData.UserInfoCache.Add($XRef, $UserIdNum)
+                $script:TwitchData.UserInfoCache[$XRef] = $UserIdNum
                 $NewDataAdded = $true
 
             }
@@ -339,43 +367,86 @@ function Find-TwitchXRef {
 
         $XRefResponse = Invoke-RestMethod @RestArgs
 
-        # $Multi will be $false if XRef is a video URL
-        if (-not $Multi) {
+        try {
 
-            # Check for incorrect video type
-            if ($XRefResponse.broadcast_type -ne "archive") {
+            # $Multi will be $false if XRef is a video URL
+            if (-not $Multi) {
 
-                Write-Error "(XRef Video) Video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName XRef -TargetObject $XRef
-                return $null
+                # Check for incorrect video type
+                if ($XRefResponse.broadcast_type -ne "archive") {
+
+                    Write-Error "(XRef Video) Video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
+
+                }
 
             }
 
-        }
+            $XRefSet = $Multi ? $XRefResponse.videos : $XRefResponse
 
-        $XRefSet = $Multi ? $XRefResponse.videos : $XRefResponse
+        }
+        catch [Microsoft.PowerShell.Commands.WriteErrorException] {
+
+            # Write-Error forwarding and skip to next object in pipeline (if any)
+            $PSCmdlet.WriteError($_)
+            return $null
+
+        }
+        catch [System.Management.Automation.PropertyNotFoundException] {
+
+            Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
+            $PSCmdlet.ThrowTerminatingError($_)
+
+        }
+        catch {
+
+            $PSCmdlet.ThrowTerminatingError($_)
+
+        }
 
         #endregion XRef Lookup =========================
 
         # Look for first video that starts before the timestamp
-        $VideoToCompare = $null
-        $VideoToCompare = $XRefSet | Where-Object { $_.recorded_at -lt $EventTimestamp } | Select-Object -First 1
-        if ($null -contains $VideoToCompare) {
 
-            Write-Error "Event occurs before search range" -ErrorId EventNotInRange -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source
+        try {
+
+            $VideoToCompare = $null
+            $VideoToCompare = $XRefSet | Where-Object { $_.recorded_at -lt $EventTimestamp } | Select-Object -First 1
+
+            if ($null -contains $VideoToCompare) {
+
+                Write-Error "Event occurs before search range" -ErrorId EventNotInRange -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source -ErrorAction Stop
+
+            }
+            elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
+
+                # Event timestamp is after the end of stream
+                Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source -ErrorAction Stop
+
+            }
+            else {
+
+                $NewOffset = $EventTimestamp - $VideoToCompare.recorded_at
+                return "$($VideoToCompare.url)?t=$($NewOffset.Hours)h$($NewOffset.Minutes)m$($NewOffset.Seconds)s"
+
+            }
+
+        }
+        catch [Microsoft.PowerShell.Commands.WriteErrorException] {
+
+            # Write-Error forwarding and skip to next object in pipeline (if any)
+            $PSCmdlet.WriteError($_)
             return $null
 
         }
-        elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
+        catch [System.Management.Automation.PropertyNotFoundException] {
 
-            # Event timestamp is after the end of stream
-            Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source
-            return $null
+            Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
+            $PSCmdlet.ThrowTerminatingError($_)
 
         }
-        else {
+        catch {
 
-            $NewOffset = $EventTimestamp - $VideoToCompare.recorded_at
-            return "$($VideoToCompare.url)?t=$($NewOffset.Hours)h$($NewOffset.Minutes)m$($NewOffset.Seconds)s"
+            $PSCmdlet.ThrowTerminatingError($_)
 
         }
 
