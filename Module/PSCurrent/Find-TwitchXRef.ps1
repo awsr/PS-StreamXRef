@@ -174,6 +174,7 @@ function Find-TwitchXRef {
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
 
+                    # Send error message and skip to next object in pipeline (if any)
                     Write-Error "(Clip) Source video unavailable or deleted" -ErrorId VideoNotFound -Category ObjectNotFound -CategoryTargetName Source -TargetObject $Source
                     return $null
 
@@ -195,6 +196,8 @@ function Find-TwitchXRef {
         }
 
         # Set absolute timestamp of event
+
+        # Check cache to see if this video is already known
         if ($script:TwitchData.VideoInfoCache.ContainsKey($VideoID)) {
 
             # Use start time from cache
@@ -219,24 +222,21 @@ function Find-TwitchXRef {
 
                 }
 
+                # Use start time from API response
+                [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+
             }
             catch [Microsoft.PowerShell.Commands.WriteErrorException] {
 
-                # Write-Error forwarding
+                # Write-Error forwarding and skip to next object in pipeline (if any)
                 $PSCmdlet.WriteError($_)
                 return $null
 
             }
-            catch {
+            catch [System.Management.Automation.PropertyNotFoundException] {
 
-                throw 'Twitch API did not return expected parameter "broadcast_type"'
-
-            }
-
-            try {
-
-                # Use start time from API response
-                [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
+                Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
+                $PSCmdlet.ThrowTerminatingError($_)
 
             }
             catch {
@@ -244,7 +244,6 @@ function Find-TwitchXRef {
                 $PSCmdlet.ThrowTerminatingError($_)
 
             }
-
 
             # Add data to Vod cache
             $script:TwitchData.VideoInfoCache.Add($VideoID, $VodResponse.recorded_at)
@@ -288,15 +287,36 @@ function Find-TwitchXRef {
 
                 $UserLookup = Invoke-RestMethod @RestArgs
 
-                # Unlike other API requests, this doesn't return a 404 error if not found
-                if ($UserLookup._total -eq 0) {
+                try {
 
-                    Write-Error "(XRef Channel/User) `"$XRef`" not found" -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef
+                    # Unlike other API requests, this doesn't return a 404 error if not found
+                    if ($UserLookup._total -eq 0) {
+
+                        Write-Error "(XRef) `"$XRef`" not found" -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
+
+                    }
+
+                    [int]$UserIdNum = $UserLookup.users[0]._id
+
+                }
+                catch [Microsoft.PowerShell.Commands.WriteErrorException] {
+
+                    # Write-Error forwarding and skip to next object in pipeline (if any)
+                    $PSCmdlet.WriteError($_)
                     return $null
 
                 }
+                catch [System.Management.Automation.PropertyNotFoundException] {
 
-                [int]$UserIdNum = $UserLookup.users[0]._id
+                    Write-Host -BackgroundColor Black -ForegroundColor Red "(XRef) Expected data missing from Twitch API response! Halting:`n"
+                    $PSCmdlet.ThrowTerminatingError($_)
+
+                }
+                catch {
+
+                    $PSCmdlet.ThrowTerminatingError($_)
+
+                }
 
                 # Save ID number in cache hashtable
                 $script:TwitchData.UserInfoCache.Add($XRef, $UserIdNum)
