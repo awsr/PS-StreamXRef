@@ -409,7 +409,7 @@ function Find-TwitchXRef {
             # Set args using ID number
             $RestArgs["Uri"] = "$API/channels/$UserIdNum/videos"
             $RestArgs["Body"] = @{
-                "broadcast-type" = "archive"
+                "broadcast_type" = "archive"
                 "sort"           = "time"
                 "limit"          = $Count
                 "offset"         = $Offset
