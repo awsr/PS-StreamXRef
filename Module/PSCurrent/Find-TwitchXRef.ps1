@@ -33,7 +33,7 @@ function Find-TwitchXRef {
 
     DynamicParam {
         $mandAttr = [System.Management.Automation.ParameterAttribute]::new()
-        if ($null, "" -contains $script:TwitchData.ApiKey) {
+        if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey)) {
             $mandAttr.Mandatory = $true
         }
         else {
@@ -181,7 +181,7 @@ function Find-TwitchXRef {
                 try {
 
                     # Ensure source video was not removed
-                    if ($ClipResponse.ContainsKey("vod") -and $null -contains $ClipResponse.vod) {
+                    if ($null -eq $ClipResponse.vod) {
 
                         Write-Error "(Clip) Source video unavailable or deleted" -ErrorId VideoNotFound -Category ObjectNotFound -CategoryTargetName Source -TargetObject $Source -ErrorAction Stop
 
@@ -417,7 +417,7 @@ function Find-TwitchXRef {
             $VideoToCompare = $null
             $VideoToCompare = $XRefSet | Where-Object { $_.recorded_at -lt $EventTimestamp } | Select-Object -First 1
 
-            if ($null -contains $VideoToCompare) {
+            if ($null -eq $VideoToCompare) {
 
                 Write-Error "Event occurs before search range" -ErrorId EventNotInRange -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source -ErrorAction Stop
 
