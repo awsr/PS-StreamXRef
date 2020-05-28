@@ -207,6 +207,11 @@ function Find-TwitchXRef {
                     $PSCmdlet.ThrowTerminatingError($_)
 
                 }
+                catch {
+
+                    $PSCmdlet.ThrowTerminatingError($_)
+
+                }
 
                 # Set REST arguments
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
