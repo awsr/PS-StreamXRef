@@ -193,6 +193,14 @@ function Find-TwitchXRef {
                     # Get Video ID from API response
                     [int]$VideoID = $ClipResponse.vod.id
 
+                    # Add data to clip cache
+                    $obj = [PSCustomObject]@{
+                        Offset  = $ClipResponse.vod.offset
+                        VideoID = $VideoID
+                    }
+                    $script:TwitchData.ClipInfoCache[$Slug] = $obj
+                    $NewDataAdded = $true
+
                 }
                 catch [Microsoft.PowerShell.Commands.WriteErrorException] {
 
@@ -215,14 +223,6 @@ function Find-TwitchXRef {
 
                 # Set REST arguments
                 $RestArgs["Uri"] = "$API/videos/$VideoID"
-
-                # Add data to clip cache
-                $obj = [PSCustomObject]@{
-                    Offset  = $ClipResponse.vod.offset
-                    VideoID = $VideoID
-                }
-                $script:TwitchData.ClipInfoCache[$Slug] = $obj
-                $NewDataAdded = $true
 
             }
 
