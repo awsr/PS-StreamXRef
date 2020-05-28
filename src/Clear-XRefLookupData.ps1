@@ -102,7 +102,7 @@ function Clear-XRefLookupData {
                         [string[]]$PurgeList = $script:TwitchData.VideoInfoCache.GetEnumerator() |
                             Where-Object { $_.Value -lt $Cutoff } | Select-Object -ExpandProperty Key
 
-                        $PurgeList | ForEach-Object { $script:TwitchData.VideoInfoCache.Remove($_) } | Out-Null
+                        [void]($PurgeList | ForEach-Object { $script:TwitchData.VideoInfoCache.Remove($_) })
 
                         $EntriesRemoved = $PreviousVideoCacheCount - $script:TwitchData.VideoInfoCache.Count
 

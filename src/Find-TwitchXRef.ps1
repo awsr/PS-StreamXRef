@@ -138,7 +138,7 @@ function Find-TwitchXRef {
             }
 
             #region Get offset from URL parameters
-            $Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*" | Out-Null
+            [void]($Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*")
 
             #region @{ PSCodeSet = Current }
             $OffsetArgs = @{ }
@@ -191,7 +191,7 @@ function Find-TwitchXRef {
                 catch {
 
                     # Suppress error because the fallback will be to just look up the value again
-                    [void] $_
+                    [void]$_
 
                 }
 
