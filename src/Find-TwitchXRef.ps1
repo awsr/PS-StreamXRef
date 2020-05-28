@@ -102,7 +102,7 @@ function Find-TwitchXRef {
     Process {
 
         # Remove variables that may still be set from previous pipeline entries since their presence will be tested for
-        Remove-Variable ClipResponse, TimeOffset, VideoID -ErrorAction Ignore
+        Remove-Variable TimeOffset, VideoID -ErrorAction Ignore
 
         <#  This trap is used for making all "404 Not Found" errors a non-terminating error
             because, for some reason, Twitch also uses that with some (but not all...) API
@@ -130,6 +130,8 @@ function Find-TwitchXRef {
 
         if ($Source -match ".*twitch\.tv/videos/.+") {
             # Video URL provided
+
+            $SourceParsedAsClip = $false
 
             # Check if missing timestamp
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
@@ -173,6 +175,8 @@ function Find-TwitchXRef {
         }
         else {
             # Clip provided
+
+            $SourceParsedAsClip = $true
 
             $Slug = $Source | Get-LastUrlSegment
 
@@ -275,10 +279,10 @@ function Find-TwitchXRef {
 
                     # Set error message based on Source type
                     #region @{ PSCodeSet = Current }
-                    $ErrSrc = (Test-Path "Variable:Local:ClipResponse") ? "(Clip) Referenced" : "(Video) Source"
+                    $ErrSrc = $SourceParsedAsClip ? "(Clip) Referenced" : "(Video) Source"
                     #endregion @{ PSCodeSet = Current }
                     #region @{ PSCodeSet = Legacy }
-                    if (Test-Path "Variable:Local:ClipResponse") {
+                    if ($SourceParsedAsClip) {
 
                         $ErrSrc = "(Clip) Referenced"
 
