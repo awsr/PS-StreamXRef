@@ -237,7 +237,7 @@ function Find-TwitchXRef {
                     # Write-Error forwarding and skip to next object in pipeline (if any)
                     $PSCmdlet.WriteError($_)
                     return $null
-    
+
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
 
@@ -386,18 +386,18 @@ function Find-TwitchXRef {
                     # Write-Error forwarding and skip to next object in pipeline (if any)
                     $PSCmdlet.WriteError($_)
                     return $null
-    
+
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
-    
+
                     Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
                     $PSCmdlet.ThrowTerminatingError($_)
-    
+
                 }
                 catch {
-    
+
                     $PSCmdlet.ThrowTerminatingError($_)
-    
+
                 }
 
                 # Save ID number in cache hashtable
@@ -468,7 +468,7 @@ function Find-TwitchXRef {
 
         }
         catch [System.Management.Automation.PropertyNotFoundException] {
-    
+
             Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
             $PSCmdlet.ThrowTerminatingError($_)
 
@@ -491,19 +491,19 @@ function Find-TwitchXRef {
             if ($null -eq $VideoToCompare) {
 
                 Write-Error "Event occurs before search range" -ErrorId EventNotInRange -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source -ErrorAction Stop
-    
+
             }
             elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
-    
+
                 # Event timestamp is after the end of stream
                 Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source -ErrorAction Stop
-    
+
             }
             else {
-    
+
                 $NewOffset = $EventTimestamp - $VideoToCompare.recorded_at
                 return "$($VideoToCompare.url)?t=$($NewOffset.Hours)h$($NewOffset.Minutes)m$($NewOffset.Seconds)s"
-    
+
             }
 
         }
@@ -515,7 +515,7 @@ function Find-TwitchXRef {
 
         }
         catch [System.Management.Automation.PropertyNotFoundException] {
-    
+
             Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
             $PSCmdlet.ThrowTerminatingError($_)
 
