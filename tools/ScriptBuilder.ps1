@@ -19,7 +19,7 @@
 
 .ICONURI
 
-.EXTERNALMODULEDEPENDENCIES 
+.EXTERNALMODULEDEPENDENCIES
 
 .REQUIREDSCRIPTS
 
@@ -34,9 +34,9 @@
 
 #Requires -Version 6
 
-<# 
+<#
 
-.DESCRIPTION 
+.DESCRIPTION
  Custom build script for generating multiple scripts from a single source.
 
 .PARAMETER File
@@ -51,7 +51,7 @@
 .PARAMETER LabelDefinitions
  Output file mappings for labels.
 
-#> 
+#>
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $true, Position = 0)]
@@ -68,7 +68,6 @@ Param (
 
     [Parameter(ValueFromRemainingArguments)]
     [string[]]$LabelDefinitions
-
 )
 
 Set-StrictMode -Version Latest
