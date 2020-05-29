@@ -196,6 +196,12 @@ function Import-XRefLookupData {
                         $Counters.User.Error++
 
                     }
+                    catch {
+
+                        # Halt to prevent potential data corruption from unknown error
+                        $PSCmdlet.ThrowTerminatingError($_)
+
+                    }
 
                 }
 
@@ -281,6 +287,12 @@ function Import-XRefLookupData {
                         $Counters.Clip.Error++
 
                     }
+                    catch {
+
+                        # Halt to prevent potential data corruption from unknown error
+                        $PSCmdlet.ThrowTerminatingError($_)
+
+                    }
 
                 }
 
@@ -355,6 +367,12 @@ function Import-XRefLookupData {
 
                         Write-Error "(Video Data) $($_.Exception.Message)" -Category InvalidData
                         $Counters.Video.Error++
+
+                    }
+                    catch {
+
+                        # Halt to prevent potential data corruption from unknown error
+                        $PSCmdlet.ThrowTerminatingError($_)
 
                     }
 
