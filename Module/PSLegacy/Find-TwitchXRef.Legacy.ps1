@@ -24,7 +24,7 @@ function Find-TwitchXRef {
 
         [Parameter()]
         [ValidateRange(1, 100)]
-        [int]$Count = 10,
+        [int]$Count = 20,
 
         [Parameter()]
         [ValidateScript({ $_ -ge 0 })]

@@ -87,7 +87,7 @@ Accept wildcard characters: False
 
 ### -Count
 Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100)
-Default: 10
+Default: 20
 
 ```yaml
 Type: Int32
