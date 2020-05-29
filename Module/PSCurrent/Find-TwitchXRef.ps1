@@ -168,7 +168,7 @@ function Find-TwitchXRef {
                 }
                 catch {
 
-                    # Suppress error because the fallback will be to just look up the value again
+                    # Suppress error output because the fallback will be to just look up the value again
                     [void]$_
 
                 }
@@ -184,7 +184,7 @@ function Find-TwitchXRef {
 
                 try {
 
-                    # Ensure source video was not removed
+                    # Verify that the source video was not removed
                     if ($null -eq $ClipResponse.vod) {
 
                         Write-Error "(Clip) Source video unavailable or deleted" -ErrorId VideoNotFound -Category ObjectNotFound -CategoryTargetName Source -TargetObject $Source -ErrorAction Stop
