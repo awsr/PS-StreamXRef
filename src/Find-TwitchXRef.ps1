@@ -23,17 +23,17 @@ function Find-TwitchXRef {
         [ValidateNotNullOrEmpty()]
         [string]$XRef,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [ValidateRange(1, 100)]
         [int]$Count = 10,
 
         #region @{ PSCodeSet = Current }
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [ValidateRange("NonNegative")]
         [int]$Offset = 0
         #endregion @{ PSCodeSet = Current }
         <# #region @{ PSCodeSet = Legacy }
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [ValidateScript({ $_ -ge 0 })]
         [int]$Offset = 0
         #endregion @{ PSCodeSet = Legacy } #>

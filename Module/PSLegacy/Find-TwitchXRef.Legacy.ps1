@@ -22,11 +22,11 @@ function Find-TwitchXRef {
         [ValidateNotNullOrEmpty()]
         [string]$XRef,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [ValidateRange(1, 100)]
         [int]$Count = 10,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [ValidateScript({ $_ -ge 0 })]
         [int]$Offset = 0
     )
