@@ -374,7 +374,7 @@ function Find-TwitchXRef {
                     # Unlike other API requests, this doesn't return a 404 error if not found
                     if ($UserLookup._total -eq 0) {
 
-                        Write-Error "(XRef) `"$XRef`" not found" -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
+                        Write-Error "(XRef Username) `"$XRef`" not found" -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
 
                     }
 
