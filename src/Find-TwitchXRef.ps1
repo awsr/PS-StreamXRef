@@ -30,13 +30,19 @@ function Find-TwitchXRef {
         #region @{ PSCodeSet = Current }
         [Parameter()]
         [ValidateRange("NonNegative")]
-        [int]$Offset = 0
+        [int]$Offset = 0,
         #endregion @{ PSCodeSet = Current }
         <# #region @{ PSCodeSet = Legacy }
         [Parameter()]
         [ValidateScript({ $_ -ge 0 })]
-        [int]$Offset = 0
+        [int]$Offset = 0,
         #endregion @{ PSCodeSet = Legacy } #>
+
+        [Parameter()]
+        [switch]$Force,
+
+        [Parameter()]
+        [switch]$IncludeEmpty
     )
 
     DynamicParam {
@@ -135,8 +141,15 @@ function Find-TwitchXRef {
 
             # Check if missing timestamp
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
+
                 Write-Error "(Video) URL missing timestamp parameter" -ErrorId MissingTimestamp -Category InvalidArgument -CategoryTargetName Source -TargetObject $Source
-                return $null
+                if ($IncludeEmpty) {
+                    return [string]::Empty
+                }
+                else {
+                    return $null
+                }
+
             }
 
             #region Get offset from URL parameters
@@ -180,7 +193,7 @@ function Find-TwitchXRef {
 
             $Slug = $Source | Get-LastUrlSegment
 
-            if ($script:TwitchData.ClipInfoCache.ContainsKey($Slug)) {
+            if (-not $Force -and $script:TwitchData.ClipInfoCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
                 try {
@@ -236,7 +249,12 @@ function Find-TwitchXRef {
 
                     # Write-Error forwarding and skip to next object in pipeline (if any)
                     $PSCmdlet.WriteError($_)
-                    return $null
+                    if ($IncludeEmpty) {
+                        return [string]::Empty
+                    }
+                    else {
+                        return $null
+                    }
 
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
@@ -261,7 +279,7 @@ function Find-TwitchXRef {
         # Set absolute timestamp of event
 
         # Check cache to see if this video is already known
-        if ($script:TwitchData.VideoInfoCache.ContainsKey($VideoID) -and $script:TwitchData.VideoInfoCache[$VideoID] -is [datetime]) {
+        if (-not $Force -and $script:TwitchData.VideoInfoCache.ContainsKey($VideoID) -and $script:TwitchData.VideoInfoCache[$VideoID] -is [datetime]) {
 
             # Use start time from cache
             [datetime]$EventTimestamp = $script:TwitchData.VideoInfoCache[$VideoID] + $TimeOffset
@@ -316,7 +334,12 @@ function Find-TwitchXRef {
 
                 # Write-Error forwarding and skip to next object in pipeline (if any)
                 $PSCmdlet.WriteError($_)
-                return $null
+                if ($IncludeEmpty) {
+                    return [string]::Empty
+                }
+                else {
+                    return $null
+                }
 
             }
             catch [System.Management.Automation.PropertyNotFoundException] {
@@ -353,7 +376,7 @@ function Find-TwitchXRef {
             $XRef = $XRef | Get-LastUrlSegment
 
             # Check ID cache for user
-            if ($script:TwitchData.UserInfoCache.ContainsKey($XRef) -and $script:TwitchData.UserInfoCache[$XRef] -is [int]) {
+            if (-not $Force -and $script:TwitchData.UserInfoCache.ContainsKey($XRef) -and $script:TwitchData.UserInfoCache[$XRef] -is [int]) {
 
                 # Get cached ID number
                 [int]$UserIdNum = $script:TwitchData.UserInfoCache[$XRef]
@@ -389,7 +412,12 @@ function Find-TwitchXRef {
 
                     # Write-Error forwarding and skip to next object in pipeline (if any)
                     $PSCmdlet.WriteError($_)
-                    return $null
+                    if ($IncludeEmpty) {
+                        return [string]::Empty
+                    }
+                    else {
+                        return $null
+                    }
 
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
@@ -464,7 +492,12 @@ function Find-TwitchXRef {
 
             # Write-Error forwarding and skip to next object in pipeline (if any)
             $PSCmdlet.WriteError($_)
-            return $null
+            if ($IncludeEmpty) {
+                return [string]::Empty
+            }
+            else {
+                return $null
+            }
 
         }
         catch [System.Management.Automation.PropertyNotFoundException] {
@@ -511,7 +544,12 @@ function Find-TwitchXRef {
 
             # Write-Error forwarding and skip to next object in pipeline (if any)
             $PSCmdlet.WriteError($_)
-            return $null
+            if ($IncludeEmpty) {
+                return [string]::Empty
+            }
+            else {
+                return $null
+            }
 
         }
         catch [System.Management.Automation.PropertyNotFoundException] {
