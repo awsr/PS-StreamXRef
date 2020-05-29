@@ -10,7 +10,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Clears either all data or any combination of the following for the StreamXRef module: Api key, User lookup cache, Clip lookup cache, Video lookup cache.</maml:para>
+      <maml:para>Clears either all data or any combination of the following for the StreamXRef module: API key, User lookup cache, Clip lookup cache, Video lookup cache.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -109,7 +109,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Keep">
           <maml:name>DaysToKeep</maml:name>
           <maml:Description>
-            <maml:para>Specifies the number of days to keep when using the `Video` Parameter. If used without `Video` it will have no effect.</maml:para>
+            <maml:para>Specifies the number of days to keep when using the `Clip` and `Video` parameters. If used without at least one of these it will have no effect. (Recommended max value: 60)</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -217,7 +217,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Keep">
         <maml:name>DaysToKeep</maml:name>
         <maml:Description>
-          <maml:para>Specifies the number of days to keep when using the `Video` Parameter. If used without `Video` it will have no effect.</maml:para>
+          <maml:para>Specifies the number of days to keep when using the `Clip` and `Video` parameters. If used without at least one of these it will have no effect. (Recommended max value: 60)</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -293,7 +293,7 @@
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
         <dev:code>PS &gt; Clear-XRefLookupData -Clip -Video -DaysToKeep 30 -Force</dev:code>
         <dev:remarks>
-          <maml:para>This will clear all data from the `Clip` cache and all but those recorded in the last 30 days from the `Video` cache. `Force` is also used prevent being asked to confirm these actions.</maml:para>
+          <maml:para>This will clear data older than 30 days from the `Clip` and `Video` caches. `Force` is also used prevent being asked to confirm these actions.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -472,14 +472,6 @@
           <maml:para>You can pipeline a value for `Path` either as a string or by property name.</maml:para>
         </maml:description>
       </command:inputType>
-      <command:inputType>
-        <dev:type>
-          <maml:name>System.Management.Automation.SwitchParameter</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para>Used for `Force`, `NoClobber`, and `Compress` parameters.</maml:para>
-        </maml:description>
-      </command:inputType>
     </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
@@ -553,10 +545,10 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Count</maml:name>
           <maml:Description>
-            <maml:para>Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100) Default: 10</maml:para>
+            <maml:para>Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100) Default: 20</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -565,10 +557,10 @@
           </dev:type>
           <dev:defaultValue>10</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Offset</maml:name>
           <maml:Description>
-            <maml:para>Number of results to offset the search range by. Default: 0</maml:para>
+            <maml:para>Specifies the number of results to offset the search range by. Default: 0</maml:para>
             <maml:para>(Useful if the source is older than 100 results.)</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
@@ -589,6 +581,28 @@
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:Description>
+            <maml:para>When specified, this cmdlet will skip reading from the internal lookup cache.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeEmpty</maml:name>
+          <maml:Description>
+            <maml:para>When specified, this cmdlet will return an empty string ("") instead of $null when a defined error occurs. (See the Notes section in help using `Get-Help Find-TwitchXRef -Full` if you need to know more about these errors)</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -617,10 +631,10 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Count</maml:name>
         <maml:Description>
-          <maml:para>Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100) Default: 10</maml:para>
+          <maml:para>Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100) Default: 20</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -629,10 +643,10 @@
         </dev:type>
         <dev:defaultValue>10</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Offset</maml:name>
         <maml:Description>
-          <maml:para>Number of results to offset the search range by. Default: 0</maml:para>
+          <maml:para>Specifies the number of results to offset the search range by. Default: 0</maml:para>
           <maml:para>(Useful if the source is older than 100 results.)</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
@@ -654,6 +668,30 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:Description>
+          <maml:para>When specified, this cmdlet will skip reading from the internal lookup cache.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>IncludeEmpty</maml:name>
+        <maml:Description>
+          <maml:para>When specified, this cmdlet will return an empty string ("") instead of $null when a defined error occurs. (See the Notes section in help using `Get-Help Find-TwitchXRef -Full` if you need to know more about these errors)</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
     <command:inputTypes>
       <command:inputType>
@@ -669,7 +707,7 @@
           <maml:name>System.Int32</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>Used for `Count` and `Offset` parameters. Can be pipelined by property name.</maml:para>
+          <maml:para>Used for `Count` and `Offset` parameters.</maml:para>
         </maml:description>
       </command:inputType>
     </command:inputTypes>
@@ -686,6 +724,12 @@
     <maml:alertSet>
       <maml:alert>
         <maml:para>The `Source` parameter works with both styles of clip URL that Twitch uses.</maml:para>
+        <maml:para>Errors with the following `FullyQualifiedErrorId` values will result in `$null` being returned (or an empty string if the `IncludeEmpty` parameter is specified) and skipping to the next item in the pipeline (if any): * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")</maml:para>
+        <maml:para>* `VideoNotFound`: The originating video the source clip came from is unavailable or deleted.</maml:para>
+        <maml:para>* `InvalidVideoType`: The source, originating, or `XRef` video is not an archived broadcast.</maml:para>
+        <maml:para>* `UserNotFound`: The user/channel name given for `XRef` wasn't found.</maml:para>
+        <maml:para>* `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.</maml:para>
+        <maml:para>* `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -937,7 +981,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         </dev:type>
         <maml:description>
           <maml:para>Returns an array object showing the results of the import operation unless the `Quiet` parameter is set. The statistics are given for "User", "Clip", and "Video" lookup caches.</maml:para>
-          <maml:para>Each object in the array has a `Name` property, as well as counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.</maml:para>
+          <maml:para>Each object in the array has a `Name` property as well as counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.</maml:para>
           <maml:para>* Imported: Number of entries successfully imported.</maml:para>
           <maml:para>* Ignored: Number of duplicate entries ignored.</maml:para>
           <maml:para>* Skipped: Number of entries that had different data than what was already in the cache and were skipped by user.</maml:para>

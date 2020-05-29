@@ -13,8 +13,8 @@ Cross-reference Twitch clips and video timestamps between different channels/use
 ## SYNTAX
 
 ```
-Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] -ApiKey <String>
- [<CommonParameters>]
+Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] [-Force] [-IncludeEmpty]
+ -ApiKey <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -97,12 +97,12 @@ Aliases:
 Required: False
 Position: Named
 Default value: 10
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -Offset
-Number of results to offset the search range by.
+Specifies the number of results to offset the search range by.
 Default: 0
 
 (Useful if the source is older than 100 results.)
@@ -115,7 +115,7 @@ Aliases:
 Required: False
 Position: Named
 Default value: 0
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -134,6 +134,36 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Force
+When specified, this cmdlet will skip reading from the internal lookup cache.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IncludeEmpty
+When specified, this cmdlet will return an empty string ("") instead of $null when a defined error occurs. (See the Notes section in help using `Get-Help Find-TwitchXRef -Full` if you need to know more about these errors)
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -145,7 +175,7 @@ Used for `Source`, `XRef`, and `ApiKey` parameters. Can be pipelined by property
 
 ### System.Int32
 
-Used for `Count` and `Offset` parameters. Can be pipelined by property name.
+Used for `Count` and `Offset` parameters.
 
 ## OUTPUTS
 
@@ -156,5 +186,13 @@ If a result is found, the URL will be returned as a string.
 ## NOTES
 
 The `Source` parameter works with both styles of clip URL that Twitch uses.
+
+Errors with the following `FullyQualifiedErrorId` values will result in `$null` being returned (or an empty string if the `IncludeEmpty` parameter is specified) and skipping to the next item in the pipeline (if any):
+* `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")
+* `VideoNotFound`: The originating video the source clip came from is unavailable or deleted.
+* `InvalidVideoType`: The source, originating, or `XRef` video is not an archived broadcast.
+* `UserNotFound`: The user/channel name given for `XRef` wasn't found.
+* `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.
+* `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.
 
 ## RELATED LINKS

@@ -151,7 +151,7 @@ Only the `Path` parameter supports accepting a value from the pipeline.
 
 Returns an array object showing the results of the import operation unless the `Quiet` parameter is set. The statistics are given for "User", "Clip", and "Video" lookup caches.
 
-Each object in the array has a `Name` property, as well as counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.
+Each object in the array has a `Name` property as well as counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.
 
 * Imported: Number of entries successfully imported.
 * Ignored: Number of duplicate entries ignored.

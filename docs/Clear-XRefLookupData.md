@@ -24,7 +24,7 @@ Clear-XRefLookupData [-ApiKey] [-User] [-Clip] [-Video] [-DaysToKeep <Int32>] [-
 ```
 
 ## DESCRIPTION
-Clears either all data or any combination of the following for the StreamXRef module: Api key, User lookup cache, Clip lookup cache, Video lookup cache.
+Clears either all data or any combination of the following for the StreamXRef module: API key, User lookup cache, Clip lookup cache, Video lookup cache.
 
 ## EXAMPLES
 
@@ -33,7 +33,7 @@ Clears either all data or any combination of the following for the StreamXRef mo
 PS > Clear-XRefLookupData -Clip -Video -DaysToKeep 30 -Force
 ```
 
-This will clear all data from the `Clip` cache and all but those recorded in the last 30 days from the `Video` cache. `Force` is also used prevent being asked to confirm these actions.
+This will clear data older than 30 days from the `Clip` and `Video` caches. `Force` is also used prevent being asked to confirm these actions.
 
 ## PARAMETERS
 
@@ -113,7 +113,7 @@ Accept wildcard characters: False
 ```
 
 ### -DaysToKeep
-Specifies the number of days to keep when using the `Video` Parameter. If used without `Video` it will have no effect.
+Specifies the number of days to keep when using the `Clip` and `Video` parameters. If used without at least one of these it will have no effect. (Recommended max value: 60)
 
 ```yaml
 Type: Int32

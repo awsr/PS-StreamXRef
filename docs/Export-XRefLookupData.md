@@ -133,10 +133,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 You can pipeline a value for `Path` either as a string or by property name.
 
-### System.Management.Automation.SwitchParameter
-
-Used for `Force`, `NoClobber`, and `Compress` parameters.
-
 ## OUTPUTS
 
 ### None
