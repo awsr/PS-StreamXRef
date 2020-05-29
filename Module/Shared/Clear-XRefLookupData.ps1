@@ -78,40 +78,65 @@ function Clear-XRefLookupData {
 
             }
 
-            if ($Clip) {
+            if ($PSBoundParameters.ContainsKey("DaysToKeep")) {
 
-                if ($PSCmdlet.ShouldProcess("Clip lookup data", "Delete entries")) {
+                $Cutoff = [datetime]::UtcNow - (New-TimeSpan -Days $DaysToKeep)
 
-                    $script:TwitchData.ClipInfoCache.Clear()
-                    Write-Verbose "(Clip) Data cleared"
+                if ($Clip) {
+
+                    if ($PSCmdlet.ShouldProcess("Clip lookup data", "Trim entries")) {
+
+                        $PreviousCount = $script:TwitchData:ClipInfoCache.Count
+
+                        # Store separately to avoid enumeration errors
+                        [string[]]$PurgeList = $script:TwitchData.ClipInfoCache.GetEnumerator() |
+                        Where-Object { $_.Value.Created -lt $Cutoff } | Select-Object -ExpandProperty Key
+
+                        [void]($PurgeList | ForEach-Object { $script:TwitchData.ClipInfoCache.Remove($_) })
+
+                        # Getting the count this way in case removing an entry somehow fails
+                        Write-Verbose "(Clip) Data entries removed: $($PreviousCount - $script:TwitchData.ClipInfoCache.Count)"
+
+                    }
 
                 }
 
-            }
-
-            if ($Video) {
-
-                if ($PSBoundParameters.ContainsKey("DaysToKeep")) {
+                if ($Video) {
 
                     if ($PSCmdlet.ShouldProcess("Video lookup data", "Trim entries")) {
 
-                        $Cutoff = [datetime]::UtcNow - (New-TimeSpan -Days $DaysToKeep)
+                        $PreviousCount = $script:TwitchData.VideoInfoCache.Count
 
-                        $PreviousVideoCacheCount = $script:TwitchData.VideoInfoCache.Count
-
+                        # Store separately to avoid enumeration errors
                         [string[]]$PurgeList = $script:TwitchData.VideoInfoCache.GetEnumerator() |
                             Where-Object { $_.Value -lt $Cutoff } | Select-Object -ExpandProperty Key
 
                         [void]($PurgeList | ForEach-Object { $script:TwitchData.VideoInfoCache.Remove($_) })
 
-                        $EntriesRemoved = $PreviousVideoCacheCount - $script:TwitchData.VideoInfoCache.Count
-
-                        Write-Verbose "(Video) Data entries removed: $EntriesRemoved"
+                        # Getting the count this way in case removing an entry somehow fails
+                        Write-Verbose "(Video) Data entries removed: $($PreviousCount - $script:TwitchData.VideoInfoCache.Count)"
 
                     }
 
                 }
-                else {
+
+            }
+            else {
+
+                # Clear all entries
+
+                if ($Clip) {
+
+                    if ($PSCmdlet.ShouldProcess("Clip lookup data", "Delete entries")) {
+
+                        $script:TwitchData.ClipInfoCache.Clear()
+                        Write-Verbose "(Clip) Data cleared"
+
+                    }
+
+                }
+
+                if ($Video) {
 
                     if ($PSCmdlet.ShouldProcess("Video lookup data", "Delete entries")) {
 

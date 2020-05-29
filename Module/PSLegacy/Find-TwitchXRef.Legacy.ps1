@@ -220,10 +220,12 @@ function Find-TwitchXRef {
                     # Get Video ID from API response
                     [int]$VideoID = $ClipResponse.vod.id
 
+                    $ClipResponse.created_at = $ClipResponse.created_at | ConvertTo-UtcDateTime
                     # Add data to clip cache
                     $obj = [PSCustomObject]@{
                         Offset  = $ClipResponse.vod.offset
                         VideoID = $VideoID
+                        Created = $ClipResponse.created_at
                     }
                     $script:TwitchData.ClipInfoCache[$Slug] = $obj
                     $NewDataAdded = $true

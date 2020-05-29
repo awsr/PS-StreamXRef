@@ -54,9 +54,10 @@ function Export-XRefLookupData {
 
             [void]$ConvertedClipInfoCache.Add(
                 [pscustomobject]@{
-                    slug   = $_.Key
-                    offset = $_.Value.Offset
-                    video  = $_.Value.VideoID
+                    slug    = $_.Key
+                    offset  = $_.Value.Offset
+                    video   = $_.Value.VideoID
+                    created = $_.Value.Created
                 }
             )
 

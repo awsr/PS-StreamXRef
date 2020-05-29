@@ -214,6 +214,7 @@ function Find-TwitchXRef {
                     $obj = [PSCustomObject]@{
                         Offset  = $ClipResponse.vod.offset
                         VideoID = $VideoID
+                        Created = $ClipResponse.created_at
                     }
                     $script:TwitchData.ClipInfoCache[$Slug] = $obj
                     $NewDataAdded = $true
