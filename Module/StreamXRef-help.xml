@@ -593,17 +593,6 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>IncludeEmpty</maml:name>
-          <maml:Description>
-            <maml:para>When specified, this cmdlet will return an empty string ("") instead of $null when a defined error occurs. (See the Notes section in help using `Get-Help Find-TwitchXRef -Full` if you need to know more about these errors)</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
@@ -680,18 +669,6 @@
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>IncludeEmpty</maml:name>
-        <maml:Description>
-          <maml:para>When specified, this cmdlet will return an empty string ("") instead of $null when a defined error occurs. (See the Notes section in help using `Get-Help Find-TwitchXRef -Full` if you need to know more about these errors)</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
     </command:parameters>
     <command:inputTypes>
       <command:inputType>
@@ -724,7 +701,7 @@
     <maml:alertSet>
       <maml:alert>
         <maml:para>The `Source` parameter works with both styles of clip URL that Twitch uses.</maml:para>
-        <maml:para>Errors with the following `FullyQualifiedErrorId` values will result in `$null` being returned (or an empty string if the `IncludeEmpty` parameter is specified) and skipping to the next item in the pipeline (if any): * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")</maml:para>
+        <maml:para>Errors with the following `FullyQualifiedErrorId` values will result in `$null` being returned and skipping to the next item in the pipeline (if any): * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")</maml:para>
         <maml:para>* `VideoNotFound`: The originating video the source clip came from is unavailable or deleted.</maml:para>
         <maml:para>* `InvalidVideoType`: The source, originating, or `XRef` video is not an archived broadcast.</maml:para>
         <maml:para>* `UserNotFound`: The user/channel name given for `XRef` wasn't found.</maml:para>

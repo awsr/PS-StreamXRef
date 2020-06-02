@@ -13,7 +13,7 @@ Cross-reference Twitch clips and video timestamps between different channels/use
 ## SYNTAX
 
 ```
-Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] [-Force] [-IncludeEmpty]
+Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] [-Force]
  -ApiKey <String> [<CommonParameters>]
 ```
 
@@ -149,21 +149,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -IncludeEmpty
-When specified, this cmdlet will return an empty string ("") instead of $null when a defined error occurs. (See the Notes section in help using `Get-Help Find-TwitchXRef -Full` if you need to know more about these errors)
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -187,7 +172,7 @@ If a result is found, the URL will be returned as a string.
 
 The `Source` parameter works with both styles of clip URL that Twitch uses.
 
-Errors with the following `FullyQualifiedErrorId` values will result in `$null` being returned (or an empty string if the `IncludeEmpty` parameter is specified) and skipping to the next item in the pipeline (if any):
+Errors with the following `FullyQualifiedErrorId` values will result in `$null` being returned and skipping to the next item in the pipeline (if any):
 * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")
 * `VideoNotFound`: The originating video the source clip came from is unavailable or deleted.
 * `InvalidVideoType`: The source, originating, or `XRef` video is not an archived broadcast.
