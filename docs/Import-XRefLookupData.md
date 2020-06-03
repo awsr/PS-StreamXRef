@@ -81,7 +81,7 @@ Specifies the path to a file containing JSON formatted data. Meant for use with 
 ```yaml
 Type: String
 Parameter Sets: General
-Aliases:
+Aliases: PSPath
 
 Required: True
 Position: 0
