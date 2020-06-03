@@ -46,31 +46,34 @@ Describe "HTTP response errors" -Tag HTTPResponse {
     }
     Context "404 Not Found" {
         BeforeEach {
-            Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Source -ine "ValidClipName" } -MockWith {
+            Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $RestArgs.Uri -notlike "*ValidClipName" } -MockWith {
                 $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 404))
             }
         }
         It "Clip name not found" {
             $Result = Find-TwitchXRef -Source ClipNameThatResultsIn404Error -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
-            $TestErrs.Count | Should -Not -Be 0
+
             $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
+
         }
         It "Clip URL not found" {
             $Result = Find-TwitchXRef -Source https://clip.twitch.tv/AnotherBadClipName -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
-            $TestErrs.Count | Should -Not -Be 0
+
             $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
+
         }
         It "Video URL not found" {
             $Result = Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=1h23m45s" -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
-            $TestErrs.Count | Should -Not -Be 0
+
             $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
+
         }
-        It "Continues with next entry in the pipeline (and terminates from incomplete response since only clip is mocked)" {
+        It "Continues with next entry in the pipeline" {
             InModuleScope StreamXRef {
-                Mock Invoke-RestMethod -ParameterFilter { $Source -ieq "ValidClipName" } -MockWith {
+                Mock Invoke-RestMethod -ParameterFilter { $RestArgs.Uri -like "*ValidClipName" } -MockWith {
                     return [pscustomobject]@{
                         vod = [pscustomobject]@{
                             id = 123456789
@@ -82,8 +85,12 @@ Describe "HTTP response errors" -Tag HTTPResponse {
                 $TestArray = @()
                 $TestArray += [pscustomobject]@{ Source = "BadClipName"; XRef = "TestVal" }
                 $TestArray += [pscustomobject]@{ Source = "ValidClipName"; XRef = "TestVal" }
-                { $TestArray | Find-TwitchXRef -ErrorAction SilentlyContinue } | Should -Throw -Because "Only the first call is mocked"
+
+                $TestArray | Find-TwitchXRef -ErrorVariable TestErrs -ErrorAction SilentlyContinue
+
+                $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
                 $TwitchData.ClipInfoCache.Keys | Should -Contain "ValidClipName"
+
             }
         }
     }
