@@ -172,7 +172,7 @@ If a result is found, the URL will be returned as a string.
 
 The `Source` parameter works with both styles of clip URL that Twitch uses.
 
-Errors with the following `FullyQualifiedErrorId` values will result in `$null` being returned and skipping to the next item in the pipeline (if any):
+Errors with the following ErrorIds will result in `$null` being returned and skipping to the next item in the pipeline (if any):
 * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")
 * `VideoNotFound`: The originating video the source clip came from is unavailable or deleted.
 * `InvalidVideoType`: The source, originating, or `XRef` video is not an archived broadcast.
