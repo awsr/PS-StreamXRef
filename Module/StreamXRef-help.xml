@@ -585,7 +585,18 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>When specified, this cmdlet will skip reading from the internal lookup cache.</maml:para>
+            <maml:para>When specified, this function will skip reading from the internal lookup cache.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="en">
+          <maml:name>ExplicitNull</maml:name>
+          <maml:Description>
+            <maml:para>When specified, this function will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -660,7 +671,19 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:Description>
-          <maml:para>When specified, this cmdlet will skip reading from the internal lookup cache.</maml:para>
+          <maml:para>When specified, this function will skip reading from the internal lookup cache.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="en">
+        <maml:name>ExplicitNull</maml:name>
+        <maml:Description>
+          <maml:para>When specified, this function will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -697,16 +720,26 @@
           <maml:para>If a result is found, the URL will be returned as a string.</maml:para>
         </maml:description>
       </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Void (Null)</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>If `ExplicitNull` is specified and a predefined error occurs, a null value will be returned</maml:para>
+        </maml:description>
+      </command:returnValue>
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>The `Source` parameter works with both styles of clip URL that Twitch uses.</maml:para>
-        <maml:para>Errors with the following ErrorIds will result in `$null` being returned and skipping to the next item in the pipeline (if any): * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")</maml:para>
+        <maml:para>The following ErrorIds are defined: * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")</maml:para>
         <maml:para>* `VideoNotFound`: The originating video the source clip came from is unavailable or deleted.</maml:para>
         <maml:para>* `InvalidVideoType`: The source, originating, or `XRef` video is not an archived broadcast.</maml:para>
         <maml:para>* `UserNotFound`: The user/channel name given for `XRef` wasn't found.</maml:para>
         <maml:para>* `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.</maml:para>
         <maml:para>* `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.</maml:para>
+        <maml:para></maml:para>
+        <maml:para>When one of these errors occur, the function will move on to the next item from the pipeline (if any). If `ExplicitNull` is specified, the function will first return a value of `$null` before moving on to the next item.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -809,7 +842,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Import-XRefLookupData</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="PSPath">
           <maml:name>Path</maml:name>
           <maml:Description>
             <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefLookupData`.</maml:para>
@@ -892,7 +925,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="PSPath">
         <maml:name>Path</maml:name>
         <maml:Description>
           <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefLookupData`.</maml:para>

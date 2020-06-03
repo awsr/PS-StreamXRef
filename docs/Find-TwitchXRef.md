@@ -135,12 +135,27 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-When specified, this cmdlet will skip reading from the internal lookup cache.
+When specified, this function will skip reading from the internal lookup cache.
 
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ExplicitNull
+When specified, this function will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: en
 
 Required: False
 Position: Named
@@ -168,16 +183,22 @@ Used for `Count` and `Offset` parameters.
 
 If a result is found, the URL will be returned as a string.
 
+### Void (Null)
+
+If `ExplicitNull` is specified and a predefined error occurs, a null value will be returned
+
 ## NOTES
 
 The `Source` parameter works with both styles of clip URL that Twitch uses.
 
-Errors with the following ErrorIds will result in `$null` being returned and skipping to the next item in the pipeline (if any):
+The following ErrorIds are defined:
 * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")
 * `VideoNotFound`: The originating video the source clip came from is unavailable or deleted.
 * `InvalidVideoType`: The source, originating, or `XRef` video is not an archived broadcast.
 * `UserNotFound`: The user/channel name given for `XRef` wasn't found.
 * `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.
 * `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.
+
+When one of these errors occur, the function will move on to the next item from the pipeline (if any). If `ExplicitNull` is specified, the function will first return a value of `$null` before moving on to the next item.
 
 ## RELATED LINKS

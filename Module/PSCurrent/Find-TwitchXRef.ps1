@@ -31,7 +31,11 @@ function Find-TwitchXRef {
         [int]$Offset = 0,
 
         [Parameter()]
-        [switch]$Force
+        [switch]$Force,
+
+        [Parameter()]
+        [Alias("en")]
+        [switch]$ExplicitNull
     )
 
     DynamicParam {
@@ -107,7 +111,12 @@ function Find-TwitchXRef {
             if ($_.Exception.Response.StatusCode -eq 404) {
                 # Not found
                 $PSCmdlet.WriteError($_)
-                return $null
+                if ($ExplicitNull) {
+                    return $null
+                }
+                else {
+                    return
+                }
             }
             else {
                 # Other error status codes
@@ -132,7 +141,12 @@ function Find-TwitchXRef {
             if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
 
                 Write-Error "(Video) URL missing timestamp parameter" -ErrorId MissingTimestamp -Category InvalidArgument -CategoryTargetName Source -TargetObject $Source
-                return $null
+                if ($ExplicitNull) {
+                    return $null
+                }
+                else {
+                    return
+                }
 
             }
 
@@ -216,7 +230,12 @@ function Find-TwitchXRef {
 
                     # Write-Error forwarding and skip to next object in pipeline (if any)
                     $PSCmdlet.WriteError($_)
-                    return $null
+                    if ($ExplicitNull) {
+                        return $null
+                    }
+                    else {
+                        return
+                    }
 
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
@@ -277,7 +296,12 @@ function Find-TwitchXRef {
 
                 # Write-Error forwarding and skip to next object in pipeline (if any)
                 $PSCmdlet.WriteError($_)
-                return $null
+                if ($ExplicitNull) {
+                    return $null
+                }
+                else {
+                    return
+                }
 
             }
             catch [System.Management.Automation.PropertyNotFoundException] {
@@ -350,7 +374,12 @@ function Find-TwitchXRef {
 
                     # Write-Error forwarding and skip to next object in pipeline (if any)
                     $PSCmdlet.WriteError($_)
-                    return $null
+                    if ($ExplicitNull) {
+                        return $null
+                    }
+                    else {
+                        return
+                    }
 
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
@@ -403,7 +432,12 @@ function Find-TwitchXRef {
 
             # Write-Error forwarding and skip to next object in pipeline (if any)
             $PSCmdlet.WriteError($_)
-            return $null
+            if ($ExplicitNull) {
+                return $null
+            }
+            else {
+                return
+            }
 
         }
         catch [System.Management.Automation.PropertyNotFoundException] {
@@ -450,7 +484,12 @@ function Find-TwitchXRef {
 
             # Write-Error forwarding and skip to next object in pipeline (if any)
             $PSCmdlet.WriteError($_)
-            return $null
+            if ($ExplicitNull) {
+                return $null
+            }
+            else {
+                return
+            }
 
         }
         catch [System.Management.Automation.PropertyNotFoundException] {

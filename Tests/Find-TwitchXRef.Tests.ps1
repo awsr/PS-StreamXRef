@@ -86,10 +86,11 @@ Describe "HTTP response errors" -Tag HTTPResponse {
                 $TestArray += [pscustomobject]@{ Source = "BadClipName"; XRef = "TestVal" }
                 $TestArray += [pscustomobject]@{ Source = "ValidClipName"; XRef = "TestVal" }
 
-                $TestArray | Find-TwitchXRef -ErrorVariable TestErrs -ErrorAction SilentlyContinue
+                $Result = $TestArray | Find-TwitchXRef -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
                 $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
                 $TwitchData.ClipInfoCache.Keys | Should -Contain "ValidClipName"
+                $Result | Should -BeNullOrEmpty
 
             }
         }
