@@ -100,9 +100,6 @@ function Find-TwitchXRef {
 
     Process {
 
-        # Remove variables that may still be set from previous pipeline entries since their presence will be tested for
-        Remove-Variable TimeOffset, VideoID -ErrorAction Ignore
-
         <#  This trap is used for making all "404 Not Found" errors a non-terminating error
             because, for some reason, Twitch also uses that with some (but not all...) API
             endpoints to indicate that no results were found. #>
@@ -183,6 +180,8 @@ function Find-TwitchXRef {
 
             $Slug = $Source | Get-LastUrlSegment
 
+            $tmpFlagCached = $false
+
             if (-not $Force -and $script:TwitchData.ClipInfoCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
@@ -194,6 +193,8 @@ function Find-TwitchXRef {
                     # Set REST arguments
                     $RestArgs["Uri"] = "$API/videos/$VideoID"
 
+                    $tmpFlagCached = $true
+
                 }
                 catch {
 
@@ -204,7 +205,7 @@ function Find-TwitchXRef {
 
             }
 
-            if (-not (Test-Path "Variable:Local:TimeOffset") -or -not (Test-Path "Variable:Local:VideoID")) {
+            if (-not $tmpFlagCached) {
                 # New uncached source ---- needs additional API call
 
                 # Get information about clip
