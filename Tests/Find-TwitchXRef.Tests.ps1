@@ -106,20 +106,3 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         }
     }
 }
-
-Describe "Import validation" {
-    BeforeAll {
-        Clear-XRefLookupData -RemoveAll -Force
-        Import-XRefLookupData ./TestData.json -Quiet -Force -ErrorAction Stop
-    }
-    It "Times are in UTC" {
-        InModuleScope StreamXRef {
-            $TwitchData.ClipInfoCache.GetEnumerator() | ForEach-Object {
-                $_.Value.Created.Kind | Should -Be Utc
-            }
-            $TwitchData.VideoInfoCache.GetEnumerator() | ForEach-Object {
-                $_.Value.Kind | Should -Be Utc
-            }
-        }
-    }
-}
