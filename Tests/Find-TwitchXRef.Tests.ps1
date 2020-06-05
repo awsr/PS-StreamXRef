@@ -46,7 +46,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
     }
     Context "404 Not Found" {
         BeforeEach {
-            Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $RestArgs.Uri -notlike "*ValidClipName" } -MockWith {
+            Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -notlike "*ValidClipName" } -MockWith {
                 $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 404))
             }
         }
@@ -73,7 +73,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         }
         It "Continues with next entry in the pipeline" {
             InModuleScope StreamXRef {
-                Mock Invoke-RestMethod -ParameterFilter { $RestArgs.Uri -like "*ValidClipName" } -MockWith {
+                Mock Invoke-RestMethod -ParameterFilter { $Uri -like "*ValidClipName" } -MockWith {
                     return [pscustomobject]@{
                         vod = [pscustomobject]@{
                             id = 123456789
@@ -90,6 +90,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
 
                 $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
                 $TwitchData.ClipInfoCache.Keys | Should -Contain "ValidClipName"
+                $TwitchData.ClipInfoCache["ValidClipName"].offset | Should -Be 2468
                 $Result | Should -BeNullOrEmpty
 
             }
@@ -103,6 +104,40 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         }
         It "503 during clip lookup" {
             { Find-TwitchXRef -Source https://clip.twitch.tv/WhatCouldGoWrong -XRef TestVal } | Should -Throw
+        }
+    }
+}
+
+Describe "Return results from cached data" {
+    BeforeAll {
+        Clear-XRefLookupData -RemoveAll -Force
+        Import-XRefLookupData ./TestData.json -Quiet -Force
+    }
+    Context "Current PSCodeSet" -Tag "Current" {
+        BeforeAll {
+            Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*11111111/videos" } -MockWith {
+                $MultiObject = [pscustomobject]@{
+                    _total = 1234
+                    videos = @()
+                }
+                $MultiObject.videos += [pscustomobject]@{
+                    broadcast_type = "archive"
+                    recorded_at = ([datetime]::Parse("2020-05-31T03:14:15Z")).ToUniversalTime()
+                    length = 3000
+                    url = "https://www.twitch.tv/videos/111444111"
+                }
+                $MultiObject.videos += [pscustomobject]@{
+                    broadcast_type = "archive"
+                    recorded_at = ([datetime]::Parse("2020-05-31T01:22:44Z")).ToUniversalTime()
+                    length = 5000
+                    url = "https://www.twitch.tv/videos/111222333"
+                }
+                return $MultiObject
+            }
+        }
+        It "Using clip name" -Tag "Current" {
+            $Result = Find-TwitchXRef madeupnameforaclip one
+            $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
         }
     }
 }
