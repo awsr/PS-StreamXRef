@@ -14,11 +14,7 @@ function Initialize-LookupCache {
         # @{ [string] User/channel name; [int] User/channel ID number }
         UserInfoCache  = [System.Collections.Generic.Dictionary[string, int]]::new()
 
-        <# @{ [string] Clip slug name; [pscustomobject]@{
-                Offset  = [int] Time offset in seconds
-                VideoID = [int] Video ID number
-                Created = [datetime] Clip creation timestamp
-            } } #>
+        # @{ [string] Clip slug name; @{ Offset = [int] Time offset in seconds; VideoID = [int] Video ID number; Created = [datetime] UTC date/time clip was created } }
         ClipInfoCache  = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
 
         # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
