@@ -39,15 +39,19 @@ filter Get-LastUrlSegment {
 
 filter ConvertTo-UtcDateTime {
 
-    if (($_ -is [datetime]) -and ($_.Kind -eq [System.DateTimeKind]::Utc)) {
+    if ($_ -is [datetime]) {
 
-        # Already formatted correctly
-        return $_
+        if ($_.Kind -eq [System.DateTimeKind]::Utc) {
 
-    }
-    elseif ($_ -is [datetime]) {
+            # Already formatted correctly
+            return $_
 
-        return $_.ToUniversalTime()
+        }
+        else {
+
+            return $_.ToUniversalTime()
+
+        }
 
     }
     elseif ($_ -is [string]) {
