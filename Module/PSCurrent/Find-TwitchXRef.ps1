@@ -217,6 +217,9 @@ function Find-TwitchXRef {
                     # Get Video ID from API response
                     [int]$VideoID = $ClipResponse.vod.id
 
+                    # Ensure timestamp was converted correctly
+                    $ClipResponse.created_at = $ClipResponse.created_at | ConvertTo-UtcDateTime
+
                     # Add data to clip cache
                     $obj = [PSCustomObject]@{
                         Offset  = $ClipResponse.vod.offset
@@ -284,6 +287,9 @@ function Find-TwitchXRef {
                     Write-Error "$ErrSrc video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -ErrorAction Stop
 
                 }
+
+                # Ensure timestamp was converted correctly
+                $VodResponse.recorded_at = $VodResponse.recorded_at | ConvertTo-UtcDateTime
 
                 # Use start time from API response
                 [datetime]$EventTimestamp = $VodResponse.recorded_at + $TimeOffset
@@ -414,19 +420,27 @@ function Find-TwitchXRef {
 
         try {
 
-            # $Multi will be $false if XRef is a video URL
-            if (-not $Multi) {
+            # Check for incorrect video type if XRef is a video URL ($Multi will be $false)
+            if (-not $Multi -and $XRefResponse.broadcast_type -ne "archive") {
 
-                # Check for incorrect video type
-                if ($XRefResponse.broadcast_type -ne "archive") {
-
-                    Write-Error "(XRef Video) Video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
-
-                }
+                Write-Error "(XRef Video) Video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
 
             }
 
             $XRefSet = $Multi ? $XRefResponse.videos : $XRefResponse
+
+            if ($XRefSet -is [array]) {
+
+                for ($i = 0; $i -lt $XRefSet.length; $i++) {
+                    $XRefSet[$i].recorded_at = $XRefSet[$i].recorded_at | ConvertTo-UtcDateTime
+                }
+
+            }
+            else {
+
+                $XRefSet.recorded_at = $XRefSet.recorded_at | ConvertTo-UtcDateTime
+
+            }
 
         }
         catch [Microsoft.PowerShell.Commands.WriteErrorException] {
