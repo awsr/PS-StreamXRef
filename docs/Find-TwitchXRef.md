@@ -1,7 +1,7 @@
 ---
 external help file: StreamXRef-help.xml
 Module Name: StreamXRef
-online version: https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Find-TwitchXRef.md
+online version: https://github.com/awsr/PS-StreamXRef/blob/module/docs/Find-TwitchXRef.md
 schema: 2.0.0
 ---
 

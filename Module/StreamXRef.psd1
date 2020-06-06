@@ -31,9 +31,9 @@
             Tags = @('Stream', 'Twitch', 'Cross-Reference', 'Reference', 'Rest', 'API', 'Find', 'Search',
                 'PSEdition_Desktop', 'PSEdition_Core', 'Windows', 'Linux', 'Mac')
 
-            LicenseUri = 'https://github.com/awsr/Get-TwitchXRef/blob/master/LICENSE'
+            LicenseUri = 'https://github.com/awsr/PS-StreamXRef/blob/master/LICENSE'
 
-            ProjectUri = 'https://github.com/awsr/Get-TwitchXRef'
+            ProjectUri = 'https://github.com/awsr/PS-StreamXRef'
 
             IconUri = ''
 

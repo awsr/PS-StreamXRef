@@ -300,7 +300,7 @@
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Clear-XRefLookupData.md</maml:uri>
+        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/module/docs/Clear-XRefLookupData.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -500,7 +500,7 @@
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Export-XRefLookupData.md</maml:uri>
+        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/module/docs/Export-XRefLookupData.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -774,7 +774,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Find-TwitchXRef.md</maml:uri>
+        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/module/docs/Find-TwitchXRef.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -1024,7 +1024,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Import-XRefLookupData.md</maml:uri>
+        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/module/docs/Import-XRefLookupData.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>

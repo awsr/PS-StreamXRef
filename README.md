@@ -29,4 +29,4 @@ Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <I
 
 **-ApiKey** (*required 1st time in session if not set*) accepts your API key (for Twitch this is the "Client ID").
 
-**-ExplicitNull** tells the function to explicitly return a value of `$null` when encountering a [specified error](https://github.com/awsr/Get-TwitchXRef/blob/module/docs/Find-TwitchXRef.md#notes).
+**-ExplicitNull** tells the function to explicitly return a value of `$null` when encountering a [specified error](https://github.com/awsr/PS-StreamXRef/blob/module/docs/Find-TwitchXRef.md#notes).
