@@ -103,7 +103,7 @@ function Find-TwitchXRef {
         <#  This trap is used for making all "404 Not Found" errors a non-terminating error
             because, for some reason, Twitch also uses that with some (but not all...) API
             endpoints to indicate that no results were found. #>
-        trap [Microsoft.PowerShell.Commands.HttpResponseException] {
+        trap [System.Net.WebException] {
             # API Responded with error status
             if ($_.Exception.Response.StatusCode -eq 404) {
                 # Not found
