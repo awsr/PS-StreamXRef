@@ -13,6 +13,7 @@ function Import-XRefLookupData {
         [switch]$Quiet = $false,
 
         [Parameter(Mandatory = $true, Position = 0, ParameterSetName = "ApiKey")]
+        [ValidateNotNullOrEmpty()]
         [string]$ApiKey,
 
         [Parameter()]
