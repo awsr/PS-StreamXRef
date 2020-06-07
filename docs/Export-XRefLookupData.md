@@ -64,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -NoClobber
-Prevents overwriting an existing file. Default: False.
+Prevents overwriting an existing file.
 
 ```yaml
 Type: SwitchParameter

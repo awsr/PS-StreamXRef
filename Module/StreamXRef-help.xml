@@ -357,7 +357,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NoClobber</maml:name>
           <maml:Description>
-            <maml:para>Prevents overwriting an existing file. Default: False.</maml:para>
+            <maml:para>Prevents overwriting an existing file.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -417,7 +417,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>NoClobber</maml:name>
         <maml:Description>
-          <maml:para>Prevents overwriting an existing file. Default: False.</maml:para>
+          <maml:para>Prevents overwriting an existing file.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
