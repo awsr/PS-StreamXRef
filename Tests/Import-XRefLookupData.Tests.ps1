@@ -1,15 +1,14 @@
 #Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.0' }
 
 BeforeAll {
-    $ModulePath = Split-Path -Parent $PSScriptRoot
-    $ModulePath = Join-Path $ModulePath "Module/StreamXRef.psd1"
-    Import-Module $ModulePath -Force -ErrorAction Stop
+    $ProjectRoot = Split-Path -Parent $PSScriptRoot
+    Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force -ErrorAction Stop
 }
 
 Describe "Import validation" {
     BeforeAll {
         Clear-XRefLookupData -RemoveAll -Force
-        Import-XRefLookupData ./TestData.json -Quiet -Force -ErrorAction Stop
+        Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop
     }
     It "Times are in UTC" {
         InModuleScope StreamXRef {
