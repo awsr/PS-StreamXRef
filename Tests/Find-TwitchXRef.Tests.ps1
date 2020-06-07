@@ -25,12 +25,23 @@ BeforeAll {
             Details = "I don't remember what the error details should look like, but this doesn't really matter."
         }
 
-        $Response = [System.Net.Http.HttpResponseMessage]::new($ErrorData[$Code].Code)
-        $Exception = [Microsoft.PowerShell.Commands.HttpResponseException]::new($ErrorData[$Code].String, $Response)
+        if ($PSVersionTable.PSVersion.Major -lt 7) {
+            # Legacy exception
+            $Status = [System.Net.WebExceptionStatus]::ProtocolError
+            $Response = [System.Net.HttpWebResponse]::new()
+            Add-Member $Response -MemberType NoteProperty -Name StatusCode -Value ($ErrorData[$Code].Code) -Force
+            $Exception = [System.Net.WebException]::new($ErrorData[$Code].String, $null, $Status, $Response)
+        }
+        else {
+            # Current exception
+            $Response = [System.Net.Http.HttpResponseMessage]::new($ErrorData[$Code].Code)
+            $Exception = [Microsoft.PowerShell.Commands.HttpResponseException]::new($ErrorData[$Code].String, $Response)
+        }
+
         $ErrorRecord = [System.Management.Automation.ErrorRecord]::new(
             $Exception,
             "WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeRestMethodCommand",
-            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+            ([System.Management.Automation.ErrorCategory]::InvalidOperation),
             $null
         )
         $ErrorRecord.ErrorDetails = $ErrorData[$Code].Details
@@ -126,36 +137,39 @@ Describe "HTTP response errors" -Tag HTTPResponse {
     }
 }
 
-Describe "Return results from cached data" {
+Describe "Use cached data" {
     BeforeAll {
         Clear-XRefLookupData -RemoveAll -Force
-        Import-XRefLookupData ./TestData.json -Quiet -Force
-    }
-    Context "Current PSCodeSet" -Tag "Current" {
-        BeforeAll {
-            Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*11111111/videos" } -MockWith {
-                $MultiObject = [pscustomobject]@{
-                    _total = 1234
-                    videos = @()
-                }
-                $MultiObject.videos += [pscustomobject]@{
-                    broadcast_type = "archive"
-                    recorded_at = ([datetime]::Parse("2020-05-31T03:14:15Z")).ToUniversalTime()
-                    length = 3000
-                    url = "https://www.twitch.tv/videos/111444111"
-                }
-                $MultiObject.videos += [pscustomobject]@{
-                    broadcast_type = "archive"
-                    recorded_at = ([datetime]::Parse("2020-05-31T01:22:44Z")).ToUniversalTime()
-                    length = 5000
-                    url = "https://www.twitch.tv/videos/111222333"
-                }
-                return $MultiObject
+        Import-XRefLookupData $ProjectRoot/Tests/TestData.json -Quiet -Force
+
+        # Catchall mock to ensure Invoke-RestMethod doesn't leak
+        Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
+            $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 404))
+        }
+
+        Mock Invoke-RestMethod -ModuleName StreamXRef -Verifiable -ParameterFilter { $Uri -like "*11111111/videos" } -MockWith {
+            $MultiObject = [pscustomobject]@{
+                _total = 1234
+                videos = @()
             }
+            $MultiObject.videos += [pscustomobject]@{
+                broadcast_type = "archive"
+                recorded_at = ([datetime]::Parse("2020-05-31T03:14:15Z")).ToUniversalTime()
+                length = 3000
+                url = "https://www.twitch.tv/videos/111444111"
+            }
+            $MultiObject.videos += [pscustomobject]@{
+                broadcast_type = "archive"
+                recorded_at = ([datetime]::Parse("2020-05-31T01:22:44Z")).ToUniversalTime()
+                length = 5000
+                url = "https://www.twitch.tv/videos/111222333"
+            }
+            return $MultiObject
         }
-        It "Using clip name" -Tag "Current" {
-            $Result = Find-TwitchXRef madeupnameforaclip one
-            $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
-        }
+    }
+    It "Uses cached clip and UserID" -Tag "Current" {
+        $Result = Find-TwitchXRef madeupnameforaclip one
+        Should -InvokeVerifiable
+        $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
     }
 }
