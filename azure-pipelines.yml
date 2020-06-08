@@ -1,0 +1,35 @@
+trigger:
+ batch: true
+ branches:
+   include:
+     - master
+     - module
+
+jobs:
+- job: Windows_Current
+  timeoutInMinutes: 5
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - template: ./.templates/pwsh.yml
+
+- job: Windows_Legacy
+  timeoutInMinutes: 5
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - template: ./.templates/powershell.yml
+
+- job: Linux
+  timeoutInMinutes: 5
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - template: ./.templates/pwsh.yml
+
+- job: MacOS
+  timeoutInMinutes: 5
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - template: ./.templates/pwsh.yml
