@@ -69,6 +69,18 @@ Describe "Internal function validation" {
 }
 
 Describe "HTTP response errors" -Tag HTTPResponse {
+    BeforeAll {
+        if ($PSVersionTable.PSVersion.Major -lt 7) {
+            # See https://github.com/PowerShell/PowerShell/pull/10840
+            $global:TestErrorOffset = 1
+        }
+        else {
+            $global:TestErrorOffset = 0
+        }
+    }
+    AfterAll {
+        Remove-Variable -Name TestErrorOffset -Scope Global -ErrorAction Ignore
+    }
     BeforeEach {
         Clear-XRefLookupData -RemoveAll -Force
         Import-XRefLookupData -ApiKey notreal -Force
@@ -82,21 +94,21 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         It "Clip name not found" {
             $Result = Find-TwitchXRef -Source ClipNameThatResultsIn404Error -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
-            $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404
+            $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
 
         }
         It "Clip URL not found" {
             $Result = Find-TwitchXRef -Source https://clip.twitch.tv/AnotherBadClipName -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
-            $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404
+            $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
 
         }
         It "Video URL not found" {
             $Result = Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=1h23m45s" -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
-            $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404
+            $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
 
         }
@@ -117,7 +129,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
 
                 $Result = $TestArray | Find-TwitchXRef -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
-                $TestErrs[0].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
+                $TestErrs[$global:TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
                 $TwitchData.ClipInfoCache.Keys | Should -Contain "ValidClipName"
                 $TwitchData.ClipInfoCache["ValidClipName"].offset | Should -Be 2468
                 $Result | Should -BeNullOrEmpty
