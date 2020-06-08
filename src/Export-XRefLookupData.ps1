@@ -57,7 +57,7 @@ function Export-XRefLookupData {
                     slug    = $_.Key
                     offset  = $_.Value.Offset
                     video   = $_.Value.VideoID
-                    created = $_.Value.Created
+                    created = $_.Value.Created.ToString("o")
                 }
             )
 
