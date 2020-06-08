@@ -29,7 +29,7 @@ BeforeAll {
             # Legacy exception
             $Status = [System.Net.WebExceptionStatus]::ProtocolError
             $Response = [System.Net.HttpWebResponse]::new()
-            Add-Member $Response -MemberType NoteProperty -Name StatusCode -Value ($ErrorData[$Code].Code) -Force
+            $Response | Add-Member -MemberType NoteProperty -Name StatusCode -Value ($ErrorData[$Code].Code) -Force
             $Exception = [System.Net.WebException]::new($ErrorData[$Code].String, $null, $Status, $Response)
         }
         else {
