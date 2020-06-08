@@ -68,7 +68,7 @@ function Import-XRefLookupData {
         }
 
         # Process ApiKey (Check parameter set first since ConfigStaging won't exist in the ApiKey set)
-        if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or $ConfigStaging.psobject.Properties.Name -contains "ApiKey") {
+        if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ConfigStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrEmpty($ConfigStaging.ApiKey))) {
 
             # Check if current API key is not set
             if ($null, "" -contains $script:TwitchData.ApiKey) {
