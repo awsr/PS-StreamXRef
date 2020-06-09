@@ -43,6 +43,22 @@ PS > Import-XRefLookupData -ApiKey "1234567890abcdefghijklmnopqrst"
 
 Set your API key without invoking the main `Find-TwitchXRef` command.
 
+### Example 3
+```powershell
+PS > $Results = Import-XRefLookupData -Path JsonFile.json -PassThru
+...
+PS > $Results | Format-Table
+
+Name  Imported Ignored Skipped Error Total
+----  -------- ------- ------- ----- -----
+User         4      12       0     0    16
+Clip         7       2       0     0     9
+Video        5       1       0     0     6
+
+```
+
+Save the results of importing and display them later as a table.
+
 ## PARAMETERS
 
 ### -ApiKey
@@ -91,7 +107,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-When specified, this function will return an object with the results of the import.
+When specified, this function will return an array with the results of the import as PSCustomObjects. Shortcut properties `User`, `Clip`, and `Video` can be used to reference that group in the array.
 
 ```yaml
 Type: SwitchParameter
@@ -149,9 +165,9 @@ Only the `Path` parameter supports accepting a value from the pipeline.
 
 ### None or System.Array[PSCustomObject]
 
-Returns an array object showing the results of the import operation unless the `Quiet` parameter is set. The statistics are given for "User", "Clip", and "Video" lookup caches.
+When the `PassThru` parameter is specified, this function returns an array with the results of the import operation. The statistics are given for "User", "Clip", and "Video" lookup caches. Shortcut properties `User`, `Clip`, and `Video` can be used to reference the specified group in the array.
 
-Each object in the array has a `Name` property as well as counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.
+Each object in the array includes counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.
 
 * Imported: Number of entries successfully imported.
 * Ignored: Number of duplicate entries ignored.
