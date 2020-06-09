@@ -3,8 +3,7 @@ function Import-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "General")]
     [OutputType([System.Array], [System.Void])]
     Param(
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true,
-                   ValueFromPipelineByPropertyName = $true, ParameterSetName = "General")]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = "General")]
         [Alias("PSPath")]
         [ValidateNotNullOrEmpty()]
         [string]$Path,
@@ -190,7 +189,7 @@ function Import-XRefLookupData {
 
                     }
                     catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
-                        [System.Management.Automation.PropertyNotFoundException] {
+                    [System.Management.Automation.PropertyNotFoundException] {
 
                         # Data formatting errors
                         Write-Error "(User Data) $($_.Exception.Message)" -Category InvalidData
@@ -283,7 +282,7 @@ function Import-XRefLookupData {
 
                     }
                     catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
-                        [System.Management.Automation.PropertyNotFoundException] {
+                    [System.Management.Automation.PropertyNotFoundException] {
 
                         Write-Error "(Clip Data) $($_.Exception.Message)" -Category InvalidData
                         $Counters.Clip.Error++
@@ -365,7 +364,7 @@ function Import-XRefLookupData {
 
                     }
                     catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
-                        [System.Management.Automation.PropertyNotFoundException] {
+                    [System.Management.Automation.PropertyNotFoundException] {
 
                         Write-Error "(Video Data) $($_.Exception.Message)" -Category InvalidData
                         $Counters.Video.Error++
