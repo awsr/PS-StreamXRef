@@ -410,7 +410,7 @@ function Import-XRefLookupData {
             $Results = @($Counters.User, $Counters.Clip, $Counters.Video)
 
             # Display import results
-            $Results | Format-Table -AutoSize
+            $Results | Format-Table -AutoSize | Out-Host
 
             if ($PassThru) {
 
