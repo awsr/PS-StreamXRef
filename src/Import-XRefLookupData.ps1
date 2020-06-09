@@ -9,15 +9,15 @@ function Import-XRefLookupData {
         [ValidateNotNullOrEmpty()]
         [string]$Path,
 
-        [Parameter(ParameterSetName = "General")]
-        [switch]$Quiet = $false,
-
         [Parameter(Mandatory = $true, Position = 0, ParameterSetName = "ApiKey")]
         [ValidateNotNullOrEmpty()]
         [string]$ApiKey,
 
+        [Parameter(ParameterSetName = "General")]
+        [switch]$PassThru,
+
         [Parameter()]
-        [switch]$Force = $false
+        [switch]$Force
     )
 
     Begin {
@@ -406,15 +406,18 @@ function Import-XRefLookupData {
 
         if ($PSCmdlet.ParameterSetName -eq "General") {
 
-            if ($Quiet) {
+            $Results = @($Counters.User, $Counters.Clip, $Counters.Video)
 
-                Write-Verbose "$(@($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-String)"
+            $Results | Format-Table -AutoSize
+
+            if ($PassThru) {
+
+                return $Results
 
             }
             else {
 
-                # Return as an array for better display formatting
-                return @($Counters.User, $Counters.Clip, $Counters.Video)
+                return
 
             }
 
