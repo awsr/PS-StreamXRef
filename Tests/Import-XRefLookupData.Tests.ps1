@@ -39,7 +39,6 @@ Describe "Results object" {
             $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
         }
         It "Shortcut parameters point to correct data" {
-            gm -in $Results | Out-Host
             $Results.User.Name | Should -Be "User"
             $Results.Clip.Name | Should -Be "Clip"
             $Results.Video.Name | Should -Be "Video"
