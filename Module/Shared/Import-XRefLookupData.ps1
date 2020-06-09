@@ -50,11 +50,11 @@ function Import-XRefLookupData {
             "User", "Clip", "Video" | ForEach-Object {
 
                 $tempobj = [pscustomobject]@{
-                    Name      = $_
-                    Imported  = 0
-                    Ignored   = 0
-                    Skipped   = 0
-                    Error     = 0
+                    Name     = $_
+                    Imported = 0
+                    Ignored  = 0
+                    Skipped  = 0
+                    Error    = 0
                 }
                 Add-Member -InputObject $tempobj -MemberType ScriptProperty -Name Total -Value { $this.Imported + $this.Ignored + $this.Skipped + $this.Error }
 
@@ -406,11 +406,18 @@ function Import-XRefLookupData {
 
         if ($PSCmdlet.ParameterSetName -eq "General") {
 
+            # Create array of counters
             $Results = @($Counters.User, $Counters.Clip, $Counters.Video)
 
+            # Display import results
             $Results | Format-Table -AutoSize
 
             if ($PassThru) {
+
+                # Add shortcut parameters for ease of use
+                Add-Member -InputObject $Results -MemberType ScriptProperty -Name User -Value { $this[0] }
+                Add-Member -InputObject $Results -MemberType ScriptProperty -Name Clip -Value { $this[1] }
+                Add-Member -InputObject $Results -MemberType ScriptProperty -Name Video -Value { $this[2] }
 
                 return $Results
 
