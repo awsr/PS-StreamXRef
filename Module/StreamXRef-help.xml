@@ -842,7 +842,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Import-XRefLookupData</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="PSPath">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="PSPath">
           <maml:name>Path</maml:name>
           <maml:Description>
             <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefLookupData`.</maml:para>
@@ -869,6 +869,17 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           <maml:name>PassThru</maml:name>
           <maml:Description>
             <maml:para>When specified, this function will return an array with the results of the import as PSCustomObjects. Shortcut properties `User`, `Clip`, and `Video` can be used to reference that group in the array.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Quiet</maml:name>
+          <maml:Description>
+            <maml:para>Suppress writing import results to host.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -925,7 +936,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="PSPath">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="PSPath">
         <maml:name>Path</maml:name>
         <maml:Description>
           <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefLookupData`.</maml:para>
@@ -941,6 +952,18 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <maml:name>PassThru</maml:name>
         <maml:Description>
           <maml:para>When specified, this function will return an array with the results of the import as PSCustomObjects. Shortcut properties `User`, `Clip`, and `Video` can be used to reference that group in the array.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Quiet</maml:name>
+        <maml:Description>
+          <maml:para>Suppress writing import results to host.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>

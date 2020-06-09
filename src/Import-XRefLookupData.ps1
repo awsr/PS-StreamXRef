@@ -15,6 +15,9 @@ function Import-XRefLookupData {
         [Parameter(ParameterSetName = "General")]
         [switch]$PassThru,
 
+        [Parameter(ParameterSetName = "General")]
+        [switch]$Quiet,
+
         [Parameter()]
         [switch]$Force
     )
@@ -408,8 +411,12 @@ function Import-XRefLookupData {
             # Create array of counters
             $Results = @($Counters.User, $Counters.Clip, $Counters.Video)
 
-            # Display import results
-            $Results | Format-Table -AutoSize | Out-Host
+            if (-not $Quiet) {
+
+                # Display import results
+                $Results | Format-Table -AutoSize | Out-Host
+
+            }
 
             if ($PassThru) {
 

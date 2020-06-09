@@ -14,7 +14,7 @@ Import data to the lookup cache. Can also set the API key without invoking a ful
 
 ### General (Default)
 ```
-Import-XRefLookupData [-Path] <String> [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-XRefLookupData [-Path] <String> [-PassThru] [-Quiet] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ApiKey
@@ -108,6 +108,21 @@ Accept wildcard characters: False
 
 ### -PassThru
 When specified, this function will return an array with the results of the import as PSCustomObjects. Shortcut properties `User`, `Clip`, and `Video` can be used to reference that group in the array.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: General
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Quiet
+Suppress writing import results to host.
 
 ```yaml
 Type: SwitchParameter
