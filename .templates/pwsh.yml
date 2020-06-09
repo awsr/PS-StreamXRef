@@ -1,3 +1,7 @@
+parameters:
+- name: testTitle
+  type: string
+
 steps:
 - task: Pester@10
   continueOnError: true
@@ -7,6 +11,7 @@ steps:
     usePSCore: true
 - task: PublishTestResults@2
   inputs:
+    testRunTitle: ${{ parameters.testTitle }}
     testResultsFormat: 'NUnit'
     testResultsFiles: '**/Test-*.xml'
     failTaskOnFailedTests: true

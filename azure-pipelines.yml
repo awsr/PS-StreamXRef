@@ -12,6 +12,8 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - template: ./.templates/pwsh.yml
+    parameters:
+      testTitle: 'Windows (Current)'
 
 - job: Windows_Legacy
   timeoutInMinutes: 5
@@ -19,6 +21,8 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - template: ./.templates/powershell.yml
+    parameters:
+      testTitle: 'Windows (Legacy)'
 
 - job: Linux
   timeoutInMinutes: 5
@@ -26,6 +30,8 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - template: ./.templates/pwsh.yml
+    parameters:
+      testTitle: 'Linux'
 
 - job: MacOS
   timeoutInMinutes: 5
@@ -33,3 +39,5 @@ jobs:
     vmImage: 'macOS-latest'
   steps:
   - template: ./.templates/pwsh.yml
+    parameters:
+      testTitle: 'MacOS'
