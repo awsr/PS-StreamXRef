@@ -868,7 +868,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:Description>
-            <maml:para>When specified, this function will return an array with the results of the import as PSCustomObjects. Shortcut properties `User`, `Clip`, and `Video` can be used to reference that group in the array.</maml:para>
+            <maml:para>When specified, this function will return an object with the results of the import.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -951,7 +951,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:Description>
-          <maml:para>When specified, this function will return an array with the results of the import as PSCustomObjects. Shortcut properties `User`, `Clip`, and `Video` can be used to reference that group in the array.</maml:para>
+          <maml:para>When specified, this function will return an object with the results of the import.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1010,10 +1010,10 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>None or System.Array[PSCustomObject]</maml:name>
+          <maml:name>None or StreamXRef.ImportResults</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>When the `PassThru` parameter is specified, this function returns an array with the results of the import operation. The statistics are given for "User", "Clip", and "Video" lookup caches. Shortcut properties `User`, `Clip`, and `Video` can be used to reference the specified group in the array.</maml:para>
+          <maml:para>When the `PassThru` parameter is specified, this function returns a `StreamXRef.ImportResults` object (based off of `System.Collections.Generic.Dictionary`) with the results of the import operation. Use `AllImported`, `AllIgnored`, `AllSkipped`, `AllError`, or `AllTotal` properties to get the counts across all of the caches.</maml:para>
           <maml:para>Each object in the array includes counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.</maml:para>
           <maml:para>* Imported: Number of entries successfully imported.</maml:para>
           <maml:para>* Ignored: Number of duplicate entries ignored.</maml:para>
@@ -1047,7 +1047,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
         <dev:code>PS &gt; $Results = Import-XRefLookupData -Path JsonFile.json -PassThru
 ...
-PS &gt; $Results | Format-Table
+PS &gt; $Results.Values | Format-Table
 
 Name  Imported Ignored Skipped Error Total
 ----  -------- ------- ------- ----- -----

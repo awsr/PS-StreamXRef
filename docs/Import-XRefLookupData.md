@@ -47,7 +47,7 @@ Set your API key without invoking the main `Find-TwitchXRef` command.
 ```powershell
 PS > $Results = Import-XRefLookupData -Path JsonFile.json -PassThru
 ...
-PS > $Results | Format-Table
+PS > $Results.Values | Format-Table
 
 Name  Imported Ignored Skipped Error Total
 ----  -------- ------- ------- ----- -----
@@ -107,7 +107,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-When specified, this function will return an array with the results of the import as PSCustomObjects. Shortcut properties `User`, `Clip`, and `Video` can be used to reference that group in the array.
+When specified, this function will return an object with the results of the import.
 
 ```yaml
 Type: SwitchParameter
@@ -178,9 +178,9 @@ Only the `Path` parameter supports accepting a value from the pipeline.
 
 ## OUTPUTS
 
-### None or System.Array[PSCustomObject]
+### None or StreamXRef.ImportResults
 
-When the `PassThru` parameter is specified, this function returns an array with the results of the import operation. The statistics are given for "User", "Clip", and "Video" lookup caches. Shortcut properties `User`, `Clip`, and `Video` can be used to reference the specified group in the array.
+When the `PassThru` parameter is specified, this function returns a `StreamXRef.ImportResults` object (based off of `System.Collections.Generic.Dictionary`) with the results of the import operation. Use `AllImported`, `AllIgnored`, `AllSkipped`, `AllError`, or `AllTotal` properties to get the counts across all of the caches.
 
 Each object in the array includes counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.
 

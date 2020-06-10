@@ -49,7 +49,7 @@ First version released as a full PowerShell Module.
 * Added `Export-XRefLookupData`, `Import-XRefLookupData`, and `Clear-XRefLookupData`
 '@
 
-            Prerelease = 'alpha10'
+            Prerelease = 'beta1'
         }
     }
 

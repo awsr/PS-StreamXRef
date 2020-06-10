@@ -1,5 +1,27 @@
 Set-StrictMode -Version 3
 
+# Add type data
+try {
+
+    if ($PSVersionTable.PSVersion.Major -lt 7) {
+
+        Add-Type -Path "$PSScriptRoot/typedata/bin/StreamXRefTypes.Legacy.dll"
+
+    }
+    else {
+
+        Add-Type -Path "$PSScriptRoot/typedata/bin/StreamXRefTypes.dll"
+
+    }
+
+}
+catch {
+
+    # As a fallback, compile from source and load into memory
+    Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.cs" -ErrorAction Stop
+
+}
+
 #region Internal shared helper functions ================
 
 function Initialize-LookupCache {

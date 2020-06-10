@@ -1,7 +1,7 @@
 #.ExternalHelp StreamXRef-help.xml
 function Import-XRefLookupData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "General")]
-    [OutputType([System.Array], [System.Void])]
+    [OutputType([System.Void], [StreamXRef.ImportResults])]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = "General")]
         [Alias("PSPath")]
@@ -47,22 +47,11 @@ function Import-XRefLookupData {
             # This will now terminate the script if it fails
             $ConfigStaging = Get-Content $Path -Raw | ConvertFrom-Json
 
-            # Store counters as a hashtable for ease of access within the function.
-            $Counters = @{ }
-            "User", "Clip", "Video" | ForEach-Object {
-
-                $tempobj = [pscustomobject]@{
-                    Name     = $_
-                    Imported = 0
-                    Ignored  = 0
-                    Skipped  = 0
-                    Error    = 0
-                }
-                Add-Member -InputObject $tempobj -MemberType ScriptProperty -Name Total -Value { $this.Imported + $this.Ignored + $this.Skipped + $this.Error }
-
-                $Counters.Add($_, $tempobj)
-
-            }
+            # Set up counters object
+            $Counters = [StreamXRef.ImportResults]::new()
+            $Counters.Add("User", [StreamXRef.ImportCounter]::new("User"))
+            $Counters.Add("Clip", [StreamXRef.ImportCounter]::new("Clip"))
+            $Counters.Add("Video", [StreamXRef.ImportCounter]::new("Video"))
 
             # Restore ErrorActionPreference
             $ErrorActionPreference = $EAPrefSetting
@@ -408,24 +397,16 @@ function Import-XRefLookupData {
 
         if ($PSCmdlet.ParameterSetName -eq "General") {
 
-            # Create array of counters
-            $Results = @($Counters.User, $Counters.Clip, $Counters.Video)
-
             if (-not $Quiet) {
 
                 # Display import results
-                $Results | Format-Table -AutoSize | Out-Host
+                $Counters.Values | Format-Table -AutoSize | Out-Host
 
             }
 
             if ($PassThru) {
 
-                # Add shortcut parameters for ease of use
-                Add-Member -InputObject $Results -MemberType ScriptProperty -Name User -Value { $this[0] }
-                Add-Member -InputObject $Results -MemberType ScriptProperty -Name Clip -Value { $this[1] }
-                Add-Member -InputObject $Results -MemberType ScriptProperty -Name Video -Value { $this[2] }
-
-                return $Results
+                return $Counters
 
             }
             else {

@@ -38,15 +38,35 @@ Describe "Results object" {
             Clear-XRefLookupData -RemoveAll -Force
             $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
         }
-        It "Shortcut parameters point to correct data" {
-            $Results.User.Name | Should -Be "User"
-            $Results.Clip.Name | Should -Be "Clip"
-            $Results.Video.Name | Should -Be "Video"
+        It "Results object is correct type" {
+            $Results | Should -BeOfType "StreamXRef.ImportResults"
+        }
+        It "All counters are in results and of correct type" {
+            $Results.User | Should -BeOfType "StreamXRef.ImportCounter"
+            $Results.Clip | Should -BeOfType "StreamXRef.ImportCounter"
+            $Results.Video | Should -BeOfType "StreamXRef.ImportCounter"
         }
         It "Imported counts are correct" {
             $Results.User.Imported | Should -Be 3
             $Results.Clip.Imported | Should -Be 2
             $Results.Video.Imported | Should -Be 2
+        }
+        It "Total counts are correct" {
+            $Results.User.Total | Should -Be 3
+            $Results.Clip.Total | Should -Be 2
+            $Results.Video.Total | Should -Be 2
+        }
+        It "ToString method override works" {
+            "$($Results.User)" | Should -Be "Imported: 3, Ignored: 0, Skipped: 0, Error: 0, Total: 3"
+            "$($Results.Clip)" | Should -Be "Imported: 2, Ignored: 0, Skipped: 0, Error: 0, Total: 2"
+            "$($Results.Video)" | Should -Be "Imported: 2, Ignored: 0, Skipped: 0, Error: 0, Total: 2"
+        }
+        It "All___ properties work" {
+            $Results.AllImported | Should -Be 7
+            $Results.AllIgnored | Should -Be 0
+            $Results.AllSkipped | Should -Be 0
+            $Results.AllError | Should -Be 0
+            $Results.AllTotal | Should -Be 7
         }
     }
     Context "Duplicate data" {
