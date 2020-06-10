@@ -16,6 +16,8 @@
 
     PowerShellVersion = '5.1'
 
+    DotNetFrameworkVersion = '4.6.1'
+
     CompatiblePSEditions = @('Desktop', 'Core')
 
     FunctionsToExport = @('Find-TwitchXRef', 'Export-XRefLookupData', 'Import-XRefLookupData', 'Clear-XRefLookupData')
