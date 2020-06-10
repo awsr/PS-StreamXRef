@@ -7,7 +7,7 @@ trigger:
 
 jobs:
 - job: Windows_Current
-  timeoutInMinutes: 5
+  timeoutInMinutes: 15
   pool:
     vmImage: 'windows-latest'
   steps:
@@ -16,7 +16,7 @@ jobs:
       testTitle: 'Windows (Current)'
 
 - job: Windows_Legacy
-  timeoutInMinutes: 5
+  timeoutInMinutes: 15
   pool:
     vmImage: 'windows-latest'
   steps:
@@ -25,7 +25,7 @@ jobs:
       testTitle: 'Windows (Legacy)'
 
 - job: Linux
-  timeoutInMinutes: 5
+  timeoutInMinutes: 15
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -34,7 +34,7 @@ jobs:
       testTitle: 'Linux'
 
 - job: MacOS
-  timeoutInMinutes: 5
+  timeoutInMinutes: 15
   pool:
     vmImage: 'macOS-latest'
   steps:
