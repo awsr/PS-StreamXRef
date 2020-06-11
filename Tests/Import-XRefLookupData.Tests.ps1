@@ -5,6 +5,13 @@ BeforeAll {
     Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force -ErrorAction Stop
 }
 
+Describe "Type loading" {
+    # Will eventually move this test into a main test file
+    It "Types assembly exists" {
+        {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.dll"} | Should -Not -Throw
+    }
+}
+
 Describe "Import validation" {
     BeforeEach {
         Clear-XRefLookupData -RemoveAll -Force

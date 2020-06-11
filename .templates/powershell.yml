@@ -3,6 +3,11 @@ parameters:
   type: string
 
 steps:
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'current'
+    artifactName: 'testdata'
+    targetPath: '$(System.DefaultWorkingDirectory)/Module/typedata'
 - task: Pester@10
   continueOnError: true
   inputs:
