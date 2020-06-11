@@ -27,7 +27,7 @@ namespace StreamXRef
             Error = 0;
         }
 
-        public override string ToString() => ("Imported: " + Imported + ", Ignored: " + Ignored + ", Skipped: " + Skipped + ", Error: " + Error + ", Total: " + Error);
+        public override string ToString() => ("Imported: " + Imported + ", Ignored: " + Ignored + ", Skipped: " + Skipped + ", Error: " + Error + ", Total: " + Total);
     }
 
     public class ImportResults : Dictionary<String, ImportCounter>
