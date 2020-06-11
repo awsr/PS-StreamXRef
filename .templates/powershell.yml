@@ -6,7 +6,7 @@ steps:
 - task: DownloadPipelineArtifact@2
   inputs:
     buildType: 'current'
-    artifactName: 'testdata'
+    artifactName: 'typedata'
     targetPath: '$(System.DefaultWorkingDirectory)/Module/typedata'
 - task: Pester@10
   continueOnError: true

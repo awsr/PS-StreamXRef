@@ -20,7 +20,7 @@ stages:
         arguments: '-c release'
     - task: CopyFiles@2
       inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)/src/dotnet'
+        SourceFolder: '$(System.DefaultWorkingDirectory)/src/dotnet/bin'
         Contents: '**/StreamXRefTypes.dll'
         TargetFolder: '$(System.DefaultWorkingDirectory)/staging'
         flattenFolders: true
