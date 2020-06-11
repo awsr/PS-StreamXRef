@@ -55,7 +55,7 @@
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $true, Position = 0)]
-    [ValidateScript({ (Test-Path $_ -IsValid) -and ($_ -match '.*\.ps[dm]?1$') })]
+    [ValidateScript({ (Test-Path $_ -IsValid) -and ($_ -match '.*\.ps[dm]?1$') -and ($_ -notlike "*.Tests.ps1") })]
     [string]$File,
 
     [Parameter(Mandatory = $true, Position = 1)]
