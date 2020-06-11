@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using System.Collections.Generic;
 
 namespace StreamXRef
@@ -28,12 +27,7 @@ namespace StreamXRef
             Error = 0;
         }
 
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Imported: {0}, Ignored: {1}, Skipped: {2}, Error: {3}, Total: {4}", this.Imported.ToString(), this.Ignored.ToString(), this.Skipped.ToString(), this.Error.ToString(), this.Total.ToString());
-            return(sb.ToString());
-        }
+        public override string ToString() => ("Imported: " + Imported + ", Ignored: " + Ignored + ", Skipped: " + Skipped + ", Error: " + Error + ", Total: " + Error);
     }
 
     public class ImportResults : Dictionary<String, ImportCounter>
