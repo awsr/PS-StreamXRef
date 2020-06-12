@@ -77,7 +77,7 @@ Describe "Results object" {
     }
     Context "Duplicate data" {
         It "Skip duplicate data" {
-            Clear-XRefLookupData -RemoveAll -Force
+            # Do not use Clear here because this is testing for duplicate data
             $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet -Force
 
             $Results.User.Imported | Should -Be 0
