@@ -3,16 +3,8 @@ Set-StrictMode -Version 3
 # Add type data
 try {
 
-    if ($PSVersionTable.PSVersion.Major -lt 7) {
-
-        Add-Type -Path "$PSScriptRoot/typedata/bin/StreamXRefTypes.Legacy.dll"
-
-    }
-    else {
-
-        Add-Type -Path "$PSScriptRoot/typedata/bin/StreamXRefTypes.dll"
-
-    }
+    # Try loading from assembly
+    Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll"
 
 }
 catch {
