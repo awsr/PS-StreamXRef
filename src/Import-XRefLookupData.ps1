@@ -30,6 +30,24 @@ function Import-XRefLookupData {
 
         }
 
+        # Ensure requirements are loaded
+        try {
+
+            if ([StreamXRef.ImportResults] -is [type] -and -not (Test-Path Variable:Script:TwitchData)) {
+
+                Initialize-LookupCache -ErrorAction Stop
+
+            }
+
+        }
+        catch {
+
+            # This also forces the function to halt if the command isn't found,
+            # indicating the module wasn't loaded correctly
+            $PSCmdlet.ThrowTerminatingError($_)
+
+        }
+
         # Initial states for ShouldContinue
         $YesToAll = $false
         $NoToAll = $false
@@ -59,10 +77,11 @@ function Import-XRefLookupData {
         }
 
         # Process ApiKey (Check parameter set first since ConfigStaging won't exist in the ApiKey set)
-        if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ConfigStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrEmpty($ConfigStaging.ApiKey))) {
+        if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ConfigStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrWhiteSpace($ConfigStaging.ApiKey))) {
 
             # Check if current API key is not set
-            if ($null, "" -contains $script:TwitchData.ApiKey) {
+            if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey)) {
+                # API key is not set
 
                 # Specify "Import" since there's nothing being replaced
                 if ($PSCmdlet.ShouldProcess("API key", "Import")) {
@@ -71,6 +90,13 @@ function Import-XRefLookupData {
 
                         # Handling import via ApiKey parameter
                         $script:TwitchData.ApiKey = $ApiKey
+
+                        if (-not $Quiet) {
+
+                            Write-Host "API key imported."
+
+                        }
+
                         return
 
                     }
@@ -79,41 +105,77 @@ function Import-XRefLookupData {
                         # Import API key from input object
                         $script:TwitchData.ApiKey = $ConfigStaging.ApiKey
 
+                        if (-not $Quiet) {
+
+                            Write-Host "API key imported."
+
+                        }
+
                     }
 
                 }
 
             }
             else {
+                # API key already exists
 
-                # Specify "Replace" since previous value will be replaced
-                if ($PSCmdlet.ShouldProcess("API key", "Replace")) {
+                if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
 
-                    # Unless -Force is specified, ask how to continue
-                    if ($Force -or $PSCmdlet.ShouldContinue("API key already exists", "Overwite with new key?")) {
+                    # Get key via ApiKey parameter
+                    $NewApiKey = $ApiKey
+
+                }
+                else {
+
+                    # Get key from input object
+                    $NewApiKey = $ConfigStaging.ApiKey
+
+                }
+
+                # Check if new key is different
+                if ($script:TwitchData.ApiKey -ne $NewApiKey) {
+
+                    # Specify "Replace" since previous value will be replaced
+                    if ($PSCmdlet.ShouldProcess("API key", "Replace")) {
 
                         if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
 
-                            # Handling import via ApiKey parameter
-                            $script:TwitchData.ApiKey = $ApiKey
+                            $script:TwitchData.ApiKey = $NewApiKey
+
+                            if (-not $Quiet) {
+
+                                Write-Host "API key replaced."
+
+                            }
+
                             return
 
                         }
                         else {
 
-                            # Import API key from input object
-                            $script:TwitchData.ApiKey = $ConfigStaging.ApiKey
+                            $script:TwitchData.ApiKey = $NewApiKey
+
+                            if (-not $Quiet) {
+
+                                Write-Host "API key replaced."
+
+                            }
 
                         }
 
                     }
 
                 }
+                elseif (-not $Quiet) {
+
+                    Write-Host "API key is unchanged."
+
+                }
 
             }
 
         }
-        elseif ($null, "" -contains $script:TwitchData.ApiKey -and $script:TwitchData.GetTotalCount() -eq 0) {
+        elseif ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
 
             # Lookup data cache is empty
             # Assume user is trying to restore from a full export
