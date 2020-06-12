@@ -67,9 +67,9 @@ function Import-XRefLookupData {
 
             # Set up counters object
             $Counters = [StreamXRef.ImportResults]::new()
-            $Counters.Add("User", [StreamXRef.ImportCounter]::new("User"))
-            $Counters.Add("Clip", [StreamXRef.ImportCounter]::new("Clip"))
-            $Counters.Add("Video", [StreamXRef.ImportCounter]::new("Video"))
+            $Counters.AddCounter("User")
+            $Counters.AddCounter("Clip")
+            $Counters.AddCounter("Video")
 
             # Restore ErrorActionPreference
             $ErrorActionPreference = $EAPrefSetting

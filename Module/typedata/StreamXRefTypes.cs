@@ -30,6 +30,8 @@ namespace StreamXRef
 
     public class ImportResults : Dictionary<String, ImportCounter>
     {
+        public void AddCounter(string name) => this.Add(name, new ImportCounter(name));
+
         public int AllImported
         {
             get
