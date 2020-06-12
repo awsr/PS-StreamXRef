@@ -144,8 +144,8 @@ function Import-XRefLookupData {
                             # If so, is the data the same?
                             if ($script:TwitchData.UserInfoCache[$_.name] -eq $_.id) {
 
-                                # Already exists and can be ignored
-                                $Counters.User.Ignored++
+                                # Already exists and can be skipped
+                                $Counters.User.Skipped++
 
                             }
                             else {
@@ -163,8 +163,7 @@ function Import-XRefLookupData {
                                 }
                                 else {
 
-                                    # Skip
-                                    $Counters.User.Skipped++
+                                    $Counters.User.Error++
 
                                 }
 
@@ -198,14 +197,11 @@ function Import-XRefLookupData {
                 }
 
                 Write-Verbose "(User Data) $($Counters.User.Imported) entries imported."
-                if ($Counters.User.Ignored -gt 0) {
-                    Write-Verbose "(User Data) $($Counters.User.Ignored) duplicate entries ignored."
-                }
                 if ($Counters.User.Skipped -gt 0) {
-                    Write-Verbose "(User Data) $($Counters.User.Skipped) conflicting entries skipped."
+                    Write-Verbose "(User Data) $($Counters.User.Skipped) duplicate entries skipped."
                 }
                 if ($Counters.User.Error -gt 0) {
-                    Write-Verbose "(User Data) $($Counters.User.Error) entries could not be parsed."
+                    Write-Verbose "(User Data) $($Counters.User.Error) entries could not be parsed or conflicted with existing data."
                 }
 
             }
@@ -238,7 +234,7 @@ function Import-XRefLookupData {
 
                             if ($ExistingObject.Offset -eq $NewOffsetValue -and $ExistingObject.VideoID -eq $NewVideoIDValue -and $ExistingObject.Created -eq $ConvertedDateTime) {
 
-                                $Counters.Clip.Ignored++
+                                $Counters.Clip.Skipped++
 
                             }
                             else {
@@ -257,7 +253,7 @@ function Import-XRefLookupData {
                                 }
                                 else {
 
-                                    $Counters.Clip.Skipped++
+                                    $Counters.Clip.Error++
 
                                 }
 
@@ -290,14 +286,11 @@ function Import-XRefLookupData {
                 }
 
                 Write-Verbose "(Clip Data) $($Counters.Clip.Imported) entries imported."
-                if ($Counters.Clip.Ignored -gt 0) {
-                    Write-Verbose "(Clip Data) $($Counters.Clip.Ignored) duplicate entries ignored."
-                }
                 if ($Counters.Clip.Skipped -gt 0) {
-                    Write-Verbose "(Clip Data) $($Counters.Clip.Skipped) conflicting entries skipped"
+                    Write-Verbose "(Clip Data) $($Counters.Clip.Skipped) duplicate entries skipped."
                 }
                 if ($Counters.Clip.Error -gt 0) {
-                    Write-Verbose "(Clip Data) $($Counters.Clip.Error) entries could not be parsed."
+                    Write-Verbose "(Clip Data) $($Counters.Clip.Error) entries could not be parsed or conflicted with existing data."
                 }
 
             }
@@ -324,7 +317,7 @@ function Import-XRefLookupData {
 
                             if ($script:TwitchData.VideoInfoCache[$_.video] -eq $ConvertedDateTime) {
 
-                                $Counters.Video.Ignored++
+                                $Counters.Video.Skipped++
 
                             }
                             else {
@@ -339,7 +332,7 @@ function Import-XRefLookupData {
                                 }
                                 else {
 
-                                    $Counters.Video.Skipped++
+                                    $Counters.Video.Error++
 
                                 }
 
@@ -372,14 +365,11 @@ function Import-XRefLookupData {
                 }
 
                 Write-Verbose "(Video Data) $($Counters.Video.Imported) entries imported."
-                if ($Counters.Video.Ignored -gt 0) {
-                    Write-Verbose "(Video Data) $($Counters.Video.Ignored) duplicate entries ignored."
-                }
                 if ($Counters.Video.Skipped -gt 0) {
-                    Write-Verbose "(Video Data) $($Counters.Video.Skipped) conflicting entries skipped"
+                    Write-Verbose "(Video Data) $($Counters.Video.Skipped) duplicate entries skipped."
                 }
                 if ($Counters.Video.Error -gt 0) {
-                    Write-Verbose "(Video Data) $($Counters.Video.Error) entries could not be parsed."
+                    Write-Verbose "(Video Data) $($Counters.Video.Error) entries could not be parsed or conflicted with existing data."
                 }
 
             }

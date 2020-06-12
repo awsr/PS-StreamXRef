@@ -64,29 +64,28 @@ Describe "Results object" {
             $Results.Video.Total | Should -Be 2
         }
         It "ToString method override works" {
-            "$($Results.User)" | Should -Be "Imported: 3, Ignored: 0, Skipped: 0, Error: 0, Total: 3"
-            "$($Results.Clip)" | Should -Be "Imported: 2, Ignored: 0, Skipped: 0, Error: 0, Total: 2"
-            "$($Results.Video)" | Should -Be "Imported: 2, Ignored: 0, Skipped: 0, Error: 0, Total: 2"
+            "$($Results.User)" | Should -Be "Imported: 3, Skipped: 0, Error: 0, Total: 3"
+            "$($Results.Clip)" | Should -Be "Imported: 2, Skipped: 0, Error: 0, Total: 2"
+            "$($Results.Video)" | Should -Be "Imported: 2, Skipped: 0, Error: 0, Total: 2"
         }
         It "All___ properties work" {
             $Results.AllImported | Should -Be 7
-            $Results.AllIgnored | Should -Be 0
             $Results.AllSkipped | Should -Be 0
             $Results.AllError | Should -Be 0
             $Results.AllTotal | Should -Be 7
         }
     }
     Context "Duplicate data" {
-        BeforeAll {
+        It "Skip duplicate data" {
+            Clear-XRefLookupData -RemoveAll -Force
             $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet -Force
-        }
-        It "Ignore duplicate data" {
+
             $Results.User.Imported | Should -Be 0
-            $Results.User.Ignored | Should -Be 3
+            $Results.User.Skipped | Should -Be 3
             $Results.Clip.Imported | Should -Be 0
-            $Results.Clip.Ignored | Should -Be 2
+            $Results.Clip.Skipped | Should -Be 2
             $Results.Video.Imported | Should -Be 0
-            $Results.Video.Ignored | Should -Be 2
+            $Results.Video.Skipped | Should -Be 2
         }
     }
 }

@@ -49,11 +49,11 @@ PS > $Results = Import-XRefLookupData -Path JsonFile.json -PassThru
 ...
 PS > $Results.Values | Format-Table
 
-Name  Imported Ignored Skipped Error Total
-----  -------- ------- ------- ----- -----
-User         4      12       0     0    16
-Clip         7       2       0     0     9
-Video        5       1       0     0     6
+Name  Imported Skipped Error Total
+----  -------- ------- ----- -----
+User         4      12     0    16
+Clip         7       2     0     9
+Video        5       1     0     6
 
 ```
 
@@ -180,14 +180,13 @@ Only the `Path` parameter supports accepting a value from the pipeline.
 
 ### None or StreamXRef.ImportResults
 
-When the `PassThru` parameter is specified, this function returns a `StreamXRef.ImportResults` object (based off of `System.Collections.Generic.Dictionary`) with the results of the import operation. Use `AllImported`, `AllIgnored`, `AllSkipped`, `AllError`, or `AllTotal` properties to get the counts across all of the caches.
+When the `PassThru` parameter is specified, this function returns a `[StreamXRef.ImportResults]` object (based on `[System.Collections.Generic.Dictionary]`) with the results of the import operation. Use `AllImported`, `AllSkipped`, `AllError`, or `AllTotal` properties to get the counts across all of the caches.
 
-Each object in the array includes counts for `Imported`, `Ignored`, `Skipped`, `Error`, and `Total`.
+Each object includes counts for `Imported`, `Skipped`, `Error`, and `Total`.
 
 * Imported: Number of entries successfully imported.
-* Ignored: Number of duplicate entries ignored.
-* Skipped: Number of entries that had different data than what was already in the cache and were skipped by user.
-* Error: Number of entries that could not be parsed.
+* Skipped: Number of duplicate entries skipped.
+* Error: Number of entries that conflicted or could not be parsed and were not imported.
 * Total: Number of entries read.
 
 ## NOTES

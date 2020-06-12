@@ -7,14 +7,13 @@ namespace StreamXRef
     {
         public String Name { get; set; }
         public int Imported { get; set; }
-        public int Ignored { get; set; }
         public int Skipped { get; set; }
         public int Error { get; set; }
         public int Total
         {
             get
             {
-                return (this.Imported + this.Ignored + this.Skipped + this.Error);
+                return (Imported + Skipped + Error);
             }
         }
 
@@ -22,12 +21,11 @@ namespace StreamXRef
         {
             Name = name;
             Imported = 0;
-            Ignored = 0;
             Skipped = 0;
             Error = 0;
         }
 
-        public override string ToString() => ("Imported: " + Imported + ", Ignored: " + Ignored + ", Skipped: " + Skipped + ", Error: " + Error + ", Total: " + Total);
+        public override string ToString() => ("Imported: " + Imported + ", Skipped: " + Skipped + ", Error: " + Error + ", Total: " + Total);
     }
 
     public class ImportResults : Dictionary<String, ImportCounter>
@@ -42,26 +40,6 @@ namespace StreamXRef
                     foreach (string part in this.Keys)
                     {
                         sum += this[part].Imported;
-                    }
-                    return (sum);
-                }
-                catch
-                {
-                    return (-1);
-                }
-            }
-        }
-
-        public int AllIgnored
-        {
-            get
-            {
-                int sum = 0;
-                try
-                {
-                    foreach (string part in this.Keys)
-                    {
-                        sum += this[part].Ignored;
                     }
                     return (sum);
                 }
