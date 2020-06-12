@@ -77,7 +77,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-Forces overwriting of existing data with imported data if there are differences (except for ones that can't be parsed).
+Forces overwriting of existing data (such as when there are data conflicts).
 
 ```yaml
 Type: SwitchParameter

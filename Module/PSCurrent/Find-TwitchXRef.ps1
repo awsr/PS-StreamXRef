@@ -71,7 +71,7 @@ function Find-TwitchXRef {
             }
             catch {
 
-                # This also forces script to halt if the command isn't found,
+                # This also forces the function to halt if the command isn't found,
                 # indicating the module wasn't loaded correctly
                 $PSCmdlet.ThrowTerminatingError($_)
 

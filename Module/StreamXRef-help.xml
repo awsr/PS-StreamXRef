@@ -809,7 +809,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>Forces overwriting of existing data with imported data if there are differences (except for ones that can't be parsed).</maml:para>
+            <maml:para>Forces overwriting of existing data (such as when there are data conflicts).</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -857,7 +857,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>Forces overwriting of existing data with imported data if there are differences (except for ones that can't be parsed).</maml:para>
+            <maml:para>Forces overwriting of existing data (such as when there are data conflicts).</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -927,7 +927,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:Description>
-          <maml:para>Forces overwriting of existing data with imported data if there are differences (except for ones that can't be parsed).</maml:para>
+          <maml:para>Forces overwriting of existing data (such as when there are data conflicts).</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
