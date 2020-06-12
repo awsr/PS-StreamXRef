@@ -139,7 +139,7 @@ $FunctionNames = $AllFunctions | ForEach-Object {
 
 }
 
-Set-Alias -Name txr -Value Find-TwitchXRef
+New-Alias -Name txr -Value Find-TwitchXRef -ErrorAction Ignore
 
 Export-ModuleMember -Alias "txr"
 Export-ModuleMember -Function $FunctionNames
