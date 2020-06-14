@@ -5,7 +5,7 @@ namespace StreamXRef
 {
     public class ImportCounter
     {
-        public String Name { get; set; }
+        public string Name { get; set; }
         public int Imported { get; set; }
         public int Skipped { get; set; }
         public int Error { get; set; }
