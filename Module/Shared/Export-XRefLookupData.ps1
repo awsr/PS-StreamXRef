@@ -57,7 +57,7 @@ function Export-XRefLookupData {
                     slug    = $_.Key
                     offset  = $_.Value.Offset
                     video   = $_.Value.VideoID
-                    created = $_.Value.Created.ToString("o")
+                    created = $_.Value.Created.ToString("yyyy-MM-ddTHH:mm:ssZ")
                 }
             )
 
@@ -66,11 +66,11 @@ function Export-XRefLookupData {
         # Convert VideoInfoCache to ArrayList
         $script:TwitchData.VideoInfoCache.GetEnumerator() | ForEach-Object {
 
-            # ToString("o") specifies format like "2020-05-09T05:35:45.5032152Z"
+            # ToString("yyyy-MM-ddTHH:mm:ssZ") specifies format like "2020-05-09T05:35:45Z"
             [void]$ConvertedVideoInfoCache.Add(
                 [pscustomobject]@{
                     video     = $_.Key
-                    timestamp = $_.Value.ToString("o")
+                    timestamp = $_.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")
                 }
             )
 
