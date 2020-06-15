@@ -10,7 +10,12 @@ Describe "Type loading" {
         {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.dll"} | Should -Not -Throw
     }
     It "Add types from source code" {
-        {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.cs"} | Should -Not -Throw
+        if ($PSVersionTable.PSVersion.Major -lt 6) {
+            {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.Legacy.cs"} | Should -Not -Throw
+        }
+        else {
+            {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.cs"} | Should -Not -Throw
+        }
     }
     Context "Specific types" {
         It "ImportCounter type exists" {
