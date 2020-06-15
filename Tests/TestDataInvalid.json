@@ -1,0 +1,52 @@
+{
+  "ApiKey": "fakeapikey",
+  "UserInfoCache": [
+    {
+      "name": "one",
+      "id": 11111111
+    },
+    {
+      "name": "two",
+      "id": "twotwotwotwotwotwotwotwo"
+    },
+    {
+      "name": "three",
+      "id": 33333333
+    }
+  ],
+  "ClipInfoCache": [
+    {
+      "slug": "madeupnameforaclip",
+      "offset": "ham",
+      "video": "cheese",
+      "created": "2020-05-31T02:04:14Z"
+    },
+    {
+      "slug": "WaitWhereIsTheRestOfIt"
+    },
+    {
+      "slug": "thisnamedoesnotexisteither",
+      "offset": 4321,
+      "video": 987654321,
+      "created": "2020-06-05T02:07:33Z"
+    }
+  ],
+  "VideoInfoCache": [
+    {
+      "video": 123456789,
+      "timestamp": "2020-05-31T00:27:16Z"
+    },
+    {
+      "video": "oops",
+      "timestamp": "2020-05-31T00:27:16Z"
+    },
+    {
+      "video": 123456789,
+      "timestamp": "eventually"
+    },
+    {
+      "video": 987654321,
+      "timestamp": "2020-06-05T00:54:56Z"
+    }
+  ]
+}

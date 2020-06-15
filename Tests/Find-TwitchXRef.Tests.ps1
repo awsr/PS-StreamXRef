@@ -49,25 +49,6 @@ BeforeAll {
     }
 }
 
-Describe "Internal function validation" {
-    It "Converts strings already in UTC" {
-        InModuleScope StreamXRef {
-            '2020-06-06T07:09:15Z' | ConvertTo-UtcDateTime | Should -Be ([datetime]::new(2020, 6, 6, 7, 9, 15, [System.DateTimeKind]::Utc))
-        }
-    }
-    It "Converts strings with a time zone offset" {
-        InModuleScope StreamXRef {
-            '2020-06-06T09:09:15+02:00' | ConvertTo-UtcDateTime | Should -Be ([datetime]::new(2020, 6, 6, 7, 9, 15, [System.DateTimeKind]::Utc))
-        }
-    }
-    It "Removes junk from clip URL" {
-        InModuleScope StreamXRef {
-            'https://www.twitch.tv/someuser/clip/TestStringPleaseWork?filter=clips&range=7d&sort=time' | Get-LastUrlSegment | Should -Be 'TestStringPleaseWork'
-            'https://clips.twitch.tv/TestStringPleaseWork' | Get-LastUrlSegment | Should -Be 'TestStringPleaseWork'
-        }
-    }
-}
-
 Describe "HTTP response errors" -Tag HTTPResponse {
     BeforeAll {
         if ($PSVersionTable.PSVersion.Major -lt 7) {
@@ -138,13 +119,12 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         }
     }
     Context "503 Service Unavailable" {
-        BeforeEach {
+        It "503 during clip lookup" {
             Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
                 $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 503))
             }
-        }
-        It "503 during clip lookup" {
-            { Find-TwitchXRef -Source https://clip.twitch.tv/WhatCouldGoWrong -XRef TestVal } | Should -Throw
+
+            {Find-TwitchXRef -Source https://clip.twitch.tv/WhatCouldGoWrong -XRef TestVal} | Should -Throw
         }
     }
 }

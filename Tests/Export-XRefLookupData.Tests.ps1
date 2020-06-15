@@ -7,11 +7,10 @@ BeforeAll {
 
 Describe "Export validation" {
     BeforeAll {
-        if (-not (Test-Path "$ProjectRoot/temp" -PathType Container)) {
-            New-Item -Path "$ProjectRoot/temp" -ItemType Directory -Force -ErrorAction Stop
-        }
         $TempPath = "$ProjectRoot/temp"
-
+        if (-not (Test-Path $TempPath -PathType Container)) {
+            New-Item -Path $TempPath -ItemType Directory -Force -ErrorAction Stop
+        }
         Clear-XRefLookupData -RemoveAll -Force
         Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop
     }

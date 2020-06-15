@@ -5,13 +5,6 @@ BeforeAll {
     Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force -ErrorAction Stop
 }
 
-Describe "Type loading" {
-    # Will eventually move this test into a main test file
-    It "Types assembly exists" {
-        {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.dll"} | Should -Not -Throw
-    }
-}
-
 Describe "Import validation" {
     BeforeEach {
         Clear-XRefLookupData -RemoveAll -Force
@@ -40,11 +33,11 @@ Describe "Import validation" {
 }
 
 Describe "Results object" {
+    BeforeAll {
+        Clear-XRefLookupData -RemoveAll -Force
+        $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
+    }
     Context "Valid data" {
-        BeforeAll {
-            Clear-XRefLookupData -RemoveAll -Force
-            $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
-        }
         It "Results object is correct type" {
             $Results | Should -BeOfType "StreamXRef.ImportResults"
         }
@@ -86,6 +79,24 @@ Describe "Results object" {
             $Results.Clip.Skipped | Should -Be 2
             $Results.Video.Imported | Should -Be 0
             $Results.Video.Skipped | Should -Be 2
+        }
+    }
+    Context "Invalid data" {
+        BeforeAll {
+            Clear-XRefLookupData -RemoveAll -Force
+            $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestDataInvalid.json" -PassThru -Quiet -ErrorAction SilentlyContinue
+        }
+        It "Counts bad user entries" {
+            $Results.User.Imported | Should -Be 2
+            $Results.User.Error | Should -Be 1
+        }
+        It "Counts bad clip entries" {
+            $Results.Clip.Imported | Should -Be 1
+            $Results.Clip.Error | Should -Be 2
+        }
+        It "Counts bad video entries" {
+            $Results.Video.Imported | Should -Be 2
+            $Results.Video.Error | Should -Be 2
         }
     }
 }
