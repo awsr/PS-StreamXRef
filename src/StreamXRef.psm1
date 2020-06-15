@@ -10,7 +10,13 @@ try {
 catch {
 
     # As a fallback, compile from source and load into memory
-    Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.cs" -ErrorAction Stop
+    if ($PSVersionTable.PSVersion.Major -lt 6) {
+        # Because the default compiler available to PowerShell 5.1 doesn't support C# 6+
+        Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.Legacy.cs" -ErrorAction Stop
+    }
+    else {
+        Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.cs" -ErrorAction Stop
+    }
 
 }
 
