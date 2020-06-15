@@ -1,0 +1,78 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build versioned scripts",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/ScriptBuilder.ps1",
+      "args": [
+        "${file}",
+        "${workspaceFolder}/Module/",
+        "-CommonPath", "Shared/${fileBasename}",
+        "Current = PSCurrent/${fileBasename}",
+        "Legacy = PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
+      ],
+      "windows": {
+        "command": "${workspaceFolder}\\tools\\ScriptBuilder.ps1",
+        "args": [
+          "${file}",
+          "${workspaceFolder}\\Module\\",
+          "-CommonPath", "Shared\\${fileBasename}",
+          "Current = PSCurrent\\${fileBasename}",
+          "Legacy = PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
+        ]
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build scripts for debugging",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/ScriptBuilder.ps1",
+      "args": [
+        "${file}",
+        "${workspaceFolder}/debug/",
+        "-CommonPath", "Shared/${fileBasename}",
+        "-Verbose",
+        "Current = PSCurrent/${fileBasename}",
+        "Legacy = PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
+      ],
+      "windows": {
+        "command": "${workspaceFolder}\\tools\\ScriptBuilder.ps1",
+        "args": [
+          "${file}",
+          "${workspaceFolder}\\debug\\",
+          "-CommonPath", "Shared\\${fileBasename}",
+          "-Verbose",
+          "Current = PSCurrent\\${fileBasename}",
+          "Legacy = PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
+        ]
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate help from markdown",
+      "type": "shell",
+      "command": "New-ExternalHelp",
+      "args": [
+        "-Path", "${workspaceFolder}/docs/",
+        "-OutputPath", "${workspaceFolder}/Module/",
+        "-Force"
+      ],
+      "windows": {
+        "command": "New-ExternalHelp",
+        "args": [
+          "-Path", "${workspaceFolder}\\docs\\",
+          "-OutputPath", "${workspaceFolder}\\Module\\",
+          "-Force"
+        ]
+      },
+      "problemMatcher": []
+    }
+  ]
+}

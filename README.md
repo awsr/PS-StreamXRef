@@ -1,28 +1,32 @@
-# Get-TwitchXRef
+# StreamXRef
 
 Have you ever seen a clip from several people streaming together and wanted to see what it looked like from other perspectives?
 
 ---
 
-Run the script to load the function into the current PowerShell session. 
-You will need to have a valid ClientID, which you can obtain from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/). 
-
-* For PowerShell 7.0+, use `Setup-TwitchXRef.ps1`
-
-* For Windows PowerShell 5.1, use `Setup-TwitchXRef-BackCompat.ps1`
-
-*I will probably turn this into an actual PowerShell Module in the future.*
+You will need to have a valid API key (Client ID), which you can obtain from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/).
 
 ---
 
-`Get-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-ClientID <String>] [-PassThru]`
+## Find-TwitchXRef
 
-**-Source** accepts Twitch clips in either URL format, Twitch clip IDs, and video URLs that include a timestamp parameter.
+Alias: `txr`
+
+```
+Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] [-Force]
+ -ApiKey <String> [-ExplicitNull] [<CommonParameters>]
+```
+
+**-Source** accepts Twitch clip URLs (either format), Twitch clip IDs, and video URLs that include a timestamp parameter.
 
 **-XRef** accepts either a video URL, a channel URL, or a channel/user name.
 
-**-Count** (*default 10*) determines the number of videos to request when **-XRef** is a name.
+**-Count** (*default 20*) determines the number of videos to request when **-XRef** is a name.
 
-**-ClientID** (*required 1st time in session*) accepts your Twitch client ID.
+**-Offset** (*default 0*) sets the starting offset for search results when **-XRef** is a name.
 
-**-PassThru** returns the URL as a string instead of writing to host.
+**-Force** tells the function to skip reading from the internal lookup cache.
+
+**-ApiKey** (*required 1st time in session if not set*) accepts your API key (for Twitch this is the "Client ID").
+
+**-ExplicitNull** tells the function to explicitly return a value of `$null` when encountering a [specified error](https://github.com/awsr/PS-StreamXRef/blob/module/docs/Find-TwitchXRef.md#notes).

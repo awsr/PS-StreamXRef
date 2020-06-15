@@ -1,0 +1,22 @@
+parameters:
+- name: testTitle
+  type: string
+
+steps:
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'current'
+    artifactName: 'typedata'
+    targetPath: '$(System.DefaultWorkingDirectory)/Module/typedata'
+- task: Pester@10
+  continueOnError: true
+  inputs:
+    scriptFolder: '$(System.DefaultWorkingDirectory)/Tests/*'
+    resultsFile: '$(System.DefaultWorkingDirectory)/Test-Pester.xml'
+    usePSCore: false
+- task: PublishTestResults@2
+  inputs:
+    testRunTitle: ${{ parameters.testTitle }}
+    testResultsFormat: 'NUnit'
+    testResultsFiles: '**/Test-*.xml'
+    failTaskOnFailedTests: true

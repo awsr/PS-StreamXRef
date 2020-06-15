@@ -1,2 +1,4 @@
-# Helper scripts
-Tools/
+# Debugging/testing output
+debug/
+src/dotnet/obj/
+src/dotnet/bin/

@@ -1,0 +1,68 @@
+trigger:
+ batch: true
+ branches:
+   include:
+     - master
+
+stages:
+- stage: Build
+  jobs:
+  - job: build
+    pool:
+      vmImage: 'ubuntu-latest' # this tends to be the fastest agent
+    timeoutInMinutes: 5
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: './src/dotnet/StreamXRefTypes.csproj'
+        arguments: '-c release'
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/src/dotnet/bin'
+        Contents: '**/StreamXRefTypes.dll'
+        TargetFolder: '$(System.DefaultWorkingDirectory)/staging'
+        flattenFolders: true
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/staging/StreamXRefTypes.dll'
+        artifact: 'typedata'
+        publishLocation: 'pipeline'
+
+- stage: Test
+  jobs:
+  - job: Windows_Current
+    timeoutInMinutes: 15
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - template: ./.templates/pwsh.yml
+      parameters:
+        testTitle: 'Windows (Current)'
+
+  - job: Windows_Legacy
+    timeoutInMinutes: 15
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - template: ./.templates/powershell.yml
+      parameters:
+        testTitle: 'Windows (Legacy)'
+
+  - job: Linux
+    timeoutInMinutes: 15
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - template: ./.templates/pwsh.yml
+      parameters:
+        testTitle: 'Linux'
+
+  - job: MacOS
+    timeoutInMinutes: 15
+    pool:
+      vmImage: 'macOS-latest'
+    steps:
+    - template: ./.templates/pwsh.yml
+      parameters:
+        testTitle: 'MacOS'
