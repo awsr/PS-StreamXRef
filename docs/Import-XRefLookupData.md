@@ -1,7 +1,7 @@
 ---
 external help file: StreamXRef-help.xml
 Module Name: StreamXRef
-online version: https://github.com/awsr/PS-StreamXRef/blob/module/docs/Import-XRefLookupData.md
+online version: https://github.com/awsr/PS-StreamXRef/blob/master/docs/Import-XRefLookupData.md
 schema: 2.0.0
 ---
 
