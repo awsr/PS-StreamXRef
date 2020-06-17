@@ -140,7 +140,8 @@ function Find-TwitchXRef {
             ErrorAction = "Stop"
         }
 
-        # Standardize XRef input to lowercase
+        # Standardize input to lowercase
+        $Source = $Source.ToLowerInvariant()
         $XRef = $XRef.ToLowerInvariant()
 
         #region Source Lookup ##########################
