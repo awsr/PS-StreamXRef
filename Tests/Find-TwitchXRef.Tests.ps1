@@ -64,7 +64,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
     }
     BeforeEach {
         Clear-XRefLookupData -RemoveAll -Force
-        Import-XRefLookupData -ApiKey notreal -Force
+        Import-XRefLookupData -ApiKey notreal -Quiet -Force
     }
     Context "404 Not Found" {
         BeforeEach {
@@ -111,9 +111,10 @@ Describe "HTTP response errors" -Tag HTTPResponse {
                 $Result = $TestArray | Find-TwitchXRef -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
                 $TestErrs[$global:TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
+                Should -Invoke "Invoke-RestMethod" -Exactly 3  # 1 404 response, 1 response with data, then 1 404 response
+                $Result | Should -BeNullOrEmpty
                 $TwitchData.ClipInfoCache.Keys | Should -Contain "ValidClipName"
                 $TwitchData.ClipInfoCache["ValidClipName"].offset | Should -Be 2468
-                $Result | Should -BeNullOrEmpty
 
             }
         }
@@ -129,7 +130,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
     }
 }
 
-Describe "Use cached data" {
+Describe "Data caching" {
     BeforeAll {
         Clear-XRefLookupData -RemoveAll -Force
         Import-XRefLookupData $ProjectRoot/Tests/TestData.json -Quiet -Force
@@ -158,10 +159,17 @@ Describe "Use cached data" {
             }
             return $MultiObject
         }
+
     }
-    It "Uses cached clip and UserID" -Tag "Current" {
+    It "Uses cached clip and UserID" {
         $Result = Find-TwitchXRef madeupnameforaclip one
         Should -InvokeVerifiable
         $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
     }
+    It "Matches cached data with different capitalization" {
+        $Result = Find-TwitchXRef MADEUPNAMEFORACLIP ONE
+        Should -InvokeVerifiable
+        $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
+    }
+
 }

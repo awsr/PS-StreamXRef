@@ -15,7 +15,7 @@ function Import-XRefLookupData {
         [Parameter(ParameterSetName = "General")]
         [switch]$PassThru,
 
-        [Parameter(ParameterSetName = "General")]
+        [Parameter()]
         [switch]$Quiet,
 
         [Parameter()]
@@ -133,7 +133,7 @@ function Import-XRefLookupData {
                 }
 
                 # Check if new key is different
-                if ($script:TwitchData.ApiKey -ne $NewApiKey) {
+                if ($script:TwitchData.ApiKey -ine $NewApiKey) {
 
                     # Specify "Replace" since previous value will be replaced
                     if ($PSCmdlet.ShouldProcess("API key", "Replace")) {

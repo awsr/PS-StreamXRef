@@ -127,15 +127,18 @@ function Find-TwitchXRef {
             ErrorAction = "Stop"
         }
 
+        # Standardize XRef input to lowercase
+        $XRef = $XRef.ToLowerInvariant()
+
         #region Source Lookup ##########################
 
-        if ($Source -match ".*twitch\.tv/videos/.+") {
+        if ($Source -imatch ".*twitch\.tv/videos/.+") {
             # Video URL provided
 
             $SourceParsedAsClip = $false
 
             # Check if missing timestamp
-            if ($Source -notmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
+            if ($Source -inotmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
 
                 Write-Error "(Video) URL missing timestamp parameter" -ErrorId MissingTimestamp -Category InvalidArgument -CategoryTargetName Source -TargetObject $Source
                 if ($ExplicitNull) {
@@ -148,7 +151,7 @@ function Find-TwitchXRef {
             }
 
             #region Get offset from URL parameters
-            [void]($Source -match ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*")
+            [void]($Source -imatch ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*")
 
             $OffsetArgs = @{ }
             $OffsetArgs["Hours"] = $Matches.ContainsKey("Hours") ? $Matches.Hours : 0
@@ -168,6 +171,7 @@ function Find-TwitchXRef {
 
             $SourceParsedAsClip = $true
 
+            # Strip potential URL formatting
             $Slug = $Source | Get-LastUrlSegment
 
             $tmpFlagCached = $false
@@ -278,7 +282,7 @@ function Find-TwitchXRef {
             try {
 
                 # Check for incorrect video type
-                if ($VodResponse.broadcast_type -ne "archive") {
+                if ($VodResponse.broadcast_type -ine "archive") {
 
                     # Set error message based on Source type
                     $ErrSrc = $SourceParsedAsClip ? "(Clip) Referenced" : "(Video) Source"
@@ -329,7 +333,7 @@ function Find-TwitchXRef {
 
         #region XRef Lookup ############################
 
-        if ($XRef -match ".*twitch\.tv/videos/.+") {
+        if ($XRef -imatch ".*twitch\.tv/videos/.+") {
             # Using VOD link
 
             [int]$XRefID = $XRef | Get-LastUrlSegment
@@ -341,7 +345,7 @@ function Find-TwitchXRef {
         else {
             # Using username/channel
 
-            # Strip formatting in case channel was passed as a URL
+            # Strip potential URL formatting
             $XRef = $XRef | Get-LastUrlSegment
 
             # Check ID cache for user
@@ -421,7 +425,7 @@ function Find-TwitchXRef {
         try {
 
             # Check for incorrect video type if XRef is a video URL ($Multi will be $false)
-            if (-not $Multi -and $XRefResponse.broadcast_type -ne "archive") {
+            if (-not $Multi -and $XRefResponse.broadcast_type -ine "archive") {
 
                 Write-Error "(XRef Video) Video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
 
