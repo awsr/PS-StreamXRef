@@ -113,8 +113,8 @@ Describe "HTTP response errors" -Tag HTTPResponse {
                 $TestErrs[$global:TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
                 Should -Invoke "Invoke-RestMethod" -Exactly 3  # 1 404 response, 1 response with data, then 1 404 response
                 $Result | Should -BeNullOrEmpty
-                $TwitchData.ClipInfoCache.Keys | Should -Contain "ValidClipName"
-                $TwitchData.ClipInfoCache["ValidClipName"].offset | Should -Be 2468
+                $TwitchData.ClipInfoCache.Keys | Should -Contain "validclipname"
+                $TwitchData.ClipInfoCache["validclipname"].offset | Should -Be 2468
 
             }
         }
