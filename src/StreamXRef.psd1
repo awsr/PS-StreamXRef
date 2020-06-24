@@ -4,7 +4,7 @@
 
     Author = 'Alex Wiser'
 
-    CompanyName = 'Unknown'
+    CompanyName = 'Alex Wiser'
 
     ModuleVersion = '3.0.0'
 
