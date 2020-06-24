@@ -1,4 +1,4 @@
-# StreamXRef
+# StreamXRef for PowerShell
 
 Have you ever seen a clip from several people streaming together and wanted to see what it looked like from other perspectives?
 
