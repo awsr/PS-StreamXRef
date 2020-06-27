@@ -10,13 +10,13 @@ function Export-XRefLookupData {
         [string]$Path,
 
         [Parameter()]
-        [switch]$Force = $false,
+        [switch]$Force,
 
         [Parameter()]
-        [switch]$NoClobber = $false,
+        [switch]$NoClobber,
 
         [Parameter()]
-        [switch]$Compress = $false
+        [switch]$Compress
     )
 
     Begin {
