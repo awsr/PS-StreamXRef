@@ -137,6 +137,20 @@ foreach ($FunctionFile in $AllFunctions) {
 
 }
 
+# Workaround for scoping issue with [ArgumentCompleter()] for Find-TwitchXRef
+$TXRArgumentCompleter = {
+    Param(
+        $commandName,
+        $parameterName,
+        $wordToComplete,
+        $commandAst,
+        $fakeBoundParameters
+    )
+
+    $script:TwitchData.UserInfoCache.Keys | Where-Object { $_ -like "$wordToComplete*" }
+}
+Register-ArgumentCompleter -CommandName Find-TwitchXRef -ParameterName XRef -ScriptBlock $TXRArgumentCompleter
+
 $FunctionNames = $AllFunctions | ForEach-Object {
 
     # Use the name of the file to specify function(s) to be exported

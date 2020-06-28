@@ -8,17 +8,6 @@ function Find-TwitchXRef {
         [string]$Source,
 
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipelineByPropertyName = $true)]
-        [ArgumentCompleter({
-            Param(
-                $commandName,
-                $parameterName,
-                $wordToComplete,
-                $commandAst,
-                $fakeBoundParameters
-            )
-
-            $script:TwitchData.UserInfoCache.Keys | Where-Object { $_ -like "$wordToComplete*" }
-        })]
         [ValidateNotNullOrEmpty()]
         [string]$XRef,
 

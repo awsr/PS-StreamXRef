@@ -7,16 +7,16 @@ function Clear-XRefLookupData {
         [switch]$RemoveAll,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$ApiKey = $false,
+        [switch]$ApiKey,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$User = $false,
+        [switch]$User,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$Clip = $false,
+        [switch]$Clip,
 
         [Parameter(ParameterSetName = "Selection")]
-        [switch]$Video = $false,
+        [switch]$Video,
 
         [Parameter(ParameterSetName = "Selection")]
         [ValidateNotNullOrEmpty()]
@@ -25,7 +25,7 @@ function Clear-XRefLookupData {
         [int]$DaysToKeep,
 
         [Parameter()]
-        [switch]$Force = $false
+        [switch]$Force
     )
 
     Begin {

@@ -10,20 +10,20 @@ function Export-XRefLookupData {
         [string]$Path,
 
         [Parameter()]
-        [switch]$Force = $false,
+        [switch]$Force,
 
         [Parameter()]
-        [switch]$NoClobber = $false,
+        [switch]$NoClobber,
 
         [Parameter()]
-        [switch]$Compress = $false
+        [switch]$Compress
     )
 
     Begin {
 
         if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
 
-            throw "No data exists to export"
+            Write-Warning "No cached data. Exported file will not contain any entries."
 
         }
 
@@ -96,7 +96,7 @@ function Export-XRefLookupData {
 
             if ($PSCmdlet.ShouldProcess($Path, "Write File")) {
 
-                $DataAsJson | Out-File $Path -Force:$Force -NoClobber:$NoClobber
+                $DataAsJson | Out-File $Path -Force:$Force -NoClobber:$NoClobber -Confirm:$false
 
             }
 
@@ -109,8 +109,8 @@ function Export-XRefLookupData {
 
                 # Create placeholder file, including any missing directories
                 # Override ErrorAction preferences because Out-File does not create missing directories and will fail anyway
-                New-Item $Path -ItemType File -Force:$Force -ErrorAction Stop | Out-Null
-                $DataAsJson | Out-File $Path
+                New-Item $Path -ItemType File -Force:$Force -Confirm:$false -ErrorAction Stop | Out-Null
+                $DataAsJson | Out-File $Path -Confirm:$false
 
             }
 
