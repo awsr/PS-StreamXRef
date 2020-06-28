@@ -21,10 +21,9 @@ function Export-XRefLookupData {
 
     Begin {
 
-        if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0 -and -not $Force) {
+        if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
 
-            Write-Warning "No data exists to export. Use -Force to write a placeholder file."
-            break
+            Write-Warning "No cached data. Exported file will not contain any entries."
 
         }
 
