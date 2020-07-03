@@ -30,21 +30,10 @@ function Import-XRefLookupData {
 
         }
 
-        # Ensure requirements are loaded
-        try {
+        # Check for required resources
+        if ([StreamXRef.ImportResults] -isnot [type] -or -not (Test-Path Variable:Script:TwitchData)) {
 
-            if ([StreamXRef.ImportResults] -is [type] -and -not (Test-Path Variable:Script:TwitchData)) {
-
-                Initialize-LookupCache -ErrorAction Stop
-
-            }
-
-        }
-        catch {
-
-            # This also forces the function to halt if the command isn't found,
-            # indicating the module wasn't loaded correctly
-            $PSCmdlet.ThrowTerminatingError($_)
+            throw "Missing required internal resources. Ensure module was loaded correctly."
 
         }
 

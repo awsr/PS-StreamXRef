@@ -30,6 +30,12 @@ function Clear-XRefLookupData {
 
     Begin {
 
+        if (-not (Test-Path Variable:Script:TwitchData)) {
+
+            throw "Missing required internal resources. Ensure module was loaded correctly."
+
+        }
+
         if ($Force -and -not $PSBoundParameters.ContainsKey("Confirm")) {
 
             $ConfirmPreference = "none"

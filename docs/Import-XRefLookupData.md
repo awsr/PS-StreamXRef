@@ -46,7 +46,6 @@ Set your API key without invoking the main `Find-TwitchXRef` command.
 ### Example 3
 ```powershell
 PS > $Results = Import-XRefLookupData -Path JsonFile.json -PassThru
-...
 PS > $Results.Values | Format-Table
 
 Name  Imported Skipped Error Total

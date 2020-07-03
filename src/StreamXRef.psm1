@@ -22,34 +22,6 @@ catch {
 
 #region Internal shared helper functions ================
 
-function Initialize-LookupCache {
-    [CmdletBinding()]
-    Param()
-
-    $script:TwitchData = [pscustomobject]@{
-
-        # [string] Client ID for API access
-        ApiKey         = $null
-
-        # @{ [string] User/channel name; [int] User/channel ID number }
-        UserInfoCache  = [System.Collections.Generic.Dictionary[string, int]]::new()
-
-        # @{ [string] Clip slug name; @{ Offset = [int] Time offset in seconds; VideoID = [int] Video ID number; Created = [datetime] UTC date/time clip was created } }
-        ClipInfoCache  = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
-
-        # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
-        VideoInfoCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
-
-    }
-
-    $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -ErrorAction Stop -Value {
-
-        $this.UserInfoCache.Count + $this.ClipInfoCache.Count + $this.VideoInfoCache.Count
-
-    }
-
-}
-
 filter Get-LastUrlSegment {
 
     $Url = $_ -split "/" | Select-Object -Last 1
@@ -93,14 +65,35 @@ filter ConvertTo-UtcDateTime {
 
 try {
 
-    Initialize-LookupCache -ErrorAction Stop
+    $script:TwitchData = [pscustomobject]@{
+
+        # [string] Client ID for API access
+        ApiKey         = $null
+
+        # @{ [string] User/channel name; [int] User/channel ID number }
+        UserInfoCache  = [System.Collections.Generic.Dictionary[string, int]]::new()
+
+        # @{ [string] Clip slug name; @{ Offset = [int] Time offset in seconds; VideoID = [int] Video ID number; Created = [datetime] UTC date/time clip was created } }
+        ClipInfoCache  = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
+
+        # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
+        VideoInfoCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
+
+    }
+
+    $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -ErrorAction Stop -Value {
+
+        $this.UserInfoCache.Count + $this.ClipInfoCache.Count + $this.VideoInfoCache.Count
+
+    }
 
 }
 catch {
 
-    throw $_
+    $PSCmdlet.ThrowTerminatingError($_)
 
 }
+
 
 #endregion Initialize variables ----------------
 

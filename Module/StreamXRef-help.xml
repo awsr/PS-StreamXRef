@@ -496,6 +496,13 @@
           <maml:para>This will export the contents of the lookup data cache to a file.</maml:para>
         </dev:remarks>
       </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 2 --------------------------</maml:title>
+        <dev:code>PS &gt; Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefLookupData -Path /path/to/XRefData.json}</dev:code>
+        <dev:remarks>
+          <maml:para>Automatically export the data cache whenever new data is added. Must use an absolute path or else it will change based on your current directory.</maml:para>
+        </dev:remarks>
+      </command:example>
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
@@ -1045,7 +1052,6 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       <command:example>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
         <dev:code>PS &gt; $Results = Import-XRefLookupData -Path JsonFile.json -PassThru
-...
 PS &gt; $Results.Values | Format-Table
 
 Name  Imported Skipped Error Total

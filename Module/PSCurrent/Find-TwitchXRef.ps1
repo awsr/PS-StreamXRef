@@ -51,20 +51,7 @@ function Find-TwitchXRef {
 
         if (-not (Test-Path Variable:Script:TwitchData)) {
 
-            try {
-
-                Write-Warning "Lookup data is missing. Reinitializing."
-
-                Initialize-LookupCache -ErrorAction Stop
-
-            }
-            catch {
-
-                # This also forces the function to halt if the command isn't found,
-                # indicating the module wasn't loaded correctly
-                $PSCmdlet.ThrowTerminatingError($_)
-
-            }
+            throw "Missing required internal resources. Ensure module was loaded correctly."
 
         }
 
@@ -519,7 +506,7 @@ function Find-TwitchXRef {
 
         if ((Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) -and $NewDataAdded) {
 
-            New-Event -SourceIdentifier XRefNewDataAdded -Sender "StreamXRef"
+            [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender StreamXRef)
 
         }
 
