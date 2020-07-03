@@ -51,7 +51,7 @@ First version released as a full PowerShell Module.
 * Added `Export-XRefLookupData`, `Import-XRefLookupData`, and `Clear-XRefLookupData`
 '@
 
-            Prerelease = 'beta4'
+            Prerelease = 'beta5'
         }
     }
 
