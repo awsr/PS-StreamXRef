@@ -1,6 +1,7 @@
 #Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.0' }
 
 BeforeAll {
+    Get-Module StreamXRef | Remove-Module
     $ProjectRoot = Split-Path -Parent $PSScriptRoot
     Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force -ErrorAction Stop
     Import-Module Microsoft.PowerShell.Utility -Force
