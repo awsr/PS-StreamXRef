@@ -8,7 +8,7 @@ BeforeAll {
 
 Describe "Import validation" {
     BeforeEach {
-        Clear-XRefLookupData -RemoveAll -Force
+        Clear-XRefLookupData -RemoveAll
     }
     It "Times are in UTC" {
         Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop
@@ -35,7 +35,7 @@ Describe "Import validation" {
 
 Describe "Results object" {
     BeforeAll {
-        Clear-XRefLookupData -RemoveAll -Force
+        Clear-XRefLookupData -RemoveAll
         $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
     }
     Context "Valid data" {
@@ -84,7 +84,7 @@ Describe "Results object" {
     }
     Context "Invalid data" {
         BeforeAll {
-            Clear-XRefLookupData -RemoveAll -Force
+            Clear-XRefLookupData -RemoveAll
             $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestDataInvalid.json" -PassThru -Quiet -ErrorAction SilentlyContinue
         }
         It "Counts bad user entries" {

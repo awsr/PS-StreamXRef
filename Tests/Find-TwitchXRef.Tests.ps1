@@ -64,7 +64,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         Remove-Variable -Name TestErrorOffset -Scope Global -ErrorAction Ignore
     }
     BeforeEach {
-        Clear-XRefLookupData -RemoveAll -Force
+        Clear-XRefLookupData -RemoveAll
         Import-XRefLookupData -ApiKey notreal -Quiet -Force
     }
     Context "404 Not Found" {
@@ -133,7 +133,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
 
 Describe "Data caching" {
     BeforeAll {
-        Clear-XRefLookupData -RemoveAll -Force
+        Clear-XRefLookupData -RemoveAll
         Import-XRefLookupData $ProjectRoot/Tests/TestData.json -Quiet -Force
 
         # Catchall mock to ensure Invoke-RestMethod doesn't leak

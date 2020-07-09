@@ -12,7 +12,7 @@ Describe "Export validation" {
         if (-not (Test-Path $TempPath -PathType Container)) {
             New-Item -Path $TempPath -ItemType Directory -Force -ErrorAction Stop
         }
-        Clear-XRefLookupData -RemoveAll -Force
+        Clear-XRefLookupData -RemoveAll
         Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop
     }
     AfterEach {
