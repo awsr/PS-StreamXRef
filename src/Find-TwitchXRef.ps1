@@ -80,6 +80,9 @@ function Find-TwitchXRef {
 
         $NewDataAdded = $false
 
+        # Temporary list for suppressing additional API calls when the username isn't found while processing a list/array of inputs
+        $NotFoundList = [System.Collections.Generic.List[string]]::new()
+
     }
 
     Process {
@@ -370,6 +373,19 @@ function Find-TwitchXRef {
             # Strip potential URL formatting
             $XRef = $XRef | Get-LastUrlSegment
 
+            # Check if repeated search using a name that wasn't found during this instance
+            if ($NotFoundList -icontains $XRef) {
+
+                Write-Error "(XRef Username) `"$XRef`" not found" -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef
+                if ($ExplicitNull) {
+                    return $null
+                }
+                else {
+                    return
+                }
+
+            }
+
             # Check ID cache for user
             if (-not $Force -and $script:TwitchData.UserInfoCache.ContainsKey($XRef) -and $script:TwitchData.UserInfoCache[$XRef] -is [int]) {
 
@@ -392,6 +408,7 @@ function Find-TwitchXRef {
                     # Unlike other API requests, this doesn't return a 404 error if not found
                     if ($UserLookup._total -eq 0) {
 
+                        $NotFoundList.Add($XRef)
                         Write-Error "(XRef Username) `"$XRef`" not found" -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
 
                     }
