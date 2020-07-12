@@ -1,6 +1,6 @@
 #.ExternalHelp StreamXRef-help.xml
 function Import-XRefLookupData {
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "General")]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low", DefaultParameterSetName = "General")]
     [OutputType([System.Void], [StreamXRef.ImportResults])]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = "General")]
@@ -37,9 +37,7 @@ function Import-XRefLookupData {
 
         }
 
-        # Initial states for ShouldContinue
-        $YesToAll = $false
-        $NoToAll = $false
+        $ConflictingData = $false
 
     }
 
@@ -164,17 +162,10 @@ function Import-XRefLookupData {
             }
 
         }
-        elseif ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
+        elseif (-not $Quiet -and [string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
 
             # Lookup data cache is empty
             # Assume user is trying to restore from a full export
-            Write-Error "API key missing from input."
-
-        }
-        else {
-
-            # Already contains API key
-            # User may have wanted to not keep the key in the JSON file, so not an error
             Write-Warning "API key missing from input."
 
         }
@@ -201,11 +192,7 @@ function Import-XRefLookupData {
                             }
                             else {
 
-                                Write-Warning "For $($_.name): $($_.id) -> $($script:TwitchData.UserInfoCache[$_.name])"
-
-                                # Exists, but data is different
-                                # Unless -Force is specified, ask how to continue becuase this should only occur due to data corruption
-                                if ($Force -or $PSCmdlet.ShouldContinue("Input data entry differs from existing data", "Overwrite with new value?", [ref]$YesToAll, [ref]$NoToAll)) {
+                                if ($Force) {
 
                                     # Overwrite
                                     $script:TwitchData.UserInfoCache[$_.name] = $_.id
@@ -214,7 +201,14 @@ function Import-XRefLookupData {
                                 }
                                 else {
 
+                                    $ConflictingData = $true
                                     $Counters.User.Error++
+
+                                    if (-not $Quiet) {
+
+                                        Write-Warning "Conflict for $($_.name): [new] $($_.id) -> [old] $($script:TwitchData.UserInfoCache[$_.name])"
+
+                                    }
 
                                 }
 
@@ -258,11 +252,6 @@ function Import-XRefLookupData {
             }
 
         }
-        else {
-
-            Write-Error "User lookup data missing from input."
-
-        }
 
         # Process ClipInfoCache
         if ($ConfigStaging.psobject.Properties.Name -contains "ClipInfoCache" -and $ConfigStaging.ClipInfoCache.Count -gt 0) {
@@ -276,6 +265,7 @@ function Import-XRefLookupData {
                         # Enforce casting to [int]
                         [int]$NewOffsetValue = $_.offset
                         [int]$NewVideoIDValue = $_.video
+
                         $ConvertedDateTime = $_.created | ConvertTo-UtcDateTime
 
                         if ($script:TwitchData.ClipInfoCache.ContainsKey($_.slug)) {
@@ -290,21 +280,27 @@ function Import-XRefLookupData {
                             }
                             else {
 
-                                Write-Warning (
-                                    "For $($_.slug):`n",
-                                    "[new] $NewOffsetValue, $NewVideoIDValue, $ConvertedDateTime`n",
-                                    "[old] $($ExistingObject.Offset), $($ExistingObject.VideoID), $($ExistingObject.Created)" -join ""
-                                )
+                                if ($Force) {
 
-                                if ($Force -or $PSCmdlet.ShouldContinue("Input data entry differs from existing data", "Overwrite with new value?", [ref]$YesToAll, [ref]$NoToAll)) {
-
+                                    # Overwrite
                                     $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime }
                                     $Counters.Clip.Imported++
 
                                 }
                                 else {
 
+                                    $ConflictingData = $true
                                     $Counters.Clip.Error++
+
+                                    if (-not $Quiet) {
+
+                                        Write-Warning (
+                                            "Conflict for $($_.slug):`n",
+                                            "[new] $NewOffsetValue, $NewVideoIDValue, $ConvertedDateTime`n",
+                                            "[old] $($ExistingObject.Offset), $($ExistingObject.VideoID), $($ExistingObject.Created)" -join ""
+                                        )
+
+                                    }
 
                                 }
 
@@ -347,11 +343,6 @@ function Import-XRefLookupData {
             }
 
         }
-        else {
-
-            Write-Error "Clip lookup data missing from input."
-
-        }
 
         # Process VideoInfoCache
         if ($ConfigStaging.psobject.Properties.Name -contains "VideoInfoCache" -and $ConfigStaging.VideoInfoCache.Count -gt 0) {
@@ -373,17 +364,23 @@ function Import-XRefLookupData {
                             }
                             else {
 
-                                Write-Warning "For $($_.video): $ConvertedDateTime -> $($script:TwitchData.VideoInfoCache[$_.video])"
+                                if ($Force) {
 
-                                if ($Force -or $PSCmdlet.ShouldContinue("Input data entry differs from existing data", "Overwrite with new value?", [ref]$YesToAll, [ref]$NoToAll)) {
-
+                                    # Overwrite
                                     $script:TwitchData.VideoInfoCache[$_.video] = $ConvertedDateTime
                                     $Counters.Video.Imported++
 
                                 }
                                 else {
 
+                                    $ConflictingData = $true
                                     $Counters.Video.Error++
+
+                                    if (-not $Quiet) {
+
+                                        Write-Warning "For $($_.video): $ConvertedDateTime -> $($script:TwitchData.VideoInfoCache[$_.video])"
+
+                                    }
 
                                 }
 
@@ -426,17 +423,16 @@ function Import-XRefLookupData {
             }
 
         }
-        else {
-
-            Write-Error "Video lookup data missing from input."
-
-        }
 
     }
 
     End {
 
         if ($PSCmdlet.ParameterSetName -eq "General") {
+
+            if ($ConflictingData) {
+                Write-Error "Some data conflicts with existing values. Run with -Force to overwrite."
+            }
 
             if (-not $Quiet) {
 
