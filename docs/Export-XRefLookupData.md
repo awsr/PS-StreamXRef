@@ -13,8 +13,8 @@ Export the contents of the lookup data cache to a file.
 ## SYNTAX
 
 ```
-Export-XRefLookupData [-Path] <String> [-Force] [-NoClobber] [-Compress] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Export-XRefLookupData [-Path] <String> [-ExcludeApiKey] [-Force] [-NoClobber] [-Compress]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -47,6 +47,21 @@ Removes unnecessary whitespace from the JSON string. This results in smaller fil
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ExcludeApiKey
+Excludes the cached API key from the export.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: NoKey, EAK
 
 Required: False
 Position: Named

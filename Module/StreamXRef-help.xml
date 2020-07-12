@@ -26,6 +26,17 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NoKey, EAK">
+          <maml:name>ExcludeApiKey</maml:name>
+          <maml:Description>
+            <maml:para>Excludes the cached API key from the export.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
@@ -394,6 +405,18 @@
         <maml:name>Compress</maml:name>
         <maml:Description>
           <maml:para>Removes unnecessary whitespace from the JSON string. This results in smaller files at the expense of readability.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NoKey, EAK">
+        <maml:name>ExcludeApiKey</maml:name>
+        <maml:Description>
+          <maml:para>Excludes the cached API key from the export.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>

@@ -10,6 +10,10 @@ function Export-XRefLookupData {
         [string]$Path,
 
         [Parameter()]
+        [Alias("NoKey", "EAK")]
+        [switch]$ExcludeApiKey,
+
+        [Parameter()]
         [switch]$Force,
 
         [Parameter()]
@@ -37,6 +41,14 @@ function Export-XRefLookupData {
 
             $ConfirmPreference = "None"
 
+        }
+
+        # Handle API key
+        if ($ExcludeApiKey) {
+            $ExportApiKey = ""
+        }
+        else {
+            $ExportApiKey = $script:TwitchData.ApiKey
         }
 
         $ConvertedUserInfoCache = [System.Collections.Generic.List[pscustomobject]]::new()
@@ -84,7 +96,7 @@ function Export-XRefLookupData {
 
         # Bundle data together for converting to JSON (for compatibility with potential Javascript-based version)
         $TXRConfigData = [pscustomobject]@{
-            ApiKey         = $script:TwitchData.ApiKey
+            ApiKey         = $ExportApiKey
             UserInfoCache  = $ConvertedUserInfoCache
             ClipInfoCache  = $ConvertedClipInfoCache
             VideoInfoCache = $ConvertedVideoInfoCache
