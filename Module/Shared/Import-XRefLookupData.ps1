@@ -454,7 +454,7 @@ function Import-XRefLookupData {
             }
 
             if ($MappingWarning) {
-                Write-Warning "Some clip -> user mapping data could not be imported"
+                Write-Warning "Some clip -> user mapping data could not be imported or was missing"
             }
 
             if (-not $Quiet) {
