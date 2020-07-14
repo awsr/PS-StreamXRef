@@ -15,112 +15,26 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Clear-XRefLookupData</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>RemoveAll</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
+          <maml:name>Name</maml:name>
           <maml:Description>
-            <maml:para>Removes the API key and all data from the caches.</maml:para>
+            <maml:para>Specify which data to clear. Accepts the folowing values:</maml:para>
+            <maml:para>- ApiKey</maml:para>
+            <maml:para>- Clip</maml:para>
+            <maml:para>- User</maml:para>
+            <maml:para>- Video</maml:para>
           </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>SwitchParameter</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
+          <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NoKey, EAK">
-          <maml:name>ExcludeApiKey</maml:name>
-          <maml:Description>
-            <maml:para>Excludes the cached API key from the export.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Force</maml:name>
-          <maml:Description>
-            <maml:para>Force clearing data.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-          <maml:name>Confirm</maml:name>
-          <maml:Description>
-            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
-          <maml:name>WhatIf</maml:name>
-          <maml:Description>
-            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
-      <command:syntaxItem>
-        <maml:name>Clear-XRefLookupData</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>ApiKey</maml:name>
-          <maml:Description>
-            <maml:para>Clear the API key.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Clip</maml:name>
-          <maml:Description>
-            <maml:para>Clear the clip lookup cache.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>User</maml:name>
-          <maml:Description>
-            <maml:para>Clear the user lookup cache.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Video</maml:name>
-          <maml:Description>
-            <maml:para>Clear the video lookup cache.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Keep">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Keep">
           <maml:name>DaysToKeep</maml:name>
           <maml:Description>
-            <maml:para>Specifies the number of days to keep when using the `Clip` and `Video` parameters. If used without at least one of these it will have no effect. (Recommended max value: 60)</maml:para>
+            <maml:para>Specifies the number of days to keep in the `Clip` and `Video` caches. If used without at least one of these it will have no effect. (Recommended max value: 60)</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -129,32 +43,13 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Clear-XRefLookupData</maml:name>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Force</maml:name>
+          <maml:name>RemoveAll</maml:name>
           <maml:Description>
-            <maml:para>Force clearing data.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-          <maml:name>Confirm</maml:name>
-          <maml:Description>
-            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
-          <maml:name>WhatIf</maml:name>
-          <maml:Description>
-            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+            <maml:para>Remove the API key and all cached data.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -165,70 +60,26 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>RemoveAll</maml:name>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
+        <maml:name>Name</maml:name>
         <maml:Description>
-          <maml:para>Removes the API key and all data from the caches.</maml:para>
+          <maml:para>Specify which data to clear. Accepts the folowing values:</maml:para>
+          <maml:para>- ApiKey</maml:para>
+          <maml:para>- Clip</maml:para>
+          <maml:para>- User</maml:para>
+          <maml:para>- Video</maml:para>
         </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>SwitchParameter</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
+        <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>ApiKey</maml:name>
-        <maml:Description>
-          <maml:para>Clear the API key.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Clip</maml:name>
-        <maml:Description>
-          <maml:para>Clear the clip lookup cache.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>User</maml:name>
-        <maml:Description>
-          <maml:para>Clear the user lookup cache.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Video</maml:name>
-        <maml:Description>
-          <maml:para>Clear the video lookup cache.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Keep">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Keep">
         <maml:name>DaysToKeep</maml:name>
         <maml:Description>
-          <maml:para>Specifies the number of days to keep when using the `Clip` and `Video` parameters. If used without at least one of these it will have no effect. (Recommended max value: 60)</maml:para>
+          <maml:para>Specifies the number of days to keep in the `Clip` and `Video` caches. If used without at least one of these it will have no effect. (Recommended max value: 60)</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -238,33 +89,9 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Force</maml:name>
+        <maml:name>RemoveAll</maml:name>
         <maml:Description>
-          <maml:para>Force clearing data.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-        <maml:name>Confirm</maml:name>
-        <maml:Description>
-          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
-        <maml:name>WhatIf</maml:name>
-        <maml:Description>
-          <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          <maml:para>Remove the API key and all cached data.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -302,9 +129,9 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS &gt; Clear-XRefLookupData -Clip -Video -DaysToKeep 30 -Force</dev:code>
+        <dev:code>PS &gt; Clear-XRefLookupData -Name Clip, Video -DaysToKeep 30</dev:code>
         <dev:remarks>
-          <maml:para>This will clear data older than 30 days from the `Clip` and `Video` caches. `Force` is also used prevent being asked to confirm these actions.</maml:para>
+          <maml:para>This will clear data older than 30 days from the `Clip` and `Video` caches.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -312,6 +139,196 @@
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
         <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/master/docs/Clear-XRefLookupData.md</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Disable-XRefPersistence</command:name>
+      <command:verb>Disable</command:verb>
+      <command:noun>XRefPersistence</command:noun>
+      <maml:description>
+        <maml:para>Disables the built-in data persistence option for the StreamXRef module.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Disables the built-in data persistence option by renaming the file and unregistering the event subscriber. The `Remove` parameter can be specified to delete all persistent data files.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Disable-XRefPersistence</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Quiet</maml:name>
+          <maml:Description>
+            <maml:para>Suppress writing information messages to host.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Remove</maml:name>
+          <maml:Description>
+            <maml:para>Delete the data file instead of renaming it when disabling persistence (or delete the renamed file if persistence is already disabled).</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Quiet</maml:name>
+        <maml:Description>
+          <maml:para>Suppress writing information messages to host.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Remove</maml:name>
+        <maml:Description>
+          <maml:para>Delete the data file instead of renaming it when disabling persistence (or delete the renamed file if persistence is already disabled).</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS &gt; Disable-XRefPersistence</dev:code>
+        <dev:remarks>
+          <maml:para>Disable the built-in data persistence.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/master/docs/Disable-XRefPersistence.md</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Enable-XRefPersistence</command:name>
+      <command:verb>Enable</command:verb>
+      <command:noun>XRefPersistence</command:noun>
+      <maml:description>
+        <maml:para>Enables the built-in data persistence option for the StreamXRef module.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>This function sets up automatic saving for all cached data to a file in the `StreamXRef` folder in your Application Data directory. If this file is detected when the module is loaded, persistence will automatically be enabled.</maml:para>
+      <maml:para>Note that automatic saving will only trigger when new data is added to the cache when running the `Find-TwitchXRef` function. Additionally, clips and videos older than 60 days will be automatically removed when loaded.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Enable-XRefPersistence</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Quiet</maml:name>
+          <maml:Description>
+            <maml:para>Suppress writing information messages to host.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Quiet</maml:name>
+        <maml:Description>
+          <maml:para>Suppress writing information messages to host.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>PS &gt; Enable-XRefPersistence</dev:code>
+        <dev:remarks>
+          <maml:para>Enable the built-in data persistence.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/master/docs/Enable-XRefPersistence.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -347,6 +364,28 @@
           <maml:name>Compress</maml:name>
           <maml:Description>
             <maml:para>Removes unnecessary whitespace from the JSON string. This results in smaller files at the expense of readability.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NoKey, EAK">
+          <maml:name>ExcludeApiKey</maml:name>
+          <maml:Description>
+            <maml:para>Excludes the cached API key from the export.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NoMapping, ECM">
+          <maml:name>ExcludeClipMapping</maml:name>
+          <maml:Description>
+            <maml:para>Excludes the cached Clip to Username results from the export.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -417,6 +456,18 @@
         <maml:name>ExcludeApiKey</maml:name>
         <maml:Description>
           <maml:para>Excludes the cached API key from the export.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NoMapping, ECM">
+        <maml:name>ExcludeClipMapping</maml:name>
+        <maml:Description>
+          <maml:para>Excludes the cached Clip to Username results from the export.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -545,7 +596,7 @@
     </command:details>
     <maml:description>
       <maml:para>Given a Twitch clip or video timestamp URL, find the same moment from the cross-referenced video or channel and return it as a URL. This only works with stream archives because Twitch returns incorrect data for highlights and etc.</maml:para>
-      <maml:para>You must provide your own API key.</maml:para>
+      <maml:para>You must provide your own API key. For Twitch this is the "Client ID" and can be obtained from the Twitch Developer Dashboard (https://dev.twitch.tv/console/apps/).</maml:para>
       <maml:para>An event with a `SourceIdentifier` of " XRefNewDataAdded " will be sent after running if new data was added to the lookup data cache and an event subscriber has been registered with `Register-EngineEvent`.</maml:para>
     </maml:description>
     <command:syntax>
@@ -818,8 +869,8 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This command lets you import data into the lookup cache from a file with JSON formatted data. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.</maml:para>
-      <maml:para>This command is meant to be used with files created using `Export-XRefLookupData`.</maml:para>
+      <maml:para>This command lets you import data into the lookup cache from a JSON file that was made using `Export-XRefLookupData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.</maml:para>
+      <maml:para>This command DOES NOT send an " XRefNewDataAdded " event.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -839,7 +890,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>Forces overwriting of existing data (such as when there are data conflicts).</maml:para>
+            <maml:para>Forces overwriting of existing data in the Clip, User, and Video lookup caches.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -887,7 +938,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>Forces overwriting of existing data (such as when there are data conflicts).</maml:para>
+            <maml:para>Forces overwriting of existing data in the Clip, User, and Video lookup caches.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -909,7 +960,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Quiet</maml:name>
           <maml:Description>
-            <maml:para>Suppress writing import results to host.</maml:para>
+            <maml:para>Suppress writing import results to host as well as per-item warning messages (but not errors).</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -957,7 +1008,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:Description>
-          <maml:para>Forces overwriting of existing data (such as when there are data conflicts).</maml:para>
+          <maml:para>Forces overwriting of existing data in the Clip, User, and Video lookup caches.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -993,7 +1044,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Quiet</maml:name>
         <maml:Description>
-          <maml:para>Suppress writing import results to host.</maml:para>
+          <maml:para>Suppress writing import results to host as well as per-item warning messages (but not errors).</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1054,7 +1105,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Clip to Username mappings are considered low priority and any errors with them will only trigger a warning message at the end of the import.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>

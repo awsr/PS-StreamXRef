@@ -20,7 +20,7 @@ Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <I
 ## DESCRIPTION
 Given a Twitch clip or video timestamp URL, find the same moment from the cross-referenced video or channel and return it as a URL. This only works with stream archives because Twitch returns incorrect data for highlights and etc.
 
-You must provide your own API key.
+You must provide your own API key. For Twitch this is the "Client ID" and can be obtained from the [Twitch Developer Dashboard](https://dev.twitch.tv/console/apps/).
 
 An event with a `SourceIdentifier` of "**XRefNewDataAdded**" will be sent after running if new data was added to the lookup data cache and an event subscriber has been registered with `Register-EngineEvent`.
 

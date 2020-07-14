@@ -23,9 +23,9 @@ Import-XRefLookupData [-ApiKey] <String> [-Force] [-WhatIf] [-Confirm] [<CommonP
 ```
 
 ## DESCRIPTION
-This command lets you import data into the lookup cache from a file with JSON formatted data. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.
+This command lets you import data into the lookup cache from a JSON file that was made using `Export-XRefLookupData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.
 
-This command is meant to be used with files created using `Export-XRefLookupData`.
+This command DOES NOT send an "**XRefNewDataAdded**" event.
 
 ## EXAMPLES
 
@@ -76,7 +76,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-Forces overwriting of existing data (such as when there are data conflicts).
+Forces overwriting of existing data in the Clip, User, and Video lookup caches.
 
 ```yaml
 Type: SwitchParameter
@@ -121,7 +121,7 @@ Accept wildcard characters: False
 ```
 
 ### -Quiet
-Suppress writing import results to host.
+Suppress writing import results to host as well as per-item warning messages (but not errors).
 
 ```yaml
 Type: SwitchParameter
@@ -189,5 +189,7 @@ Each object includes counts for `Imported`, `Skipped`, `Error`, and `Total`.
 * Total: Number of entries read.
 
 ## NOTES
+
+Clip to Username mappings are considered low priority and any errors with them will only trigger a warning message at the end of the import.
 
 ## RELATED LINKS
