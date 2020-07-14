@@ -98,9 +98,14 @@ Describe "HTTP response errors" -Tag HTTPResponse {
             InModuleScope StreamXRef {
                 Mock Invoke-RestMethod -ParameterFilter { $Uri -like "*ValidClipName" } -MockWith {
                     return [pscustomobject]@{
+                        broadcaster = [pscustomobject]@{
+                            id = 22446688
+                            name = "someone"
+                        }
                         vod = [pscustomobject]@{
                             id = 123456789
                             offset = 2468
+                            url = "https://notimportant.com/because/not/being/checked/in/this/test"
                         }
                         created_at = [datetime]::UtcNow
                     }

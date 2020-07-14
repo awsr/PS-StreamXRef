@@ -28,7 +28,8 @@
       "slug": "thisnamedoesnotexisteither",
       "offset": 4321,
       "video": 987654321,
-      "created": "2020-06-05T02:07:33Z"
+      "created": "2020-06-05T02:07:33Z",
+      "mapping": []
     }
   ],
   "VideoInfoCache": [

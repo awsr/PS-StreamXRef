@@ -21,16 +21,6 @@ Describe "Import validation" {
             }
         }
     }
-    It "Writes errors for missing data" {
-        Import-XRefLookupData "$ProjectRoot/Tests/TestDataEmpty.json" -Quiet -ErrorVariable TestErrs -ErrorAction SilentlyContinue
-        $TestErrs.Count | Should -Be 4
-    }
-    It "Does not write error for missing API key when one already exists" {
-        Import-XRefLookupData -ApiKey testval -Quiet
-        Import-XRefLookupData "$ProjectRoot/Tests/TestDataEmpty.json" -Quiet -ErrorVariable TestErrs -WarningVariable TestWarns -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-        $TestErrs.Count | Should -Be 3
-        $TestWarns.Count | Should -Be 1
-    }
 }
 
 Describe "Results object" {
