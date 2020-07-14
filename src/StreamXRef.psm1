@@ -172,3 +172,40 @@ New-Alias -Name txr -Value Find-TwitchXRef -ErrorAction Ignore
 
 Export-ModuleMember -Alias "txr"
 Export-ModuleMember -Function $FunctionNames
+
+#region Persistent data ========================
+
+$script:PersistStatus = [pscustomobject]@{
+    CanUse = $false
+    Enabled = $false
+    Id = 0
+}
+
+try {
+
+    # Get path inside try/catch in case of problems resolving the path
+    $script:PersistPath = Join-Path ([System.Environment]::GetFolderPath("ApplicationData")) "StreamXRef/datacache.json"
+    $script:PersistStatus.CanUse = $true
+
+    # If the data file is found in the default location, automatically enable persistence
+    if (Test-Path $PersistPath) {
+
+        Enable-XRefPersistence -Quiet
+
+    }
+
+}
+catch {
+
+    $script:PersistStatus.CanUse = $false
+
+}
+
+# Cleanup on unload
+$ExecutionContext.SessionState.Module.OnRemove += {
+    if ($PersistStatus.Id -ne 0) {
+        Unregister-Event -SubscriptionId $PersistStatus.Id -ErrorAction SilentlyContinue
+    }
+}
+
+#endregion Persistent data ---------------------

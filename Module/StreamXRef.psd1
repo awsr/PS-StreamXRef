@@ -20,7 +20,8 @@
 
     CompatiblePSEditions = @('Desktop', 'Core')
 
-    FunctionsToExport = @('Find-TwitchXRef', 'Export-XRefLookupData', 'Import-XRefLookupData', 'Clear-XRefLookupData')
+    FunctionsToExport = @('Find-TwitchXRef', 'Export-XRefLookupData', 'Import-XRefLookupData',
+        'Clear-XRefLookupData', 'Enable-XRefPersistence', 'Disable-XRefPersistence')
 
     AliasesToExport = @('txr')
 
@@ -48,7 +49,7 @@ First version released as a full PowerShell Module.
 * Renamed `Get-TwitchXRef` to `Find-TwitchXRef`
 * Changed alias from `gtxr` to `txr`
 * Added data caching
-* Added `Export-XRefLookupData`, `Import-XRefLookupData`, and `Clear-XRefLookupData`
+* Added `Export-XRefLookupData`, `Import-XRefLookupData`, `Clear-XRefLookupData`, `Enable-XRefPersistence`, and `Disable-XRefPersistence`
 '@
 
             Prerelease = 'beta5'
