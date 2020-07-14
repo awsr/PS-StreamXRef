@@ -1,6 +1,6 @@
 #.ExternalHelp StreamXRef-help.xml
 function Export-XRefLookupData {
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium")]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low")]
     [OutputType([System.Void])]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
