@@ -14,6 +14,10 @@ function Export-XRefLookupData {
         [switch]$ExcludeApiKey,
 
         [Parameter()]
+        [Alias("NoMapping", "ECM")]
+        [switch]$ExcludeClipMapping,
+
+        [Parameter()]
         [switch]$Force,
 
         [Parameter()]
@@ -70,12 +74,27 @@ function Export-XRefLookupData {
         # Convert ClipInfoCache to List
         $script:TwitchData.ClipInfoCache.GetEnumerator() | ForEach-Object {
 
+            $ClipInfoMapping = [System.Collections.Generic.List[pscustomobject]]::new()
+
+            if (-not $ExcludeClipMapping) {
+                # Convert clip mapping data to List
+                $_.Value.Mapping.GetEnumerator() | ForEach-Object {
+                    $ClipInfoMapping.Add(
+                        [pscustomobject]@{
+                            user   = $_.Key
+                            result = $_.Value
+                        }
+                    )
+                }
+            }
+
             $ConvertedClipInfoCache.Add(
                 [pscustomobject]@{
                     slug    = $_.Key
                     offset  = $_.Value.Offset
                     video   = $_.Value.VideoID
                     created = $_.Value.Created.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    mapping = $ClipInfoMapping
                 }
             )
 
@@ -106,8 +125,8 @@ function Export-XRefLookupData {
 
     Process {
 
-        # Save Json string
-        [string]$DataAsJson = $TXRConfigData | ConvertTo-Json -Compress:$Compress
+        # Save Json string ("-Depth 4" required in order to include clip/username mapping)
+        [string]$DataAsJson = $TXRConfigData | ConvertTo-Json -Compress:$Compress -Depth 4
 
         # Check if path exists
         if (Test-Path $Path) {

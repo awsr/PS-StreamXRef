@@ -67,16 +67,33 @@ try {
 
     $script:TwitchData = [pscustomobject]@{
 
-        # [string] Client ID for API access
+        #   Value = [string] Client ID for API access
         ApiKey         = $null
 
-        # @{ [string] User/channel name; [int] User/channel ID number }
+        <#
+            Key   = [string] User/channel name
+            Value = [int] User/channel ID number
+        #>
         UserInfoCache  = [System.Collections.Generic.Dictionary[string, int]]::new()
 
-        # @{ [string] Clip slug name; @{ Offset = [int] Time offset in seconds; VideoID = [int] Video ID number; Created = [datetime] UTC date/time clip was created } }
+        <#
+            Key   = [string] Clip slug name
+            Value = [pscustomobject]@{
+                Offset  = [int] Time offset in seconds
+                VideoID = [int] Video ID number
+                Created = [datetime] UTC date/time clip was created
+                Mapping = [hashtable]@{
+                    Key   = [string] Username from a previous search
+                    Value = [string] URL returned from a previous search
+                }
+            }
+        #>
         ClipInfoCache  = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
 
-        # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
+        <#
+            Key   = [int] Video ID number
+            Value = [datetime] Starting timestamp in UTC
+        #>
         VideoInfoCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
 
     }
@@ -93,7 +110,6 @@ catch {
     $PSCmdlet.ThrowTerminatingError($_)
 
 }
-
 
 #endregion Initialize variables ----------------
 

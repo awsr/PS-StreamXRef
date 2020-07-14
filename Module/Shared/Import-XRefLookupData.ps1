@@ -37,6 +37,7 @@ function Import-XRefLookupData {
 
         }
 
+        $MappingWarning = $false
         $ConflictingData = $false
 
     }
@@ -273,6 +274,7 @@ function Import-XRefLookupData {
                             # Shorter variable for using in the "if" statements and warning message
                             $ExistingObject = $script:TwitchData.ClipInfoCache[$_.slug]
 
+                            # Results mapping info is low priority and not checked here
                             if ($ExistingObject.Offset -eq $NewOffsetValue -and $ExistingObject.VideoID -eq $NewVideoIDValue -and $ExistingObject.Created -eq $ConvertedDateTime) {
 
                                 $Counters.Clip.Skipped++
@@ -283,7 +285,7 @@ function Import-XRefLookupData {
                                 if ($Force) {
 
                                     # Overwrite
-                                    $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime }
+                                    $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
                                     $Counters.Clip.Imported++
 
                                 }
@@ -310,8 +312,25 @@ function Import-XRefLookupData {
                         else {
 
                             # New data to add
-                            $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime }
+                            $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
                             $Counters.Clip.Imported++
+
+                        }
+
+                        # Try importing mapping subset
+                        try {
+
+                            foreach ($entry in $_.mapping) {
+
+                                # Add to Mapping hashtable
+                                $script:TwitchData.ClipInfoCache[$_.slug].Mapping[$entry.user] = $entry.result
+
+                            }
+
+                        }
+                        catch {
+
+                            $MappingWarning = $true
 
                         }
 
@@ -432,6 +451,10 @@ function Import-XRefLookupData {
 
             if ($ConflictingData) {
                 Write-Error "Some data conflicts with existing values. Run with -Force to overwrite."
+            }
+
+            if ($MappingWarning) {
+                Write-Warning "Some clip -> user mapping data could not be imported"
             }
 
             if (-not $Quiet) {
