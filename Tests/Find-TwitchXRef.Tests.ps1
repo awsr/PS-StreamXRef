@@ -146,7 +146,7 @@ Describe "Data caching" {
             $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 404))
         }
 
-        Mock Invoke-RestMethod -ModuleName StreamXRef -Verifiable -ParameterFilter { $Uri -like "*11111111/videos" } -MockWith {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*11111111/videos" } -MockWith {
             $MultiObject = [pscustomobject]@{
                 _total = 1234
                 videos = @()
@@ -168,14 +168,18 @@ Describe "Data caching" {
 
     }
     It "Uses cached clip and UserID" {
+        # Mock won't be invoked if function doesn't read the cached data
         $Result = Find-TwitchXRef madeupnameforaclip one
-        Should -InvokeVerifiable
-        $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
+        Should -Invoke 'Invoke-RestMethod' -ModuleName StreamXRef -Exactly 1
+        $Result | Should -Be 'https://www.twitch.tv/videos/111222333?t=0h40m4s'
+    }
+    It "Uses cached Clip to User mapping data for quick result" {
+        [void] (Find-TwitchXRef madeupnameforaclip one)
+        Should -Invoke 'Invoke-RestMethod' -ModuleName StreamXRef -Exactly 0
     }
     It "Matches cached data with different capitalization" {
         $Result = Find-TwitchXRef MADEUPNAMEFORACLIP ONE
-        Should -InvokeVerifiable
-        $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
+        $Result | Should -Be 'https://www.twitch.tv/videos/111222333?t=0h40m4s'
     }
 
 }
