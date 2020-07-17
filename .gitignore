@@ -1,4 +1,4 @@
-# Debugging/testing output
 debug/
+build/
 src/dotnet/obj/
 src/dotnet/bin/
