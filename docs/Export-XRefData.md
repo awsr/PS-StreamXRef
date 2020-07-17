@@ -1,11 +1,11 @@
 ---
 external help file: StreamXRef-help.xml
 Module Name: StreamXRef
-online version: https://github.com/awsr/PS-StreamXRef/blob/master/docs/Export-XRefLookupData.md
+online version: https://github.com/awsr/PS-StreamXRef/blob/master/docs/Export-XRefData.md
 schema: 2.0.0
 ---
 
-# Export-XRefLookupData
+# Export-XRefData
 
 ## SYNOPSIS
 Export the contents of the lookup data cache to a file.
@@ -13,27 +13,27 @@ Export the contents of the lookup data cache to a file.
 ## SYNTAX
 
 ```
-Export-XRefLookupData [-Path] <String> [-ExcludeApiKey] [-ExcludeClipMapping] [-Force] [-NoClobber] [-Compress]
+Export-XRefData [-Path] <String> [-ExcludeApiKey] [-ExcludeClipMapping] [-Force] [-NoClobber] [-Compress]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 This command exports the contents of the lookup data cache as JSON to a specified file.
 
-The files created by this command can be used with `Import-XRefLookupData`.
+The files created by this command can be used with `Import-XRefData`.
 
 ## EXAMPLES
 
 ### Example 1
 ```
-PS > Export-XRefLookupData -Path XRefData.json
+PS > Export-XRefData -Path XRefData.json
 ```
 
 This will export the contents of the lookup data cache to a file.
 
 ### Example 2
 ```
-PS > Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefLookupData -Path /path/to/XRefData.json}
+PS > Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefData -Path /path/to/XRefData.json}
 ```
 
 Automatically export the data cache whenever new data is added. Must use an absolute path or else it will change based on your current directory.

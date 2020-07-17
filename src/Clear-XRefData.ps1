@@ -1,5 +1,5 @@
 #.ExternalHelp StreamXRef-help.xml
-function Clear-XRefLookupData {
+function Clear-XRefData {
     [CmdletBinding(DefaultParameterSetName = "Selection")]
     [OutputType([System.Void])]
     Param(

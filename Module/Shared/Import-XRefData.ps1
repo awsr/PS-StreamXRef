@@ -1,5 +1,5 @@
 #.ExternalHelp StreamXRef-help.xml
-function Import-XRefLookupData {
+function Import-XRefData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low", DefaultParameterSetName = "General")]
     [OutputType([System.Void], [StreamXRef.ImportResults])]
     Param(

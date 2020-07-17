@@ -1,5 +1,5 @@
 #.ExternalHelp StreamXRef-help.xml
-function Export-XRefLookupData {
+function Export-XRefData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low")]
     [OutputType([System.Void])]
     Param(

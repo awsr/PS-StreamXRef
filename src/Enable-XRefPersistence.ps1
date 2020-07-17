@@ -34,13 +34,13 @@ function Enable-XRefPersistence {
 
                 if (Test-Path $PersistPath) {
 
-                    Import-XRefLookupData -Path $PersistPath -Quiet -Force
+                    Import-XRefData -Path $PersistPath -Quiet -Force
 
                     # Clean up entries older than 60 days (default Twitch retention policy)
-                    Clear-XRefLookupData -Name Clip, Video -DaysToKeep 60
+                    Clear-XRefData -Name Clip, Video -DaysToKeep 60
 
                     # Export cleaned data back to persistent storage
-                    Export-XRefLookupData -Path $PersistPath -Force
+                    Export-XRefData -Path $PersistPath -Force
 
                 }
                 else {
@@ -53,7 +53,7 @@ function Enable-XRefPersistence {
 
                 # Suppress writing job info to host when registering
                 [void] (Register-EngineEvent -SourceIdentifier XRefNewDataAdded -ErrorAction Stop -Action {
-                    Export-XRefLookupData -Path $script:PersistPath -Force
+                    Export-XRefData -Path $script:PersistPath -Force
                 })
 
                 # Take note of the subscription id (might not be the same as the PSEventJob id)

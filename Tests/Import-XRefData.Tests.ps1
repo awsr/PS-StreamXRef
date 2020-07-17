@@ -8,10 +8,10 @@ BeforeAll {
 
 Describe "Import validation" {
     BeforeEach {
-        Clear-XRefLookupData -RemoveAll
+        Clear-XRefData -RemoveAll
     }
     It "Times are in UTC" {
-        Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop
+        Import-XRefData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop
         InModuleScope StreamXRef {
             $TwitchData.ClipInfoCache.GetEnumerator() | ForEach-Object {
                 $_.Value.Created.Kind | Should -Be Utc
@@ -25,8 +25,8 @@ Describe "Import validation" {
 
 Describe "Results object" {
     BeforeAll {
-        Clear-XRefLookupData -RemoveAll
-        $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
+        Clear-XRefData -RemoveAll
+        $Results = Import-XRefData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
     }
     Context "Valid data" {
         It "Results object is correct type" {
@@ -62,7 +62,7 @@ Describe "Results object" {
     Context "Duplicate data" {
         It "Skip duplicate data" {
             # Do not use Clear here because this is testing for duplicate data
-            $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet -Force
+            $Results = Import-XRefData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet -Force
 
             $Results.User.Imported | Should -Be 0
             $Results.User.Skipped | Should -Be 3
@@ -74,8 +74,8 @@ Describe "Results object" {
     }
     Context "Invalid data" {
         BeforeAll {
-            Clear-XRefLookupData -RemoveAll
-            $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestDataInvalid.json" -PassThru -Quiet -ErrorAction SilentlyContinue
+            Clear-XRefData -RemoveAll
+            $Results = Import-XRefData "$ProjectRoot/Tests/TestDataInvalid.json" -PassThru -Quiet -ErrorAction SilentlyContinue
         }
         It "Counts bad user entries" {
             $Results.User.Imported | Should -Be 2

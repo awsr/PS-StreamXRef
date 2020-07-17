@@ -2,9 +2,9 @@
 <helpItems schema="maml" xmlns="http://msh">
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Clear-XRefLookupData</command:name>
+      <command:name>Clear-XRefData</command:name>
       <command:verb>Clear</command:verb>
-      <command:noun>XRefLookupData</command:noun>
+      <command:noun>XRefData</command:noun>
       <maml:description>
         <maml:para>Clears data from the internal lookup caches for the StreamXRef module.</maml:para>
       </maml:description>
@@ -14,7 +14,7 @@
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Clear-XRefLookupData</maml:name>
+        <maml:name>Clear-XRefData</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
           <maml:name>Name</maml:name>
           <maml:Description>
@@ -45,7 +45,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Clear-XRefLookupData</maml:name>
+        <maml:name>Clear-XRefData</maml:name>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>RemoveAll</maml:name>
           <maml:Description>
@@ -129,7 +129,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS &gt; Clear-XRefLookupData -Name Clip, Video -DaysToKeep 30</dev:code>
+        <dev:code>PS &gt; Clear-XRefData -Name Clip, Video -DaysToKeep 30</dev:code>
         <dev:remarks>
           <maml:para>This will clear data older than 30 days from the `Clip` and `Video` caches.</maml:para>
         </dev:remarks>
@@ -138,7 +138,7 @@
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/master/docs/Clear-XRefLookupData.md</maml:uri>
+        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/master/docs/Clear-XRefData.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -334,20 +334,20 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Export-XRefLookupData</command:name>
+      <command:name>Export-XRefData</command:name>
       <command:verb>Export</command:verb>
-      <command:noun>XRefLookupData</command:noun>
+      <command:noun>XRefData</command:noun>
       <maml:description>
         <maml:para>Export the contents of the lookup data cache to a file.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
       <maml:para>This command exports the contents of the lookup data cache as JSON to a specified file.</maml:para>
-      <maml:para>The files created by this command can be used with `Import-XRefLookupData`.</maml:para>
+      <maml:para>The files created by this command can be used with `Import-XRefData`.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Export-XRefLookupData</maml:name>
+        <maml:name>Export-XRefData</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="0" aliases="PSPath">
           <maml:name>Path</maml:name>
           <maml:Description>
@@ -565,14 +565,14 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS &gt; Export-XRefLookupData -Path XRefData.json</dev:code>
+        <dev:code>PS &gt; Export-XRefData -Path XRefData.json</dev:code>
         <dev:remarks>
           <maml:para>This will export the contents of the lookup data cache to a file.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
-        <dev:code>PS &gt; Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefLookupData -Path /path/to/XRefData.json}</dev:code>
+        <dev:code>PS &gt; Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefData -Path /path/to/XRefData.json}</dev:code>
         <dev:remarks>
           <maml:para>Automatically export the data cache whenever new data is added. Must use an absolute path or else it will change based on your current directory.</maml:para>
         </dev:remarks>
@@ -581,7 +581,7 @@
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/master/docs/Export-XRefLookupData.md</maml:uri>
+        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/master/docs/Export-XRefData.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -861,20 +861,20 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Import-XRefLookupData</command:name>
+      <command:name>Import-XRefData</command:name>
       <command:verb>Import</command:verb>
-      <command:noun>XRefLookupData</command:noun>
+      <command:noun>XRefData</command:noun>
       <maml:description>
         <maml:para>Import data to the lookup cache. Can also set the API key without invoking a full lookup.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This command lets you import data into the lookup cache from a JSON file that was made using `Export-XRefLookupData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.</maml:para>
+      <maml:para>This command lets you import data into the lookup cache from a JSON file that was made using `Export-XRefData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.</maml:para>
       <maml:para>This command DOES NOT send an " XRefNewDataAdded " event.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Import-XRefLookupData</maml:name>
+        <maml:name>Import-XRefData</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
           <maml:name>ApiKey</maml:name>
           <maml:Description>
@@ -922,11 +922,11 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Import-XRefLookupData</maml:name>
+        <maml:name>Import-XRefData</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="PSPath">
           <maml:name>Path</maml:name>
           <maml:Description>
-            <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefLookupData`.</maml:para>
+            <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefData`.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1020,7 +1020,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="PSPath">
         <maml:name>Path</maml:name>
         <maml:Description>
-          <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefLookupData`.</maml:para>
+          <maml:para>Specifies the path to a file containing JSON formatted data. Meant for use with `Export-XRefData`.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -1111,21 +1111,21 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS &gt; Import-XRefLookupData -Path JsonFile.json</dev:code>
+        <dev:code>PS &gt; Import-XRefData -Path JsonFile.json</dev:code>
         <dev:remarks>
           <maml:para>Import previously-exported data from a file.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
-        <dev:code>PS &gt; Import-XRefLookupData -ApiKey "1234567890abcdefghijklmnopqrst"</dev:code>
+        <dev:code>PS &gt; Import-XRefData -ApiKey "1234567890abcdefghijklmnopqrst"</dev:code>
         <dev:remarks>
           <maml:para>Set your API key without invoking the main `Find-TwitchXRef` command.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
-        <dev:code>PS &gt; $Results = Import-XRefLookupData -Path JsonFile.json -PassThru
+        <dev:code>PS &gt; $Results = Import-XRefData -Path JsonFile.json -PassThru
 PS &gt; $Results.Values | Format-Table
 
 Name  Imported Skipped Error Total
@@ -1141,7 +1141,7 @@ Video        5       1     0     6</dev:code>
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>Online Version:</maml:linkText>
-        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/master/docs/Import-XRefLookupData.md</maml:uri>
+        <maml:uri>https://github.com/awsr/PS-StreamXRef/blob/master/docs/Import-XRefData.md</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>

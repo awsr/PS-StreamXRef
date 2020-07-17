@@ -1,11 +1,11 @@
 ---
 external help file: StreamXRef-help.xml
 Module Name: StreamXRef
-online version: https://github.com/awsr/PS-StreamXRef/blob/master/docs/Clear-XRefLookupData.md
+online version: https://github.com/awsr/PS-StreamXRef/blob/master/docs/Clear-XRefData.md
 schema: 2.0.0
 ---
 
-# Clear-XRefLookupData
+# Clear-XRefData
 
 ## SYNOPSIS
 Clears data from the internal lookup caches for the StreamXRef module.
@@ -14,12 +14,12 @@ Clears data from the internal lookup caches for the StreamXRef module.
 
 ### Selection (Default)
 ```
-Clear-XRefLookupData -Name <String[]> [-DaysToKeep <Int32>] [<CommonParameters>]
+Clear-XRefData -Name <String[]> [-DaysToKeep <Int32>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Clear-XRefLookupData [-RemoveAll] [<CommonParameters>]
+Clear-XRefData [-RemoveAll] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -29,7 +29,7 @@ Clears either all data or any combination of the following for the StreamXRef mo
 
 ### Example 1
 ```
-PS > Clear-XRefLookupData -Name Clip, Video -DaysToKeep 30
+PS > Clear-XRefData -Name Clip, Video -DaysToKeep 30
 ```
 
 This will clear data older than 30 days from the `Clip` and `Video` caches.
