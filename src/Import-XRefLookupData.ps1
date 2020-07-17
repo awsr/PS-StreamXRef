@@ -31,7 +31,7 @@ function Import-XRefLookupData {
         }
 
         # Check for required resources
-        if ([StreamXRef.ImportResults] -isnot [type] -or -not (Test-Path Variable:Script:TwitchData)) {
+        if (-not (Test-Path Variable:Script:TwitchData)) {
 
             throw "Missing required internal resources. Ensure module was loaded correctly."
 
@@ -53,11 +53,21 @@ function Import-XRefLookupData {
             # This will now terminate the script if it fails
             $ConfigStaging = Get-Content $Path -Raw | ConvertFrom-Json
 
-            # Set up counters object
-            $Counters = [StreamXRef.ImportResults]::new()
-            $Counters.AddCounter("User")
-            $Counters.AddCounter("Clip")
-            $Counters.AddCounter("Video")
+            if ($AdvImportCounter) {
+                # Set up counters object
+                $Counters = [StreamXRef.ImportResults]::new()
+                $Counters.AddCounter("User")
+                $Counters.AddCounter("Clip")
+                $Counters.AddCounter("Video")
+            }
+            else {
+                # Basic fallback object
+                $Counters = @{
+                    User = [pscustomobject]@{Name = "User"; Imported = 0; Skipped = 0; Error = 0}
+                    Clip = [pscustomobject]@{Name = "Clip"; Imported = 0; Skipped = 0; Error = 0}
+                    Video = [pscustomobject]@{Name = "Video"; Imported = 0; Skipped = 0; Error = 0}
+                }
+            }
 
             # Restore ErrorActionPreference
             $ErrorActionPreference = $EAPrefSetting
@@ -459,8 +469,8 @@ function Import-XRefLookupData {
 
             if (-not $Quiet) {
 
-                # Display import results
-                $Counters.Values | Format-Table -AutoSize | Out-Host
+                # Display import results (manual ordering in case of unordered fallback object)
+                ($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-Host
 
             }
 

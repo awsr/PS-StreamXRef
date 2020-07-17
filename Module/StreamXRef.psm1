@@ -1,7 +1,14 @@
 Set-StrictMode -Version 3
 
 # Add type data
-Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll"
+try {
+    Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll"
+    $script:AdvImportCounter = $true
+}
+catch {
+    $script:AdvImportCounter = $false
+    Write-Warning "Unable to add StreamXRef type data. Only basic import stats will be available"
+}
 
 #region Internal shared helper functions ================
 
