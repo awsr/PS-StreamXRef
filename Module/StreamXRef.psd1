@@ -52,7 +52,7 @@ First version released as a full PowerShell Module.
 * Added `Export-XRefData`, `Import-XRefData`, `Clear-XRefData`, `Enable-XRefPersistence`, and `Disable-XRefPersistence`
 '@
 
-            Prerelease = 'beta6'
+            Prerelease = 'beta7'
         }
     }
 

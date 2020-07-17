@@ -40,7 +40,7 @@ function Enable-XRefPersistence {
                     Clear-XRefData -Name Clip, Video -DaysToKeep 60
 
                     # Export cleaned data back to persistent storage
-                    Export-XRefData -Path $PersistPath -Force
+                    Export-XRefData -Path $PersistPath -Force -WarningAction SilentlyContinue
 
                 }
                 else {
@@ -48,6 +48,7 @@ function Enable-XRefPersistence {
                     <#  Try creating placeholder here before registering event subscriber so
                         that there's only one error message if the path can't be written to. #>
                     [void] (New-Item -Path $PersistPath -ItemType File -Force -ErrorAction Stop)
+                    Export-XRefData -Path $PersistPath -Force -WarningAction Ignore
 
                 }
 

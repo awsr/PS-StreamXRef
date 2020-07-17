@@ -177,17 +177,17 @@ try {
     $script:PersistPath = Join-Path ([System.Environment]::GetFolderPath("ApplicationData")) "StreamXRef/datacache.json"
     $script:PersistStatus.CanUse = $true
 
-    # If the data file is found in the default location, automatically enable persistence
-    if (Test-Path $PersistPath) {
-
-        Enable-XRefPersistence -Quiet
-
-    }
-
 }
 catch {
 
     $script:PersistStatus.CanUse = $false
+
+}
+
+# If the data file is found in the default location, automatically enable persistence
+if (Test-Path $PersistPath) {
+
+    Enable-XRefPersistence -Quiet
 
 }
 
