@@ -29,18 +29,15 @@ Describe "Type loading" {
     Context "Custom type members" {
         It "ImportCounter contains all properties" {
             $Properties = [StreamXRef.ImportCounter].DeclaredProperties.Name
-            $Properties | Should -Contain Name
-            $Properties | Should -Contain Imported
-            $Properties | Should -Contain Skipped
-            $Properties | Should -Contain Error
-            $Properties | Should -Contain Total
+            $Properties | ForEach-Object {
+                $_ | Should -BeIn Name, Imported, Skipped, Error, Total
+            }
         }
         It "ImportResults contains all properties" {
             $Properties = [StreamXRef.ImportResults].DeclaredProperties.Name
-            $Properties | Should -Contain AllImported
-            $Properties | Should -Contain AllSkipped
-            $Properties | Should -Contain AllError
-            $Properties | Should -Contain AllTotal
+            $Properties | ForEach-Object {
+                $_ | Should -BeIn AllImported, AllSkipped, AllError, AllTotal
+            }
         }
         It "ImportResults contains AddCounter method" {
             [StreamXRef.ImportResults].DeclaredMethods.Name | Should -Contain AddCounter
