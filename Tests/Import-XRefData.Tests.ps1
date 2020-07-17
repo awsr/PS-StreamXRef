@@ -1,16 +1,17 @@
 #Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.0' }
 
 BeforeAll {
+    Get-Module StreamXRef | Remove-Module
     $ProjectRoot = Split-Path -Parent $PSScriptRoot
     Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force -ErrorAction Stop
 }
 
 Describe "Import validation" {
     BeforeEach {
-        Clear-XRefLookupData -RemoveAll -Force
+        Clear-XRefData -RemoveAll
     }
     It "Times are in UTC" {
-        Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop
+        Import-XRefData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop
         InModuleScope StreamXRef {
             $TwitchData.ClipInfoCache.GetEnumerator() | ForEach-Object {
                 $_.Value.Created.Kind | Should -Be Utc
@@ -20,22 +21,12 @@ Describe "Import validation" {
             }
         }
     }
-    It "Writes errors for missing data" {
-        Import-XRefLookupData "$ProjectRoot/Tests/TestDataEmpty.json" -Quiet -ErrorVariable TestErrs -ErrorAction SilentlyContinue
-        $TestErrs.Count | Should -Be 4
-    }
-    It "Does not write error for missing API key when one already exists" {
-        Import-XRefLookupData -ApiKey testval -Quiet
-        Import-XRefLookupData "$ProjectRoot/Tests/TestDataEmpty.json" -Quiet -ErrorVariable TestErrs -WarningVariable TestWarns -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-        $TestErrs.Count | Should -Be 3
-        $TestWarns.Count | Should -Be 1
-    }
 }
 
 Describe "Results object" {
     BeforeAll {
-        Clear-XRefLookupData -RemoveAll -Force
-        $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
+        Clear-XRefData -RemoveAll
+        $Results = Import-XRefData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
     }
     Context "Valid data" {
         It "Results object is correct type" {
@@ -71,7 +62,7 @@ Describe "Results object" {
     Context "Duplicate data" {
         It "Skip duplicate data" {
             # Do not use Clear here because this is testing for duplicate data
-            $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet -Force
+            $Results = Import-XRefData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet -Force
 
             $Results.User.Imported | Should -Be 0
             $Results.User.Skipped | Should -Be 3
@@ -83,8 +74,8 @@ Describe "Results object" {
     }
     Context "Invalid data" {
         BeforeAll {
-            Clear-XRefLookupData -RemoveAll -Force
-            $Results = Import-XRefLookupData "$ProjectRoot/Tests/TestDataInvalid.json" -PassThru -Quiet -ErrorAction SilentlyContinue
+            Clear-XRefData -RemoveAll
+            $Results = Import-XRefData "$ProjectRoot/Tests/TestDataInvalid.json" -PassThru -Quiet -ErrorAction SilentlyContinue
         }
         It "Counts bad user entries" {
             $Results.User.Imported | Should -Be 2

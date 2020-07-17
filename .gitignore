@@ -1,4 +1,5 @@
-# Debugging/testing output
+Module/typedata/
 debug/
+build/
 src/dotnet/obj/
 src/dotnet/bin/

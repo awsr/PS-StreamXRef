@@ -2,22 +2,12 @@ Set-StrictMode -Version 3
 
 # Add type data
 try {
-
-    # Try loading from assembly
     Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll"
-
+    $script:AdvImportCounter = $true
 }
 catch {
-
-    # As a fallback, compile from source and load into memory
-    if ($PSVersionTable.PSVersion.Major -lt 6) {
-        # Because the default compiler available to PowerShell 5.1 doesn't support C# 6+
-        Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.Legacy.cs" -ErrorAction Stop
-    }
-    else {
-        Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.cs" -ErrorAction Stop
-    }
-
+    $script:AdvImportCounter = $false
+    Write-Warning "Unable to add StreamXRef type data. Only basic import stats will be available"
 }
 
 #region Internal shared helper functions ================
@@ -67,16 +57,33 @@ try {
 
     $script:TwitchData = [pscustomobject]@{
 
-        # [string] Client ID for API access
+        #   Value = [string] Client ID for API access
         ApiKey         = $null
 
-        # @{ [string] User/channel name; [int] User/channel ID number }
+        <#
+            Key   = [string] User/channel name
+            Value = [int] User/channel ID number
+        #>
         UserInfoCache  = [System.Collections.Generic.Dictionary[string, int]]::new()
 
-        # @{ [string] Clip slug name; @{ Offset = [int] Time offset in seconds; VideoID = [int] Video ID number; Created = [datetime] UTC date/time clip was created } }
+        <#
+            Key   = [string] Clip slug name
+            Value = [pscustomobject]@{
+                Offset  = [int] Time offset in seconds
+                VideoID = [int] Video ID number
+                Created = [datetime] UTC date/time clip was created
+                Mapping = [hashtable]@{
+                    Key   = [string] Username from a previous search
+                    Value = [string] URL returned from a previous search
+                }
+            }
+        #>
         ClipInfoCache  = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
 
-        # @{ [int] Video ID number; [datetime] Starting timestamp in UTC }
+        <#
+            Key   = [int] Video ID number
+            Value = [datetime] Starting timestamp in UTC
+        #>
         VideoInfoCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
 
     }
@@ -93,7 +100,6 @@ catch {
     $PSCmdlet.ThrowTerminatingError($_)
 
 }
-
 
 #endregion Initialize variables ----------------
 
@@ -156,3 +162,40 @@ New-Alias -Name txr -Value Find-TwitchXRef -ErrorAction Ignore
 
 Export-ModuleMember -Alias "txr"
 Export-ModuleMember -Function $FunctionNames
+
+#region Persistent data ========================
+
+$script:PersistStatus = [pscustomobject]@{
+    CanUse = $false
+    Enabled = $false
+    Id = 0
+}
+
+try {
+
+    # Get path inside try/catch in case of problems resolving the path
+    $script:PersistPath = Join-Path ([System.Environment]::GetFolderPath("ApplicationData")) "StreamXRef/datacache.json"
+    $script:PersistStatus.CanUse = $true
+
+    # If the data file is found in the default location, automatically enable persistence
+    if (Test-Path $PersistPath) {
+
+        Enable-XRefPersistence -Quiet
+
+    }
+
+}
+catch {
+
+    $script:PersistStatus.CanUse = $false
+
+}
+
+# Cleanup on unload
+$ExecutionContext.SessionState.Module.OnRemove += {
+    if ($PersistStatus.Id -ne 0) {
+        Unregister-Event -SubscriptionId $PersistStatus.Id -ErrorAction SilentlyContinue
+    }
+}
+
+#endregion Persistent data ---------------------

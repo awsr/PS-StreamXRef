@@ -1,6 +1,7 @@
 #Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.0' }
 
 BeforeAll {
+    Get-Module StreamXRef | Remove-Module
     $ProjectRoot = Split-Path -Parent $PSScriptRoot
     Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force -ErrorAction Stop
     Import-Module Microsoft.PowerShell.Utility -Force
@@ -63,8 +64,8 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         Remove-Variable -Name TestErrorOffset -Scope Global -ErrorAction Ignore
     }
     BeforeEach {
-        Clear-XRefLookupData -RemoveAll -Force
-        Import-XRefLookupData -ApiKey notreal -Quiet -Force
+        Clear-XRefData -RemoveAll
+        Import-XRefData -ApiKey notreal -Quiet -Force
     }
     Context "404 Not Found" {
         BeforeEach {
@@ -97,9 +98,14 @@ Describe "HTTP response errors" -Tag HTTPResponse {
             InModuleScope StreamXRef {
                 Mock Invoke-RestMethod -ParameterFilter { $Uri -like "*ValidClipName" } -MockWith {
                     return [pscustomobject]@{
+                        broadcaster = [pscustomobject]@{
+                            id = 22446688
+                            name = "someone"
+                        }
                         vod = [pscustomobject]@{
                             id = 123456789
                             offset = 2468
+                            url = "https://notimportant.com/because/not/being/checked/in/this/test"
                         }
                         created_at = [datetime]::UtcNow
                     }
@@ -132,15 +138,15 @@ Describe "HTTP response errors" -Tag HTTPResponse {
 
 Describe "Data caching" {
     BeforeAll {
-        Clear-XRefLookupData -RemoveAll -Force
-        Import-XRefLookupData $ProjectRoot/Tests/TestData.json -Quiet -Force
+        Clear-XRefData -RemoveAll
+        Import-XRefData $ProjectRoot/Tests/TestData.json -Quiet -Force
 
         # Catchall mock to ensure Invoke-RestMethod doesn't leak
         Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
             $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 404))
         }
 
-        Mock Invoke-RestMethod -ModuleName StreamXRef -Verifiable -ParameterFilter { $Uri -like "*11111111/videos" } -MockWith {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*11111111/videos" } -MockWith {
             $MultiObject = [pscustomobject]@{
                 _total = 1234
                 videos = @()
@@ -162,14 +168,18 @@ Describe "Data caching" {
 
     }
     It "Uses cached clip and UserID" {
+        # Mock won't be invoked if function doesn't read the cached data
         $Result = Find-TwitchXRef madeupnameforaclip one
-        Should -InvokeVerifiable
-        $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
+        Should -Invoke 'Invoke-RestMethod' -ModuleName StreamXRef -Exactly 1
+        $Result | Should -Be 'https://www.twitch.tv/videos/111222333?t=0h40m4s'
+    }
+    It "Uses cached Clip to User mapping data for quick result" {
+        [void] (Find-TwitchXRef madeupnameforaclip one)
+        Should -Invoke 'Invoke-RestMethod' -ModuleName StreamXRef -Exactly 0
     }
     It "Matches cached data with different capitalization" {
         $Result = Find-TwitchXRef MADEUPNAMEFORACLIP ONE
-        Should -InvokeVerifiable
-        $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
+        $Result | Should -Be 'https://www.twitch.tv/videos/111222333?t=0h40m4s'
     }
 
 }

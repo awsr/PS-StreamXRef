@@ -1,6 +1,6 @@
 #.ExternalHelp StreamXRef-help.xml
-function Import-XRefLookupData {
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Medium", DefaultParameterSetName = "General")]
+function Import-XRefData {
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low", DefaultParameterSetName = "General")]
     [OutputType([System.Void], [StreamXRef.ImportResults])]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = "General")]
@@ -31,15 +31,14 @@ function Import-XRefLookupData {
         }
 
         # Check for required resources
-        if ([StreamXRef.ImportResults] -isnot [type] -or -not (Test-Path Variable:Script:TwitchData)) {
+        if (-not (Test-Path Variable:Script:TwitchData)) {
 
             throw "Missing required internal resources. Ensure module was loaded correctly."
 
         }
 
-        # Initial states for ShouldContinue
-        $YesToAll = $false
-        $NoToAll = $false
+        $MappingWarning = $false
+        $ConflictingData = $false
 
     }
 
@@ -54,11 +53,21 @@ function Import-XRefLookupData {
             # This will now terminate the script if it fails
             $ConfigStaging = Get-Content $Path -Raw | ConvertFrom-Json
 
-            # Set up counters object
-            $Counters = [StreamXRef.ImportResults]::new()
-            $Counters.AddCounter("User")
-            $Counters.AddCounter("Clip")
-            $Counters.AddCounter("Video")
+            if ($AdvImportCounter) {
+                # Set up counters object
+                $Counters = [StreamXRef.ImportResults]::new()
+                $Counters.AddCounter("User")
+                $Counters.AddCounter("Clip")
+                $Counters.AddCounter("Video")
+            }
+            else {
+                # Basic fallback object
+                $Counters = @{
+                    User = [pscustomobject]@{Name = "User"; Imported = 0; Skipped = 0; Error = 0}
+                    Clip = [pscustomobject]@{Name = "Clip"; Imported = 0; Skipped = 0; Error = 0}
+                    Video = [pscustomobject]@{Name = "Video"; Imported = 0; Skipped = 0; Error = 0}
+                }
+            }
 
             # Restore ErrorActionPreference
             $ErrorActionPreference = $EAPrefSetting
@@ -164,17 +173,10 @@ function Import-XRefLookupData {
             }
 
         }
-        elseif ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
+        elseif (-not $Quiet -and [string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
 
             # Lookup data cache is empty
             # Assume user is trying to restore from a full export
-            Write-Error "API key missing from input."
-
-        }
-        else {
-
-            # Already contains API key
-            # User may have wanted to not keep the key in the JSON file, so not an error
             Write-Warning "API key missing from input."
 
         }
@@ -201,11 +203,7 @@ function Import-XRefLookupData {
                             }
                             else {
 
-                                Write-Warning "For $($_.name): $($_.id) -> $($script:TwitchData.UserInfoCache[$_.name])"
-
-                                # Exists, but data is different
-                                # Unless -Force is specified, ask how to continue becuase this should only occur due to data corruption
-                                if ($Force -or $PSCmdlet.ShouldContinue("Input data entry differs from existing data", "Overwrite with new value?", [ref]$YesToAll, [ref]$NoToAll)) {
+                                if ($Force) {
 
                                     # Overwrite
                                     $script:TwitchData.UserInfoCache[$_.name] = $_.id
@@ -214,7 +212,14 @@ function Import-XRefLookupData {
                                 }
                                 else {
 
+                                    $ConflictingData = $true
                                     $Counters.User.Error++
+
+                                    if (-not $Quiet) {
+
+                                        Write-Warning "Conflict for $($_.name): [new] $($_.id) -> [old] $($script:TwitchData.UserInfoCache[$_.name])"
+
+                                    }
 
                                 }
 
@@ -258,11 +263,6 @@ function Import-XRefLookupData {
             }
 
         }
-        else {
-
-            Write-Error "User lookup data missing from input."
-
-        }
 
         # Process ClipInfoCache
         if ($ConfigStaging.psobject.Properties.Name -contains "ClipInfoCache" -and $ConfigStaging.ClipInfoCache.Count -gt 0) {
@@ -276,6 +276,7 @@ function Import-XRefLookupData {
                         # Enforce casting to [int]
                         [int]$NewOffsetValue = $_.offset
                         [int]$NewVideoIDValue = $_.video
+
                         $ConvertedDateTime = $_.created | ConvertTo-UtcDateTime
 
                         if ($script:TwitchData.ClipInfoCache.ContainsKey($_.slug)) {
@@ -283,6 +284,7 @@ function Import-XRefLookupData {
                             # Shorter variable for using in the "if" statements and warning message
                             $ExistingObject = $script:TwitchData.ClipInfoCache[$_.slug]
 
+                            # Results mapping info is low priority and not checked here
                             if ($ExistingObject.Offset -eq $NewOffsetValue -and $ExistingObject.VideoID -eq $NewVideoIDValue -and $ExistingObject.Created -eq $ConvertedDateTime) {
 
                                 $Counters.Clip.Skipped++
@@ -290,21 +292,27 @@ function Import-XRefLookupData {
                             }
                             else {
 
-                                Write-Warning (
-                                    "For $($_.slug):`n",
-                                    "[new] $NewOffsetValue, $NewVideoIDValue, $ConvertedDateTime`n",
-                                    "[old] $($ExistingObject.Offset), $($ExistingObject.VideoID), $($ExistingObject.Created)" -join ""
-                                )
+                                if ($Force) {
 
-                                if ($Force -or $PSCmdlet.ShouldContinue("Input data entry differs from existing data", "Overwrite with new value?", [ref]$YesToAll, [ref]$NoToAll)) {
-
-                                    $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime }
+                                    # Overwrite
+                                    $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
                                     $Counters.Clip.Imported++
 
                                 }
                                 else {
 
+                                    $ConflictingData = $true
                                     $Counters.Clip.Error++
+
+                                    if (-not $Quiet) {
+
+                                        Write-Warning (
+                                            "Conflict for $($_.slug):`n",
+                                            "[new] $NewOffsetValue, $NewVideoIDValue, $ConvertedDateTime`n",
+                                            "[old] $($ExistingObject.Offset), $($ExistingObject.VideoID), $($ExistingObject.Created)" -join ""
+                                        )
+
+                                    }
 
                                 }
 
@@ -314,8 +322,25 @@ function Import-XRefLookupData {
                         else {
 
                             # New data to add
-                            $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime }
+                            $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
                             $Counters.Clip.Imported++
+
+                        }
+
+                        # Try importing mapping subset
+                        try {
+
+                            foreach ($entry in $_.mapping) {
+
+                                # Add to Mapping hashtable
+                                $script:TwitchData.ClipInfoCache[$_.slug].Mapping[$entry.user] = $entry.result
+
+                            }
+
+                        }
+                        catch {
+
+                            $MappingWarning = $true
 
                         }
 
@@ -347,11 +372,6 @@ function Import-XRefLookupData {
             }
 
         }
-        else {
-
-            Write-Error "Clip lookup data missing from input."
-
-        }
 
         # Process VideoInfoCache
         if ($ConfigStaging.psobject.Properties.Name -contains "VideoInfoCache" -and $ConfigStaging.VideoInfoCache.Count -gt 0) {
@@ -373,17 +393,23 @@ function Import-XRefLookupData {
                             }
                             else {
 
-                                Write-Warning "For $($_.video): $ConvertedDateTime -> $($script:TwitchData.VideoInfoCache[$_.video])"
+                                if ($Force) {
 
-                                if ($Force -or $PSCmdlet.ShouldContinue("Input data entry differs from existing data", "Overwrite with new value?", [ref]$YesToAll, [ref]$NoToAll)) {
-
+                                    # Overwrite
                                     $script:TwitchData.VideoInfoCache[$_.video] = $ConvertedDateTime
                                     $Counters.Video.Imported++
 
                                 }
                                 else {
 
+                                    $ConflictingData = $true
                                     $Counters.Video.Error++
+
+                                    if (-not $Quiet) {
+
+                                        Write-Warning "For $($_.video): $ConvertedDateTime -> $($script:TwitchData.VideoInfoCache[$_.video])"
+
+                                    }
 
                                 }
 
@@ -426,11 +452,6 @@ function Import-XRefLookupData {
             }
 
         }
-        else {
-
-            Write-Error "Video lookup data missing from input."
-
-        }
 
     }
 
@@ -438,10 +459,18 @@ function Import-XRefLookupData {
 
         if ($PSCmdlet.ParameterSetName -eq "General") {
 
+            if ($ConflictingData) {
+                Write-Error "Some data conflicts with existing values. Run with -Force to overwrite."
+            }
+
+            if ($MappingWarning) {
+                Write-Warning "Some clip -> user mapping data could not be imported or was missing"
+            }
+
             if (-not $Quiet) {
 
-                # Display import results
-                $Counters.Values | Format-Table -AutoSize | Out-Host
+                # Display import results (manual ordering in case of unordered fallback object)
+                ($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-Host
 
             }
 

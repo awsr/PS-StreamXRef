@@ -7,7 +7,7 @@ trigger:
 stages:
 - stage: Build
   jobs:
-  - job: build
+  - job: Typedata
     pool:
       vmImage: 'ubuntu-latest' # this tends to be the fastest agent
     timeoutInMinutes: 5

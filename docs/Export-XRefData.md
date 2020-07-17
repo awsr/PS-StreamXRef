@@ -1,63 +1,51 @@
 ---
 external help file: StreamXRef-help.xml
 Module Name: StreamXRef
-online version: https://github.com/awsr/PS-StreamXRef/blob/master/docs/Clear-XRefLookupData.md
+online version: https://github.com/awsr/PS-StreamXRef/blob/master/docs/Export-XRefData.md
 schema: 2.0.0
 ---
 
-# Clear-XRefLookupData
+# Export-XRefData
 
 ## SYNOPSIS
-Clears data from the internal lookup caches for the StreamXRef module.
+Export the contents of the lookup data cache to a file.
 
 ## SYNTAX
 
-### All (Default)
 ```
-Clear-XRefLookupData [-RemoveAll] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
-```
-
-### Selection
-```
-Clear-XRefLookupData [-ApiKey] [-User] [-Clip] [-Video] [-DaysToKeep <Int32>] [-Force] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Export-XRefData [-Path] <String> [-ExcludeApiKey] [-ExcludeClipMapping] [-Force] [-NoClobber] [-Compress]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Clears either all data or any combination of the following for the StreamXRef module: API key, User lookup cache, Clip lookup cache, Video lookup cache.
+This command exports the contents of the lookup data cache as JSON to a specified file.
+
+The files created by this command can be used with `Import-XRefData`.
 
 ## EXAMPLES
 
 ### Example 1
 ```
-PS > Clear-XRefLookupData -Clip -Video -DaysToKeep 30 -Force
+PS > Export-XRefData -Path XRefData.json
 ```
 
-This will clear data older than 30 days from the `Clip` and `Video` caches. `Force` is also used prevent being asked to confirm these actions.
+This will export the contents of the lookup data cache to a file.
+
+### Example 2
+```
+PS > Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefData -Path /path/to/XRefData.json}
+```
+
+Automatically export the data cache whenever new data is added. Must use an absolute path or else it will change based on your current directory.
 
 ## PARAMETERS
 
-### -RemoveAll
-Removes the API key and all data from the caches.
+### -Compress
+Removes unnecessary whitespace from the JSON string. This results in smaller files at the expense of readability.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: All
-Aliases:
-
-Required: True
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ApiKey
-Clear the API key.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: Selection
+Parameter Sets: (All)
 Aliases:
 
 Required: False
@@ -67,13 +55,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Clip
-Clear the clip lookup cache.
+### -ExcludeApiKey
+Excludes the cached API key from the export.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Selection
-Aliases:
+Parameter Sets: (All)
+Aliases: NoKey, EAK
 
 Required: False
 Position: Named
@@ -82,53 +70,38 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -User
-Clear the user lookup cache.
+### -ExcludeClipMapping
+Excludes the cached Clip to Username results from the export.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Selection
-Aliases:
+Parameter Sets: (All)
+Aliases: NoMapping, ECM
 
 Required: False
 Position: Named
 Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Video
-Clear the video lookup cache.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: Selection
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -DaysToKeep
-Specifies the number of days to keep when using the `Clip` and `Video` parameters. If used without at least one of these it will have no effect. (Recommended max value: 60)
-
-```yaml
-Type: Int32
-Parameter Sets: Selection
-Aliases: Keep
-
-Required: False
-Position: Named
-Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -Force
-Force clearing data.
+Forces overwriting of read-only files.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -NoClobber
+Prevents overwriting an existing file.
 
 ```yaml
 Type: SwitchParameter
@@ -139,6 +112,21 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Path
+Specifies the path to the file where the JSON formatted data will be stored.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: PSPath
+
+Required: True
+Position: 0
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -178,7 +166,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
+### System.String
+
+You can pipeline a value for `Path` either as a string or by property name.
 
 ## OUTPUTS
 

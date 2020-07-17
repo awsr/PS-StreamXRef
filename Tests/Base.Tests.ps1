@@ -1,6 +1,7 @@
 #Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.0' }
 
 BeforeAll {
+    Get-Module StreamXRef | Remove-Module
     $ProjectRoot = Split-Path -Parent $PSScriptRoot
     Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force -ErrorAction Stop
 }
@@ -8,14 +9,6 @@ BeforeAll {
 Describe "Type loading" {
     It "Add types from dll assembly" {
         {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.dll"} | Should -Not -Throw
-    }
-    It "Add types from source code" {
-        if ($PSVersionTable.PSVersion.Major -lt 6) {
-            {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.Legacy.cs"} | Should -Not -Throw
-        }
-        else {
-            {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.cs"} | Should -Not -Throw
-        }
     }
     Context "Specific types" {
         It "ImportCounter type exists" {
@@ -28,18 +21,15 @@ Describe "Type loading" {
     Context "Custom type members" {
         It "ImportCounter contains all properties" {
             $Properties = [StreamXRef.ImportCounter].DeclaredProperties.Name
-            $Properties | Should -Contain Name
-            $Properties | Should -Contain Imported
-            $Properties | Should -Contain Skipped
-            $Properties | Should -Contain Error
-            $Properties | Should -Contain Total
+            $Properties | ForEach-Object {
+                $_ | Should -BeIn Name, Imported, Skipped, Error, Total
+            }
         }
         It "ImportResults contains all properties" {
             $Properties = [StreamXRef.ImportResults].DeclaredProperties.Name
-            $Properties | Should -Contain AllImported
-            $Properties | Should -Contain AllSkipped
-            $Properties | Should -Contain AllError
-            $Properties | Should -Contain AllTotal
+            $Properties | ForEach-Object {
+                $_ | Should -BeIn AllImported, AllSkipped, AllError, AllTotal
+            }
         }
         It "ImportResults contains AddCounter method" {
             [StreamXRef.ImportResults].DeclaredMethods.Name | Should -Contain AddCounter
