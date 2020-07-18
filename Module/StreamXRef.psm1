@@ -1,3 +1,4 @@
+using namespace System.Collections.Generic
 Set-StrictMode -Version 3
 
 # Add type data
@@ -57,15 +58,16 @@ try {
 
     $script:TwitchData = [pscustomobject]@{
 
-        #   Value = [string] Client ID for API access
         ApiKey         = $null
+        #   Value = [string] Client ID for API access
 
+        UserInfoCache  = [Dictionary[string, int]]::new()
         <#
             Key   = [string] User/channel name
             Value = [int] User/channel ID number
         #>
-        UserInfoCache  = [System.Collections.Generic.Dictionary[string, int]]::new()
 
+        ClipInfoCache  = [Dictionary[string, pscustomobject]]::new()
         <#
             Key   = [string] Clip slug name
             Value = [pscustomobject]@{
@@ -78,13 +80,13 @@ try {
                 }
             }
         #>
-        ClipInfoCache  = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
 
+        VideoInfoCache = [Dictionary[int, datetime]]::new()
         <#
             Key   = [int] Video ID number
             Value = [datetime] Starting timestamp in UTC
         #>
-        VideoInfoCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
+
 
     }
 

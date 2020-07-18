@@ -67,7 +67,7 @@ function Clear-XRefData {
                     [string[]]$PurgeList = $script:TwitchData.ClipInfoCache.GetEnumerator() |
                     Where-Object { $_.Value.Created -lt $Cutoff } | Select-Object -ExpandProperty Key
 
-                    [void]($PurgeList | ForEach-Object { $script:TwitchData.ClipInfoCache.Remove($_) })
+                    [void] ($PurgeList | ForEach-Object { $script:TwitchData.ClipInfoCache.Remove($_) })
 
                     # Getting the count this way in case removing an entry somehow fails
                     Write-Verbose "(Clip) Data entries removed: $($PreviousCount - $script:TwitchData.ClipInfoCache.Count)"
@@ -82,7 +82,7 @@ function Clear-XRefData {
                     [string[]]$PurgeList = $script:TwitchData.VideoInfoCache.GetEnumerator() |
                         Where-Object { $_.Value -lt $Cutoff } | Select-Object -ExpandProperty Key
 
-                    [void]($PurgeList | ForEach-Object { $script:TwitchData.VideoInfoCache.Remove($_) })
+                    [void] ($PurgeList | ForEach-Object { $script:TwitchData.VideoInfoCache.Remove($_) })
 
                     # Getting the count this way in case removing an entry somehow fails
                     Write-Verbose "(Video) Data entries removed: $($PreviousCount - $script:TwitchData.VideoInfoCache.Count)"

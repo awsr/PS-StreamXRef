@@ -133,7 +133,7 @@ function Find-TwitchXRef {
             }
 
             #region Get offset from URL parameters
-            [void]($Source -imatch ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*")
+            [void] ($Source -imatch ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*")
 
             $OffsetArgs = @{ }
             $OffsetArgs["Hours"] = $Matches.ContainsKey("Hours") ? $Matches.Hours : 0
@@ -180,7 +180,7 @@ function Find-TwitchXRef {
                 catch {
 
                     # Suppress error output because the fallback will be to just look up the value again
-                    [void]$_
+                    [void] $_
 
                 }
 
