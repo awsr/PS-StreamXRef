@@ -30,12 +30,6 @@ function Export-XRefData {
 
     Begin {
 
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            throw "Missing required internal resources. Ensure module was loaded correctly."
-
-        }
-
         if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
 
             Write-Warning "No cached data. Exported file will not contain any entries."

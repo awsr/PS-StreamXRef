@@ -57,12 +57,6 @@ function Find-TwitchXRef {
 
     Begin {
 
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            throw "Missing required internal resources. Ensure module was loaded correctly."
-
-        }
-
         $API = "https://api.twitch.tv/kraken"
 
         if ($PSBoundParameters.ContainsKey("ApiKey")) {

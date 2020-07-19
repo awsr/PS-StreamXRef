@@ -30,13 +30,6 @@ function Import-XRefData {
 
         }
 
-        # Check for required resources
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            throw "Missing required internal resources. Ensure module was loaded correctly."
-
-        }
-
         $MappingWarning = $false
         $ConflictingData = $false
 
@@ -53,21 +46,11 @@ function Import-XRefData {
             # This will now terminate the script if it fails
             $ConfigStaging = Get-Content $Path -Raw | ConvertFrom-Json
 
-            if ($AdvImportCounter) {
-                # Set up counters object
-                $Counters = [StreamXRef.ImportResults]::new()
-                $Counters.AddCounter("User")
-                $Counters.AddCounter("Clip")
-                $Counters.AddCounter("Video")
-            }
-            else {
-                # Basic fallback object
-                $Counters = @{
-                    User = [pscustomobject]@{Name = "User"; Imported = 0; Skipped = 0; Error = 0}
-                    Clip = [pscustomobject]@{Name = "Clip"; Imported = 0; Skipped = 0; Error = 0}
-                    Video = [pscustomobject]@{Name = "Video"; Imported = 0; Skipped = 0; Error = 0}
-                }
-            }
+            # Set up counters object
+            $Counters = [StreamXRef.ImportResults]::new()
+            $Counters.AddCounter("User")
+            $Counters.AddCounter("Clip")
+            $Counters.AddCounter("Video")
 
             # Restore ErrorActionPreference
             $ErrorActionPreference = $EAPrefSetting
@@ -469,8 +452,7 @@ function Import-XRefData {
 
             if (-not $Quiet) {
 
-                # Display import results (manual ordering in case of unordered fallback object)
-                ($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-Host
+                $Counters.Values| Format-Table -AutoSize | Out-Host
 
             }
 

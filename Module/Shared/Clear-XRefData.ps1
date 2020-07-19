@@ -17,16 +17,6 @@ function Clear-XRefData {
         [switch]$RemoveAll
     )
 
-    Begin {
-
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            throw "Missing required internal resources. Ensure module was loaded correctly."
-
-        }
-
-    }
-
     Process {
 
         if ($RemoveAll) {
