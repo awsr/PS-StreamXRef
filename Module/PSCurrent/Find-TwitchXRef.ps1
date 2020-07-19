@@ -100,10 +100,6 @@ function Find-TwitchXRef {
             ErrorAction = "Stop"
         }
 
-        # Standardize input to lowercase
-        $Source = $Source.ToLowerInvariant()
-        $XRef = $XRef.ToLowerInvariant()
-
         # Initial basic sorting
         $SourceIsVideo = $Source -imatch ".*twitch\.tv/videos/.+" ? $true : $false
         $XRefIsVideo = $XRef -imatch ".*twitch\.tv/videos/.+" ? $true : $false
@@ -209,20 +205,19 @@ function Find-TwitchXRef {
 
                     }
 
-                    # Populate the Clip to Username hashtable with the originating video
-                    $ClipMapping = @{}
-                    $ClipMapping[$ClipResponse.broadcaster.name] = $ClipResponse.vod.url
-
                     # Ensure timestamp was converted correctly
                     $ClipResponse.created_at = $ClipResponse.created_at | ConvertTo-UtcDateTime
 
                     # Add data to clip cache
-                    $script:TwitchData.ClipInfoCache[$Slug] = [PSCustomObject]@{
+                    $script:TwitchData.ClipInfoCache[$Slug] = [StreamXRef.ClipObject]@{
                         Offset  = $ClipResponse.vod.offset
                         VideoID = $VideoID
                         Created = $ClipResponse.created_at
-                        Mapping = $ClipMapping
                     }
+
+                    # Add mapping for originating video to clip entry
+                    $script:TwitchData.ClipInfoCache[$Slug].Mapping[$ClipResponse.broadcaster.name] = $ClipResponse.vod.url
+
                     $NewDataAdded = $true
 
                     # Quick return path for when XRef is original broadcaster

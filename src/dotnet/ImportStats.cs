@@ -9,13 +9,7 @@ namespace StreamXRef
         public int Imported { get; set; }
         public int Skipped { get; set; }
         public int Error { get; set; }
-        public int Total
-        {
-            get
-            {
-                return (Imported + Skipped + Error);
-            }
-        }
+        public int Total { get => Imported + Skipped + Error; }
 
         public ImportCounter(string name)
         {

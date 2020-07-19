@@ -1,15 +1,10 @@
-using namespace System.Collections.Generic
 Set-StrictMode -Version 3
 
 # Add type data
-try {
-    Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll"
-    $script:AdvImportCounter = $true
-}
-catch {
-    $script:AdvImportCounter = $false
-    Write-Warning "Unable to add StreamXRef type data. Only basic import stats will be available"
-}
+Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll" -ErrorAction Stop
+
+# Initialize cache (see comment at end of file for structure reference)
+$script:TwitchData = [StreamXRef.DataCache]::new()
 
 #region Internal shared helper functions ================
 
@@ -51,59 +46,6 @@ filter ConvertTo-UtcDateTime {
 }
 
 #endregion Shared helper functions -------------
-
-#region Initialize variables ===================
-
-try {
-
-    $script:TwitchData = [pscustomobject]@{
-
-        ApiKey         = $null
-        #   Value = [string] Client ID for API access
-
-        UserInfoCache  = [Dictionary[string, int]]::new()
-        <#
-            Key   = [string] User/channel name
-            Value = [int] User/channel ID number
-        #>
-
-        ClipInfoCache  = [Dictionary[string, pscustomobject]]::new()
-        <#
-            Key   = [string] Clip slug name
-            Value = [pscustomobject]@{
-                Offset  = [int] Time offset in seconds
-                VideoID = [int] Video ID number
-                Created = [datetime] UTC date/time clip was created
-                Mapping = [hashtable]@{
-                    Key   = [string] Username from a previous search
-                    Value = [string] URL returned from a previous search
-                }
-            }
-        #>
-
-        VideoInfoCache = [Dictionary[int, datetime]]::new()
-        <#
-            Key   = [int] Video ID number
-            Value = [datetime] Starting timestamp in UTC
-        #>
-
-
-    }
-
-    $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -ErrorAction Stop -Value {
-
-        $this.UserInfoCache.Count + $this.ClipInfoCache.Count + $this.VideoInfoCache.Count
-
-    }
-
-}
-catch {
-
-    $PSCmdlet.ThrowTerminatingError($_)
-
-}
-
-#endregion Initialize variables ----------------
 
 # If not running at least PowerShell 7.0, get the "PSLegacy" version of the functions
 # Otherwise, load the "PSCurrent" version of the functions
@@ -201,3 +143,30 @@ $ExecutionContext.SessionState.Module.OnRemove += {
 }
 
 #endregion Persistent data ---------------------
+
+<#
+Structure of StreamXRef.DataCache:
+
+    [string]ApiKey:
+        Value = [string] Client ID for API access
+
+    [dictionary]UserInfoCache:
+        Key   = [string] User/channel name
+        Value = [int] User/channel ID number
+
+    [dictionary]ClipInfoCache:
+        Key   = [string] Clip slug name
+        Value = [StreamXRef.ClipObject]@{
+            Offset  = [int] Time offset in seconds
+            VideoID = [int] Video ID number
+            Created = [datetime] UTC date/time clip was created
+            Mapping = [dictionary]@{
+                Key   = [string] Username from a previous search
+                Value = [string] URL returned from a previous search
+            }
+        }
+
+    [dictionary]VideoInfoCache:
+        Key   = [int] Video ID number
+        Value = [datetime] Starting timestamp in UTC
+#>
