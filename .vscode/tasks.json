@@ -80,6 +80,7 @@
         "type": "process",
         "args": [
             "build",
+            "-c", "Release",
             "${workspaceFolder}/src/dotnet/StreamXRefTypes.csproj",
             "/property:GenerateFullPaths=true",
             "/consoleloggerparameters:NoSummary"
