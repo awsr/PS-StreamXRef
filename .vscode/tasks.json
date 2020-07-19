@@ -73,6 +73,18 @@
         ]
       },
       "problemMatcher": []
+    },
+    {
+        "label": "Build .NET assembly",
+        "command": "dotnet",
+        "type": "process",
+        "args": [
+            "build",
+            "${workspaceFolder}/src/dotnet/StreamXRefTypes.csproj",
+            "/property:GenerateFullPaths=true",
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
     }
   ]
 }
