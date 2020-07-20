@@ -3,25 +3,6 @@ using System.Collections.Generic;
 
 namespace StreamXRef
 {
-    public class ImportCounter
-    {
-        public string Name { get; set; }
-        public int Imported { get; set; }
-        public int Skipped { get; set; }
-        public int Error { get; set; }
-        public int Total { get => Imported + Skipped + Error; }
-
-        public ImportCounter(string name)
-        {
-            Name = name;
-            Imported = 0;
-            Skipped = 0;
-            Error = 0;
-        }
-
-        public override string ToString() => ("Imported: " + Imported + ", Skipped: " + Skipped + ", Error: " + Error + ", Total: " + Total);
-    }
-
     public class ImportResults : Dictionary<String, ImportCounter>
     {
         public void AddCounter(string name) => this.Add(name, new ImportCounter(name));
@@ -105,5 +86,24 @@ namespace StreamXRef
                 }
             }
         }
+    }
+
+    public class ImportCounter
+    {
+        public string Name { get; set; }
+        public int Imported { get; set; }
+        public int Skipped { get; set; }
+        public int Error { get; set; }
+        public int Total { get => Imported + Skipped + Error; }
+
+        public ImportCounter(string name)
+        {
+            Name = name;
+            Imported = 0;
+            Skipped = 0;
+            Error = 0;
+        }
+
+        public override string ToString() => ("Imported: " + Imported + ", Skipped: " + Skipped + ", Error: " + Error + ", Total: " + Total);
     }
 }
