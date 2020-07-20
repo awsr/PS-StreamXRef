@@ -127,7 +127,7 @@ catch {
 }
 
 # If the data file is found in the default location, automatically enable persistence
-if (Test-Path $PersistPath) {
+if ($PersistCanUse -and (Test-Path $PersistPath)) {
 
     Enable-XRefPersistence -Quiet
 
