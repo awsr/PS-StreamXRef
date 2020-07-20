@@ -6,52 +6,75 @@ BeforeAll {
     Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force
 }
 
-Describe "Type loading" {
-    It "Add types from dll assembly" {
-        {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.dll"} | Should -Not -Throw
-    }
-    Context "Specific types" {
-        It "ImportCounter type exists" {
-            [StreamXRef.ImportCounter] | Should -BeOfType "type"
+Describe "Custom type data" {
+    Context "Constructors" {
+        It "ImportCounter can be created" {
+            {[StreamXRef.ImportCounter]::new("Test")} | Should -Not -Throw
         }
-        It "ImportResults type exists" {
-            [StreamXRef.ImportResults] | Should -BeOfType "type"
+        It "ImportCounter requires input value" {
+            {[StreamXRef.ImportCounter]::new()} | Should -Throw
+        }
+        It "ImportResults can be created" {
+            {[StreamXRef.ImportResults]::new()} | Should -Not -Throw
+        }
+        It "ClipObject can be created" {
+            {[StreamXRef.ClipObject]::new()} | Should -Not -Throw
+        }
+        It "DataCache can be created" {
+            {[StreamXRef.DataCache]::new()} | Should -Not -Throw
         }
     }
-    Context "Custom type members" {
+    Context "Members" {
         It "ImportCounter contains all properties" {
-            $Properties = [StreamXRef.ImportCounter].DeclaredProperties.Name
-            $Properties | ForEach-Object {
+            [StreamXRef.ImportCounter].DeclaredProperties.Name | ForEach-Object {
                 $_ | Should -BeIn Name, Imported, Skipped, Error, Total
             }
         }
         It "ImportResults contains all properties" {
-            $Properties = [StreamXRef.ImportResults].DeclaredProperties.Name
-            $Properties | ForEach-Object {
+            [StreamXRef.ImportResults].DeclaredProperties.Name | ForEach-Object {
                 $_ | Should -BeIn AllImported, AllSkipped, AllError, AllTotal
             }
         }
         It "ImportResults contains AddCounter method" {
             [StreamXRef.ImportResults].DeclaredMethods.Name | Should -Contain AddCounter
         }
+        It "ClipObject contains all properties" {
+            [StreamXRef.ClipObject].DeclaredProperties.Name | ForEach-Object {
+                $_ | Should -BeIn Offset, VideoID, Created, Mapping
+            }
+        }
+        It "DataCache contains all properties" {
+            [StreamXRef.DataCache].DeclaredProperties.Name | ForEach-Object {
+                $_ | Should -BeIn ApiKey, UserInfoCache, ClipInfoCache, VideoInfoCache
+            }
+        }
+        It "DataCache contains GetTotalCount method" {
+            [StreamXRef.DataCache].DeclaredMethods.Name | Should -Contain GetTotalCount
+        }
     }
-    Context "Custom type actions" {
-        BeforeAll {
-            $TestObj = [StreamXRef.ImportCounter]::new("Test")
-            $ResultObj = [StreamXRef.ImportResults]::new()
-        }
-        It "ImportCounter constructor sets name" {
-            $TestObj.Name | Should -Be "Test"
-        }
+    Context "Functionality" {
         It "ImportCounter.Total sums all counter properties" {
+            $TestObj = [StreamXRef.ImportCounter]::new("Test")
+
             $TestObj.Imported = 20
             $TestObj.Skipped = 4
             $TestObj.Error = 3
             $TestObj.Total | Should -Be 27
         }
         It "ImportResults.AddCounter(...) adds counter object" {
+            $ResultObj = [StreamXRef.ImportResults]::new()
+
             $ResultObj.AddCounter("Test1")
             $ResultObj.Keys | Should -Contain "Test1"
+            $ResultObj["Test1"] | Should -BeOfType "StreamXRef.ImportCounter"
+        }
+        It "DataCache.GetTotalCount() sums all dictionary counts" {
+            $TestCache = [StreamXRef.DataCache]::new()
+            $TestCache.UserInfoCache.Add("TestName", 12345678)
+            $TestCache.ClipInfoCache.Add("TestClip", [StreamXRef.ClipObject]::new())
+            $TestCache.VideoInfoCache.Add(123456789, [datetime]::UtcNow)
+
+            $TestCache.GetTotalCount() | Should -Be 3
         }
     }
 }
