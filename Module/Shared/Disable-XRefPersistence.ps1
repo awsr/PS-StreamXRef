@@ -12,7 +12,7 @@ function Disable-XRefPersistence {
 
     Process {
 
-        if ($PersistStatus.CanUse) {
+        if ($PersistCanUse) {
 
             if ($Remove) {
 
@@ -41,12 +41,12 @@ function Disable-XRefPersistence {
             }
 
             # Disable persistence subscriber
-            if ($PersistStatus.Id -ne 0) {
+            if ($PersistId -ne 0) {
 
-                Unregister-Event -SubscriptionId $PersistStatus.Id
+                Unregister-Event -SubscriptionId $PersistId
 
                 # Reset value
-                $script:PersistStatus.Id = 0
+                $script:PersistId = 0
 
                 if (-not $Quiet) {
                     Write-Host "StreamXRef persistence disabled."
@@ -54,7 +54,7 @@ function Disable-XRefPersistence {
 
             }
 
-            $script:PersistStatus.Enabled = $false
+            $script:PersistEnabled = $false
 
         }
         else {

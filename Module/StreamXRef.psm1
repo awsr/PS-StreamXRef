@@ -109,22 +109,20 @@ Export-ModuleMember -Function $FunctionNames
 
 #region Persistent data ========================
 
-$script:PersistStatus = [pscustomobject]@{
-    CanUse = $false
-    Enabled = $false
-    Id = 0
-}
+$script:PersistCanUse = $false
+$script:PersistEnabled = $false
+$script:PersistId = 0
 
 try {
 
     # Get path inside try/catch in case of problems resolving the path
     $script:PersistPath = Join-Path ([System.Environment]::GetFolderPath("ApplicationData")) "StreamXRef/datacache.json"
-    $script:PersistStatus.CanUse = $true
+    $script:PersistCanUse = $true
 
 }
 catch {
 
-    $script:PersistStatus.CanUse = $false
+    $script:PersistCanUse = $false
 
 }
 
@@ -137,8 +135,8 @@ if (Test-Path $PersistPath) {
 
 # Cleanup on unload
 $ExecutionContext.SessionState.Module.OnRemove += {
-    if ($PersistStatus.Id -ne 0) {
-        Unregister-Event -SubscriptionId $PersistStatus.Id -ErrorAction SilentlyContinue
+    if ($PersistId -ne 0) {
+        Unregister-Event -SubscriptionId $PersistId -ErrorAction SilentlyContinue
     }
 }
 

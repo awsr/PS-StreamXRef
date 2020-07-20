@@ -9,9 +9,9 @@ function Enable-XRefPersistence {
 
     Process {
 
-        if ($PersistStatus.CanUse) {
+        if ($PersistCanUse) {
 
-            if ($PersistStatus.Enabled) {
+            if ($PersistEnabled) {
 
                 if (-not $Quiet) {
                     Write-Host "StreamXRef persistence is already enabled."
@@ -58,9 +58,9 @@ function Enable-XRefPersistence {
                 })
 
                 # Take note of the subscription id (might not be the same as the PSEventJob id)
-                $script:PersistStatus.Id = (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded | Select-Object -Last 1).SubscriptionId
+                $script:PersistId = (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded | Select-Object -Last 1).SubscriptionId
 
-                $script:PersistStatus.Enabled = $true
+                $script:PersistEnabled = $true
 
                 if (-not $Quiet) {
                     Write-Host -BackgroundColor Black -ForegroundColor Green "StreamXRef persistence enabled."
