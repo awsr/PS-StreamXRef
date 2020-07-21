@@ -7,6 +7,11 @@ BeforeAll {
 }
 
 Describe "Custom type data" {
+    BeforeAll {
+        # If one "Should" test fails, keep checking the rest in the "It" block
+        $PesterPreference = [PesterConfiguration]::Default
+        $PesterPreference.Should.ErrorAction = "Continue"
+    }
     Context "Constructors" {
         It "ImportCounter can be created" {
             {[StreamXRef.ImportCounter]::new("Test")} | Should -Not -Throw
@@ -26,45 +31,62 @@ Describe "Custom type data" {
     }
     Context "Members" {
         It "ImportCounter contains all properties" {
-            [StreamXRef.ImportCounter].DeclaredProperties.Name | ForEach-Object {
-                $_ | Should -BeIn Name, Imported, Skipped, Error, Total
-            }
+            $Properties = [StreamXRef.ImportCounter].DeclaredProperties.Name
+
+            $Properties | Should -Contain Name
+            $Properties | Should -Contain Imported
+            $Properties | Should -Contain Skipped
+            $Properties | Should -Contain Error
+            $Properties | Should -Contain Total
         }
         It "ImportResults contains all properties" {
-            [StreamXRef.ImportResults].DeclaredProperties.Name | ForEach-Object {
-                $_ | Should -BeIn AllImported, AllSkipped, AllError, AllTotal
-            }
+            $Properties = [StreamXRef.ImportResults].DeclaredProperties.Name
+
+            $Properties | Should -Contain AllImported
+            $Properties | Should -Contain AllSkipped
+            $Properties | Should -Contain AllError
+            $Properties | Should -Contain AllTotal
         }
         It "ImportResults contains AddCounter method" {
-            [StreamXRef.ImportResults].DeclaredMethods.Name | Should -Contain AddCounter
+            $Properties = [StreamXRef.ImportResults].DeclaredMethods.Name
+
+            $Properties | Should -Contain AddCounter
         }
         It "ClipObject contains all properties" {
-            [StreamXRef.ClipObject].DeclaredProperties.Name | ForEach-Object {
-                $_ | Should -BeIn Offset, VideoID, Created, Mapping
-            }
+            $Properties = [StreamXRef.ClipObject].DeclaredProperties.Name
+
+            $Properties | Should -Contain Offset
+            $Properties | Should -Contain VideoID
+            $Properties | Should -Contain Created
+            $Properties | Should -Contain Mapping
         }
         It "DataCache contains all properties" {
-            [StreamXRef.DataCache].DeclaredProperties.Name | ForEach-Object {
-                $_ | Should -BeIn ApiKey, UserInfoCache, ClipInfoCache, VideoInfoCache
-            }
+            $Properties = [StreamXRef.DataCache].DeclaredProperties.Name
+
+            $Properties | Should -Contain ApiKey
+            $Properties | Should -Contain UserInfoCache
+            $Properties | Should -Contain ClipInfoCache
+            $Properties | Should -Contain VideoInfoCache
         }
         It "DataCache contains GetTotalCount method" {
-            [StreamXRef.DataCache].DeclaredMethods.Name | Should -Contain GetTotalCount
+            $Properties = [StreamXRef.DataCache].DeclaredMethods.Name
+
+            $Properties | Should -Contain GetTotalCount
         }
     }
     Context "Functionality" {
         It "ImportCounter.Total sums all counter properties" {
             $TestObj = [StreamXRef.ImportCounter]::new("Test")
-
             $TestObj.Imported = 20
             $TestObj.Skipped = 4
             $TestObj.Error = 3
+
             $TestObj.Total | Should -Be 27
         }
         It "ImportResults.AddCounter(...) adds counter object" {
             $ResultObj = [StreamXRef.ImportResults]::new()
-
             $ResultObj.AddCounter("Test1")
+
             $ResultObj.Keys | Should -Contain "Test1"
             $ResultObj["Test1"] | Should -BeOfType "StreamXRef.ImportCounter"
         }
