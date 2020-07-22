@@ -578,7 +578,7 @@ function Find-TwitchXRef {
 
         if ((Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) -and $NewDataAdded) {
 
-            [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender StreamXRef)
+            [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Find-TwitchXRef")
 
         }
 
