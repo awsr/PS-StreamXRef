@@ -10,7 +10,7 @@
       "args": [
         "${file}",
         "${workspaceFolder}/Module/",
-        "-CommonPath", "Shared/${fileBasename}",
+        "-DefaultDirName", "Shared",
         "Current = PSCurrent/${fileBasename}",
         "Legacy = PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
       ],
@@ -19,7 +19,7 @@
         "args": [
           "${file}",
           "${workspaceFolder}\\Module\\",
-          "-CommonPath", "Shared\\${fileBasename}",
+          "-DefaultDirName", "Shared",
           "Current = PSCurrent\\${fileBasename}",
           "Legacy = PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
         ]
@@ -37,7 +37,7 @@
       "args": [
         "${file}",
         "${workspaceFolder}/debug/",
-        "-CommonPath", "Shared/${fileBasename}",
+        "-DefaultDirName", "Shared",
         "-Verbose",
         "Current = PSCurrent/${fileBasename}",
         "Legacy = PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
@@ -47,7 +47,7 @@
         "args": [
           "${file}",
           "${workspaceFolder}\\debug\\",
-          "-CommonPath", "Shared\\${fileBasename}",
+          "-DefaultDirName", "Shared",
           "-Verbose",
           "Current = PSCurrent\\${fileBasename}",
           "Legacy = PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
