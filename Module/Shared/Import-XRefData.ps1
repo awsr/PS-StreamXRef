@@ -16,6 +16,9 @@ function Import-XRefData {
         [switch]$PassThru,
 
         [Parameter()]
+        [switch]$Persist,
+
+        [Parameter()]
         [switch]$Quiet,
 
         [Parameter()]
@@ -442,6 +445,16 @@ function Import-XRefData {
             if (-not $Quiet) {
 
                 $Counters.Values| Format-Table -AutoSize | Out-Host
+
+            }
+
+            if ($Persist -and $Counters.AllImported -gt 0) {
+
+                if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
+
+                    [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Import-XRefData")
+
+                }
 
             }
 
