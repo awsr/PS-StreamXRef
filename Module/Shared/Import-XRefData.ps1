@@ -119,28 +119,17 @@ function Import-XRefData {
                     # Specify "Replace" since previous value will be replaced
                     if ($PSCmdlet.ShouldProcess("API key", "Replace")) {
 
-                        if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
+                        $script:TwitchData.ApiKey = $NewApiKey
 
-                            $script:TwitchData.ApiKey = $NewApiKey
+                        if (-not $Quiet) {
 
-                            if (-not $Quiet) {
-
-                                Write-Host "API key replaced."
-
-                            }
-
-                            return
+                            Write-Host "API key replaced."
 
                         }
-                        else {
 
-                            $script:TwitchData.ApiKey = $NewApiKey
+                        if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
 
-                            if (-not $Quiet) {
-
-                                Write-Host "API key replaced."
-
-                            }
+                            return
 
                         }
 
