@@ -123,3 +123,10 @@ Describe "Internal function validation" {
         }
     }
 }
+
+Describe "System environment" {
+    It "Application Data folder can be determined" {
+        {[System.Environment]::GetFolderPath("ApplicationData")} | Should -Not -Throw
+        [string]::IsNullOrWhiteSpace([System.Environment]::GetFolderPath("ApplicationData")) | Should -BeFalse
+    }
+}
