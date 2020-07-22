@@ -109,7 +109,7 @@ function Import-XRefData {
                 else {
 
                     # Get key from input object
-                    $NewApiKey = $ConfigStaging.ApiKey
+                    $NewApiKey = $ImportStaging.ApiKey
 
                 }
 
