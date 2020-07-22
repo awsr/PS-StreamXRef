@@ -49,12 +49,6 @@ function Find-TwitchXRef {
 
     Begin {
 
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            throw "Missing required internal resources. Ensure module was loaded correctly."
-
-        }
-
         $API = "https://api.twitch.tv/kraken"
 
         if ($PSBoundParameters.ContainsKey("ApiKey")) {
@@ -106,10 +100,6 @@ function Find-TwitchXRef {
             ErrorAction = "Stop"
         }
 
-        # Standardize input to lowercase
-        $Source = $Source.ToLowerInvariant()
-        $XRef = $XRef.ToLowerInvariant()
-
         # Initial basic sorting
         $SourceIsVideo = $Source -imatch ".*twitch\.tv/videos/.+" ? $true : $false
         $XRefIsVideo = $XRef -imatch ".*twitch\.tv/videos/.+" ? $true : $false
@@ -133,14 +123,14 @@ function Find-TwitchXRef {
             }
 
             #region Get offset from URL parameters
-            [void]($Source -imatch ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*")
+            [void] ($Source -imatch ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*")
 
             $OffsetArgs = @{ }
             $OffsetArgs["Hours"] = $Matches.ContainsKey("Hours") ? $Matches.Hours : 0
             $OffsetArgs["Minutes"] = $Matches.ContainsKey("Minutes") ? $Matches.Minutes : 0
             $OffsetArgs["Seconds"] = $Matches.ContainsKey("Seconds") ? $Matches.Seconds : 0
 
-            [timespan]$TimeOffset = New-TimeSpan @OffsetArgs
+            $TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
 
             [int]$VideoID = $Source | Get-LastUrlSegment
@@ -154,8 +144,6 @@ function Find-TwitchXRef {
             # Strip potential URL formatting
             $Slug = $Source | Get-LastUrlSegment
 
-            $tmpFlagCached = $false
-
             if (-not $Force -and $script:TwitchData.ClipInfoCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
@@ -165,28 +153,18 @@ function Find-TwitchXRef {
                     return $script:TwitchData.ClipInfoCache[$Slug].Mapping[$XRef]
 
                 }
+                else {
 
-                try {
-
-                    [timespan]$TimeOffset = New-TimeSpan -Seconds $script:TwitchData.ClipInfoCache[$Slug].Offset
-                    [int]$VideoID = $script:TwitchData.ClipInfoCache[$Slug].VideoID
+                    $TimeOffset = New-TimeSpan -Seconds $script:TwitchData.ClipInfoCache[$Slug].Offset
+                    $VideoID = $script:TwitchData.ClipInfoCache[$Slug].VideoID
 
                     # Set REST arguments
                     $RestArgs["Uri"] = "$API/videos/$VideoID"
 
-                    $tmpFlagCached = $true
-
-                }
-                catch {
-
-                    # Suppress error output because the fallback will be to just look up the value again
-                    [void]$_
-
                 }
 
             }
-
-            if (-not $tmpFlagCached) {
+            else {
                 # New uncached source ---- needs additional API call
 
                 # Get information about clip
@@ -203,7 +181,7 @@ function Find-TwitchXRef {
                     }
 
                     # Get offset from API response
-                    [timespan]$TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
+                    $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
                     # Get Video ID from API response
                     [int]$VideoID = $ClipResponse.vod.id
@@ -215,20 +193,19 @@ function Find-TwitchXRef {
 
                     }
 
-                    # Populate the Clip to Username hashtable with the originating video
-                    $ClipMapping = @{}
-                    $ClipMapping[$ClipResponse.broadcaster.name] = $ClipResponse.vod.url
-
                     # Ensure timestamp was converted correctly
                     $ClipResponse.created_at = $ClipResponse.created_at | ConvertTo-UtcDateTime
 
                     # Add data to clip cache
-                    $script:TwitchData.ClipInfoCache[$Slug] = [PSCustomObject]@{
+                    $script:TwitchData.ClipInfoCache[$Slug] = [StreamXRef.ClipObject]@{
                         Offset  = $ClipResponse.vod.offset
                         VideoID = $VideoID
                         Created = $ClipResponse.created_at
-                        Mapping = $ClipMapping
                     }
+
+                    # Add mapping for originating video to clip entry
+                    $script:TwitchData.ClipInfoCache[$Slug].Mapping[$ClipResponse.broadcaster.name] = $ClipResponse.vod.url
+
                     $NewDataAdded = $true
 
                     # Quick return path for when XRef is original broadcaster
@@ -276,7 +253,7 @@ function Find-TwitchXRef {
         if (-not $Force -and $script:TwitchData.VideoInfoCache.ContainsKey($VideoID)) {
 
             # Use start time from cache
-            [datetime]$EventTimestamp = $script:TwitchData.VideoInfoCache[$VideoID] + $TimeOffset
+            $EventTimestamp = $script:TwitchData.VideoInfoCache[$VideoID] + $TimeOffset
 
         }
         else {
@@ -370,7 +347,7 @@ function Find-TwitchXRef {
             if (-not $Force -and $script:TwitchData.UserInfoCache.ContainsKey($XRef)) {
 
                 # Get cached ID number
-                [int]$UserIdNum = $script:TwitchData.UserInfoCache[$XRef]
+                $UserIdNum = $script:TwitchData.UserInfoCache[$XRef]
 
             }
             else {
@@ -566,7 +543,7 @@ function Find-TwitchXRef {
 
         if ((Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) -and $NewDataAdded) {
 
-            [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender StreamXRef)
+            [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Find-TwitchXRef")
 
         }
 

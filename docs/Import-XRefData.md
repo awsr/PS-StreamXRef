@@ -8,24 +8,25 @@ schema: 2.0.0
 # Import-XRefData
 
 ## SYNOPSIS
-Import data to the lookup cache. Can also set the API key without invoking a full lookup.
+Import data to the lookup cache.
 
 ## SYNTAX
 
 ### General (Default)
 ```
-Import-XRefData [-Path] <String> [-PassThru] [-Quiet] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-XRefData [-Path] <String> [-PassThru] [-Persist] [-Quiet] [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### ApiKey
 ```
-Import-XRefData [-ApiKey] <String> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-XRefData [-ApiKey] <String> [-Persist] [-Quiet] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 This command lets you import data into the lookup cache from a JSON file that was made using `Export-XRefData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.
 
-This command DOES NOT send an "**XRefNewDataAdded**" event.
+This command does not send an "**XRefNewDataAdded**" event by default.
 
 ## EXAMPLES
 
@@ -53,7 +54,6 @@ Name  Imported Skipped Error Total
 User         4      12     0    16
 Clip         7       2     0     9
 Video        5       1     0     6
-
 ```
 
 Save the results of importing and display them later as a table.
@@ -120,12 +120,27 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Persist
+Enables sending an **XRefNewDataAdded** event after new data is imported if there's a registered event subscriber (or if persistence is enabled).
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Quiet
 Suppress writing import results to host as well as per-item warning messages (but not errors).
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: General
+Parameter Sets: (All)
 Aliases:
 
 Required: False

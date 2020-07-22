@@ -1,3 +1,4 @@
+using namespace System.Collections.Generic
 #.ExternalHelp StreamXRef-help.xml
 function Export-XRefData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low")]
@@ -29,12 +30,6 @@ function Export-XRefData {
 
     Begin {
 
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            throw "Missing required internal resources. Ensure module was loaded correctly."
-
-        }
-
         if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
 
             Write-Warning "No cached data. Exported file will not contain any entries."
@@ -47,6 +42,9 @@ function Export-XRefData {
 
         }
 
+        # DateTime string formatting ("yyyy-MM-ddTHH:mm:ssZ" -> "2020-05-09T05:35:45Z")
+        $DateTimeFormatting = "yyyy-MM-ddTHH:mm:ssZ"
+
         # Handle API key
         if ($ExcludeApiKey) {
             $ExportApiKey = ""
@@ -55,9 +53,9 @@ function Export-XRefData {
             $ExportApiKey = $script:TwitchData.ApiKey
         }
 
-        $ConvertedUserInfoCache = [System.Collections.Generic.List[pscustomobject]]::new()
-        $ConvertedClipInfoCache = [System.Collections.Generic.List[pscustomobject]]::new()
-        $ConvertedVideoInfoCache = [System.Collections.Generic.List[pscustomobject]]::new()
+        $ConvertedUserInfoCache = [List[pscustomobject]]::new()
+        $ConvertedClipInfoCache = [List[pscustomobject]]::new()
+        $ConvertedVideoInfoCache = [List[pscustomobject]]::new()
 
         # Convert UserInfoCache to List
         $script:TwitchData.UserInfoCache.GetEnumerator() | ForEach-Object {
@@ -74,7 +72,7 @@ function Export-XRefData {
         # Convert ClipInfoCache to List
         $script:TwitchData.ClipInfoCache.GetEnumerator() | ForEach-Object {
 
-            $ClipInfoMapping = [System.Collections.Generic.List[pscustomobject]]::new()
+            $ClipInfoMapping = [List[pscustomobject]]::new()
 
             if (-not $ExcludeClipMapping) {
                 # Convert clip mapping data to List
@@ -93,7 +91,7 @@ function Export-XRefData {
                     slug    = $_.Key
                     offset  = $_.Value.Offset
                     video   = $_.Value.VideoID
-                    created = $_.Value.Created.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    created = $_.Value.Created.ToString($DateTimeFormatting)
                     mapping = $ClipInfoMapping
                 }
             )
@@ -103,11 +101,10 @@ function Export-XRefData {
         # Convert VideoInfoCache to List
         $script:TwitchData.VideoInfoCache.GetEnumerator() | ForEach-Object {
 
-            # ToString("yyyy-MM-ddTHH:mm:ssZ") specifies format like "2020-05-09T05:35:45Z"
             $ConvertedVideoInfoCache.Add(
                 [pscustomobject]@{
                     video     = $_.Key
-                    timestamp = $_.Value.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    timestamp = $_.Value.ToString($DateTimeFormatting)
                 }
             )
 

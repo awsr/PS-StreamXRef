@@ -865,12 +865,12 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       <command:verb>Import</command:verb>
       <command:noun>XRefData</command:noun>
       <maml:description>
-        <maml:para>Import data to the lookup cache. Can also set the API key without invoking a full lookup.</maml:para>
+        <maml:para>Import data to the lookup cache.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
       <maml:para>This command lets you import data into the lookup cache from a JSON file that was made using `Export-XRefData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.</maml:para>
-      <maml:para>This command DOES NOT send an " XRefNewDataAdded " event.</maml:para>
+      <maml:para>This command does not send an " XRefNewDataAdded " event by default.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -891,6 +891,28 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           <maml:name>Force</maml:name>
           <maml:Description>
             <maml:para>Forces overwriting of existing data in the Clip, User, and Video lookup caches.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Persist</maml:name>
+          <maml:Description>
+            <maml:para>Enables sending an XRefNewDataAdded event after new data is imported if there's a registered event subscriber (or if persistence is enabled).</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Quiet</maml:name>
+          <maml:Description>
+            <maml:para>Suppress writing import results to host as well as per-item warning messages (but not errors).</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -950,6 +972,17 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           <maml:name>PassThru</maml:name>
           <maml:Description>
             <maml:para>When specified, this function will return an object with the results of the import.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Persist</maml:name>
+          <maml:Description>
+            <maml:para>Enables sending an XRefNewDataAdded event after new data is imported if there's a registered event subscriber (or if persistence is enabled).</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1033,6 +1066,18 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <maml:name>PassThru</maml:name>
         <maml:Description>
           <maml:para>When specified, this function will return an object with the results of the import.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Persist</maml:name>
+        <maml:Description>
+          <maml:para>Enables sending an XRefNewDataAdded event after new data is imported if there's a registered event subscriber (or if persistence is enabled).</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>

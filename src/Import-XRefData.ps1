@@ -16,6 +16,9 @@ function Import-XRefData {
         [switch]$PassThru,
 
         [Parameter()]
+        [switch]$Persist,
+
+        [Parameter()]
         [switch]$Quiet,
 
         [Parameter()]
@@ -27,13 +30,6 @@ function Import-XRefData {
         if ($Force -and -not $PSBoundParameters.ContainsKey("Confirm")) {
 
             $ConfirmPreference = "None"
-
-        }
-
-        # Check for required resources
-        if (-not (Test-Path Variable:Script:TwitchData)) {
-
-            throw "Missing required internal resources. Ensure module was loaded correctly."
 
         }
 
@@ -51,23 +47,13 @@ function Import-XRefData {
             $ErrorActionPreference = "Stop"
 
             # This will now terminate the script if it fails
-            $ConfigStaging = Get-Content $Path -Raw | ConvertFrom-Json
+            $ImportStaging = Get-Content $Path -Raw | ConvertFrom-Json
 
-            if ($AdvImportCounter) {
-                # Set up counters object
-                $Counters = [StreamXRef.ImportResults]::new()
-                $Counters.AddCounter("User")
-                $Counters.AddCounter("Clip")
-                $Counters.AddCounter("Video")
-            }
-            else {
-                # Basic fallback object
-                $Counters = @{
-                    User = [pscustomobject]@{Name = "User"; Imported = 0; Skipped = 0; Error = 0}
-                    Clip = [pscustomobject]@{Name = "Clip"; Imported = 0; Skipped = 0; Error = 0}
-                    Video = [pscustomobject]@{Name = "Video"; Imported = 0; Skipped = 0; Error = 0}
-                }
-            }
+            # Set up counters object
+            $Counters = [StreamXRef.ImportResults]::new()
+            $Counters.AddCounter("User")
+            $Counters.AddCounter("Clip")
+            $Counters.AddCounter("Video")
 
             # Restore ErrorActionPreference
             $ErrorActionPreference = $EAPrefSetting
@@ -75,7 +61,7 @@ function Import-XRefData {
         }
 
         # Process ApiKey (Check parameter set first since ConfigStaging won't exist in the ApiKey set)
-        if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ConfigStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrWhiteSpace($ConfigStaging.ApiKey))) {
+        if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ImportStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrWhiteSpace($ImportStaging.ApiKey))) {
 
             # Check if current API key is not set
             if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey)) {
@@ -101,7 +87,7 @@ function Import-XRefData {
                     else {
 
                         # Import API key from input object
-                        $script:TwitchData.ApiKey = $ConfigStaging.ApiKey
+                        $script:TwitchData.ApiKey = $ImportStaging.ApiKey
 
                         if (-not $Quiet) {
 
@@ -126,7 +112,7 @@ function Import-XRefData {
                 else {
 
                     # Get key from input object
-                    $NewApiKey = $ConfigStaging.ApiKey
+                    $NewApiKey = $ImportStaging.ApiKey
 
                 }
 
@@ -136,28 +122,17 @@ function Import-XRefData {
                     # Specify "Replace" since previous value will be replaced
                     if ($PSCmdlet.ShouldProcess("API key", "Replace")) {
 
-                        if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
+                        $script:TwitchData.ApiKey = $NewApiKey
 
-                            $script:TwitchData.ApiKey = $NewApiKey
+                        if (-not $Quiet) {
 
-                            if (-not $Quiet) {
-
-                                Write-Host "API key replaced."
-
-                            }
-
-                            return
+                            Write-Host "API key replaced."
 
                         }
-                        else {
 
-                            $script:TwitchData.ApiKey = $NewApiKey
+                        if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
 
-                            if (-not $Quiet) {
-
-                                Write-Host "API key replaced."
-
-                            }
+                            return
 
                         }
 
@@ -182,12 +157,12 @@ function Import-XRefData {
         }
 
         # Process UserInfoCache
-        if ($ConfigStaging.psobject.Properties.Name -contains "UserInfoCache" -and $ConfigStaging.UserInfoCache.Count -gt 0) {
+        if ($ImportStaging.psobject.Properties.Name -contains "UserInfoCache" -and $ImportStaging.UserInfoCache.Count -gt 0) {
 
             # Check for confirm status here instead of for every single entry
             if ($PSCmdlet.ShouldProcess("User ID lookup data", "Import")) {
 
-                $ConfigStaging.UserInfoCache | ForEach-Object {
+                $ImportStaging.UserInfoCache | ForEach-Object {
 
                     try {
 
@@ -265,11 +240,11 @@ function Import-XRefData {
         }
 
         # Process ClipInfoCache
-        if ($ConfigStaging.psobject.Properties.Name -contains "ClipInfoCache" -and $ConfigStaging.ClipInfoCache.Count -gt 0) {
+        if ($ImportStaging.psobject.Properties.Name -contains "ClipInfoCache" -and $ImportStaging.ClipInfoCache.Count -gt 0) {
 
             if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Import")) {
 
-                $ConfigStaging.ClipInfoCache | ForEach-Object {
+                $ImportStaging.ClipInfoCache | ForEach-Object {
 
                     try {
 
@@ -295,7 +270,7 @@ function Import-XRefData {
                                 if ($Force) {
 
                                     # Overwrite
-                                    $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
+                                    $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
                                     $Counters.Clip.Imported++
 
                                 }
@@ -322,7 +297,7 @@ function Import-XRefData {
                         else {
 
                             # New data to add
-                            $script:TwitchData.ClipInfoCache[$_.slug] = [pscustomobject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
+                            $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
                             $Counters.Clip.Imported++
 
                         }
@@ -374,11 +349,11 @@ function Import-XRefData {
         }
 
         # Process VideoInfoCache
-        if ($ConfigStaging.psobject.Properties.Name -contains "VideoInfoCache" -and $ConfigStaging.VideoInfoCache.Count -gt 0) {
+        if ($ImportStaging.psobject.Properties.Name -contains "VideoInfoCache" -and $ImportStaging.VideoInfoCache.Count -gt 0) {
 
             if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Import")) {
 
-                $ConfigStaging.VideoInfoCache | ForEach-Object {
+                $ImportStaging.VideoInfoCache | ForEach-Object {
 
                     try {
 
@@ -469,8 +444,17 @@ function Import-XRefData {
 
             if (-not $Quiet) {
 
-                # Display import results (manual ordering in case of unordered fallback object)
-                ($Counters.User, $Counters.Clip, $Counters.Video) | Format-Table -AutoSize | Out-Host
+                $Counters.Values| Format-Table -AutoSize | Out-Host
+
+            }
+
+            if ($Persist -and $Counters.AllImported -gt 0) {
+
+                if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
+
+                    [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Import-XRefData")
+
+                }
 
             }
 

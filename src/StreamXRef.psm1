@@ -1,14 +1,16 @@
 Set-StrictMode -Version 3
 
 # Add type data
+Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll"
+
 try {
-    Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll"
-    $script:AdvImportCounter = $true
+    # Initialize cache (see comment at end of file for structure reference)
+    $script:TwitchData = [StreamXRef.DataCache]::new()
 }
 catch {
-    $script:AdvImportCounter = $false
-    Write-Warning "Unable to add StreamXRef type data. Only basic import stats will be available"
+    throw "Unable to initialize StreamXRef data object"
 }
+
 
 #region Internal shared helper functions ================
 
@@ -50,58 +52,6 @@ filter ConvertTo-UtcDateTime {
 }
 
 #endregion Shared helper functions -------------
-
-#region Initialize variables ===================
-
-try {
-
-    $script:TwitchData = [pscustomobject]@{
-
-        #   Value = [string] Client ID for API access
-        ApiKey         = $null
-
-        <#
-            Key   = [string] User/channel name
-            Value = [int] User/channel ID number
-        #>
-        UserInfoCache  = [System.Collections.Generic.Dictionary[string, int]]::new()
-
-        <#
-            Key   = [string] Clip slug name
-            Value = [pscustomobject]@{
-                Offset  = [int] Time offset in seconds
-                VideoID = [int] Video ID number
-                Created = [datetime] UTC date/time clip was created
-                Mapping = [hashtable]@{
-                    Key   = [string] Username from a previous search
-                    Value = [string] URL returned from a previous search
-                }
-            }
-        #>
-        ClipInfoCache  = [System.Collections.Generic.Dictionary[string, pscustomobject]]::new()
-
-        <#
-            Key   = [int] Video ID number
-            Value = [datetime] Starting timestamp in UTC
-        #>
-        VideoInfoCache = [System.Collections.Generic.Dictionary[int, datetime]]::new()
-
-    }
-
-    $script:TwitchData | Add-Member -MemberType ScriptMethod -Name GetTotalCount -ErrorAction Stop -Value {
-
-        $this.UserInfoCache.Count + $this.ClipInfoCache.Count + $this.VideoInfoCache.Count
-
-    }
-
-}
-catch {
-
-    $PSCmdlet.ThrowTerminatingError($_)
-
-}
-
-#endregion Initialize variables ----------------
 
 # If not running at least PowerShell 7.0, get the "PSLegacy" version of the functions
 # Otherwise, load the "PSCurrent" version of the functions
@@ -165,27 +115,25 @@ Export-ModuleMember -Function $FunctionNames
 
 #region Persistent data ========================
 
-$script:PersistStatus = [pscustomobject]@{
-    CanUse = $false
-    Enabled = $false
-    Id = 0
-}
+$script:PersistCanUse = $false
+$script:PersistEnabled = $false
+$script:PersistId = 0
 
 try {
 
     # Get path inside try/catch in case of problems resolving the path
     $script:PersistPath = Join-Path ([System.Environment]::GetFolderPath("ApplicationData")) "StreamXRef/datacache.json"
-    $script:PersistStatus.CanUse = $true
+    $script:PersistCanUse = $true
 
 }
 catch {
 
-    $script:PersistStatus.CanUse = $false
+    $script:PersistCanUse = $false
 
 }
 
 # If the data file is found in the default location, automatically enable persistence
-if (Test-Path $PersistPath) {
+if ($PersistCanUse -and (Test-Path $PersistPath)) {
 
     Enable-XRefPersistence -Quiet
 
@@ -193,9 +141,38 @@ if (Test-Path $PersistPath) {
 
 # Cleanup on unload
 $ExecutionContext.SessionState.Module.OnRemove += {
-    if ($PersistStatus.Id -ne 0) {
-        Unregister-Event -SubscriptionId $PersistStatus.Id -ErrorAction SilentlyContinue
+    if ($PersistId -ne 0) {
+        Unregister-Event -SubscriptionId $PersistId -ErrorAction SilentlyContinue
     }
 }
 
 #endregion Persistent data ---------------------
+
+<#
+Structure of StreamXRef.DataCache:
+
+    [string]ApiKey:
+        Value = [string] Client ID for API access
+
+    [dictionary]UserInfoCache:
+        Key   = [string] User/channel name
+        Value = [int] User/channel ID number
+
+    [dictionary]ClipInfoCache:
+        Key   = [string] Clip slug name
+        Value = [StreamXRef.ClipObject]@{
+            Offset  = [int] Time offset in seconds
+            VideoID = [int] Video ID number
+            Created = [datetime] UTC date/time clip was created
+            Mapping = [dictionary]@{
+                Key   = [string] Username from a previous search
+                Value = [string] URL returned from a previous search
+            }
+        }
+
+    [dictionary]VideoInfoCache:
+        Key   = [int] Video ID number
+        Value = [datetime] Starting timestamp in UTC
+
+(All dictionaries use InvariantCultureIgnoreCase)
+#>

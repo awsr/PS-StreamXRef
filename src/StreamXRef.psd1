@@ -45,14 +45,14 @@
 
 First version released as a full PowerShell Module.
 
-* Renamed module to "StreamXRef" due to Twitch's limitiations on project names
+* Renamed module to "StreamXRef" due to Twitch's limitations on project names
 * Renamed `Get-TwitchXRef` to `Find-TwitchXRef`
 * Changed alias from `gtxr` to `txr`
 * Added data caching
 * Added `Export-XRefData`, `Import-XRefData`, `Clear-XRefData`, `Enable-XRefPersistence`, and `Disable-XRefPersistence`
 '@
 
-            Prerelease = 'beta7'
+            Prerelease = 'beta8'
         }
     }
 

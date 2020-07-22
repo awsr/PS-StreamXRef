@@ -1,57 +1,102 @@
-#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.0' }
+#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.2' }
 
 BeforeAll {
     Get-Module StreamXRef | Remove-Module
     $ProjectRoot = Split-Path -Parent $PSScriptRoot
-    Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force -ErrorAction Stop
+    Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force
 }
 
-Describe "Type loading" {
-    It "Add types from dll assembly" {
-        {Add-Type -Path "$ProjectRoot/Module/typedata/StreamXRefTypes.dll"} | Should -Not -Throw
+Describe "Custom type data" {
+    BeforeAll {
+        # If one "Should" test fails, keep checking the rest in the "It" block
+        $PesterPreference = [PesterConfiguration]::Default
+        $PesterPreference.Should.ErrorAction = "Continue"
     }
-    Context "Specific types" {
-        It "ImportCounter type exists" {
-            [StreamXRef.ImportCounter] | Should -BeOfType "type"
+    Context "Constructors" {
+        It "ImportCounter can be created" {
+            {[StreamXRef.ImportCounter]::new("Test")} | Should -Not -Throw
         }
-        It "ImportResults type exists" {
-            [StreamXRef.ImportResults] | Should -BeOfType "type"
+        It "ImportCounter requires input value" {
+            {[StreamXRef.ImportCounter]::new()} | Should -Throw
+        }
+        It "ImportResults can be created" {
+            {[StreamXRef.ImportResults]::new()} | Should -Not -Throw
+        }
+        It "ClipObject can be created" {
+            {[StreamXRef.ClipObject]::new()} | Should -Not -Throw
+        }
+        It "DataCache can be created" {
+            {[StreamXRef.DataCache]::new()} | Should -Not -Throw
         }
     }
-    Context "Custom type members" {
+    Context "Members" {
         It "ImportCounter contains all properties" {
             $Properties = [StreamXRef.ImportCounter].DeclaredProperties.Name
-            $Properties | ForEach-Object {
-                $_ | Should -BeIn Name, Imported, Skipped, Error, Total
-            }
+
+            $Properties | Should -Contain Name
+            $Properties | Should -Contain Imported
+            $Properties | Should -Contain Skipped
+            $Properties | Should -Contain Error
+            $Properties | Should -Contain Total
         }
         It "ImportResults contains all properties" {
             $Properties = [StreamXRef.ImportResults].DeclaredProperties.Name
-            $Properties | ForEach-Object {
-                $_ | Should -BeIn AllImported, AllSkipped, AllError, AllTotal
-            }
+
+            $Properties | Should -Contain AllImported
+            $Properties | Should -Contain AllSkipped
+            $Properties | Should -Contain AllError
+            $Properties | Should -Contain AllTotal
         }
         It "ImportResults contains AddCounter method" {
-            [StreamXRef.ImportResults].DeclaredMethods.Name | Should -Contain AddCounter
+            $Properties = [StreamXRef.ImportResults].DeclaredMethods.Name
+
+            $Properties | Should -Contain AddCounter
+        }
+        It "ClipObject contains all properties" {
+            $Properties = [StreamXRef.ClipObject].DeclaredProperties.Name
+
+            $Properties | Should -Contain Offset
+            $Properties | Should -Contain VideoID
+            $Properties | Should -Contain Created
+            $Properties | Should -Contain Mapping
+        }
+        It "DataCache contains all properties" {
+            $Properties = [StreamXRef.DataCache].DeclaredProperties.Name
+
+            $Properties | Should -Contain ApiKey
+            $Properties | Should -Contain UserInfoCache
+            $Properties | Should -Contain ClipInfoCache
+            $Properties | Should -Contain VideoInfoCache
+        }
+        It "DataCache contains GetTotalCount method" {
+            $Properties = [StreamXRef.DataCache].DeclaredMethods.Name
+
+            $Properties | Should -Contain GetTotalCount
         }
     }
-    Context "Custom type actions" {
-        BeforeAll {
-            $TestObj = [StreamXRef.ImportCounter]::new("Test")
-            $ResultObj = [StreamXRef.ImportResults]::new()
-        }
-        It "ImportCounter constructor sets name" {
-            $TestObj.Name | Should -Be "Test"
-        }
+    Context "Functionality" {
         It "ImportCounter.Total sums all counter properties" {
+            $TestObj = [StreamXRef.ImportCounter]::new("Test")
             $TestObj.Imported = 20
             $TestObj.Skipped = 4
             $TestObj.Error = 3
+
             $TestObj.Total | Should -Be 27
         }
         It "ImportResults.AddCounter(...) adds counter object" {
+            $ResultObj = [StreamXRef.ImportResults]::new()
             $ResultObj.AddCounter("Test1")
+
             $ResultObj.Keys | Should -Contain "Test1"
+            $ResultObj["Test1"] | Should -BeOfType "StreamXRef.ImportCounter"
+        }
+        It "DataCache.GetTotalCount() sums all dictionary counts" {
+            $TestCache = [StreamXRef.DataCache]::new()
+            $TestCache.UserInfoCache.Add("TestName", 12345678)
+            $TestCache.ClipInfoCache.Add("TestClip", [StreamXRef.ClipObject]::new())
+            $TestCache.VideoInfoCache.Add(123456789, [datetime]::UtcNow)
+
+            $TestCache.GetTotalCount() | Should -Be 3
         }
     }
 }
@@ -76,5 +121,12 @@ Describe "Internal function validation" {
                 'https://clips.twitch.tv/TestStringPleaseWork' | Get-LastUrlSegment | Should -Be 'TestStringPleaseWork'
             }
         }
+    }
+}
+
+Describe "System environment" {
+    It "Application Data folder can be determined" {
+        {[System.Environment]::GetFolderPath("ApplicationData")} | Should -Not -Throw
+        [string]::IsNullOrWhiteSpace([System.Environment]::GetFolderPath("ApplicationData")) | Should -BeFalse
     }
 }
