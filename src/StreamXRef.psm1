@@ -3,8 +3,14 @@ Set-StrictMode -Version 3
 # Add type data
 Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll"
 
-# Initialize cache (see comment at end of file for structure reference)
-$script:TwitchData = [StreamXRef.DataCache]::new()
+try {
+    # Initialize cache (see comment at end of file for structure reference)
+    $script:TwitchData = [StreamXRef.DataCache]::new()
+}
+catch {
+    throw "Unable to initialize StreamXRef data object"
+}
+
 
 #region Internal shared helper functions ================
 
