@@ -408,7 +408,7 @@ function Find-TwitchXRef {
 
                     [int]$UserIdNum = $UserLookup.users[0]._id
 
-                    # Save ID number in cache hashtable
+                    # Save ID number in user cache
                     $script:TwitchData.UserInfoCache[$XRef] = $UserIdNum
                     $NewDataAdded = $true
 
@@ -543,7 +543,7 @@ function Find-TwitchXRef {
                     }
                     catch {
 
-                        Write-Verbose "Unable to add result to clip mapping hashtable"
+                        Write-Verbose "Unable to add result to clip mapping"
 
                     }
 

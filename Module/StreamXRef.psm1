@@ -53,6 +53,8 @@ filter ConvertTo-UtcDateTime {
 
 #endregion Shared helper functions -------------
 
+#region Load and setup commands ================
+
 # If not running at least PowerShell 7.0, get the "PSLegacy" version of the functions
 # Otherwise, load the "PSCurrent" version of the functions
 if ($PSVersionTable.PSVersion.Major -lt 7) {
@@ -112,6 +114,8 @@ New-Alias -Name txr -Value Find-TwitchXRef -ErrorAction Ignore
 
 Export-ModuleMember -Alias "txr"
 Export-ModuleMember -Function $FunctionNames
+
+#endregion Load and setup commands -------------
 
 #region Persistent data ========================
 
