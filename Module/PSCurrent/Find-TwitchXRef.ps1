@@ -50,10 +50,18 @@ function Find-TwitchXRef {
     Begin {
 
         $API = "https://api.twitch.tv/kraken"
+        $NewDataAdded = $false
 
         if ($PSBoundParameters.ContainsKey("ApiKey")) {
+
             $ClientID = $PSBoundParameters.ApiKey
+
+            if ($script:TwitchData.ApiKey -ine $PSBoundParameters.ApiKey) {
+                $NewDataAdded = $true
+            }
+
             $script:TwitchData.ApiKey = $PSBoundParameters.ApiKey
+
         }
         else {
             $ClientID = $script:TwitchData.ApiKey
@@ -63,8 +71,6 @@ function Find-TwitchXRef {
             "Client-ID" = $ClientID
             "Accept"    = "application/vnd.twitchtv.v5+json"
         }
-
-        $NewDataAdded = $false
 
         # Temporary list for suppressing additional API calls when the username isn't found while processing a list/array of inputs
         $NotFoundList = [System.Collections.Generic.List[string]]::new()
