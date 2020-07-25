@@ -64,7 +64,7 @@ function Enable-XRefPersistence {
                     <#  Try creating placeholder here before registering event subscriber so
                         that there's only one error message if the path can't be written to. #>
                     [void] (New-Item -Path $PersistPath -ItemType File -Force -ErrorAction Stop)
-                    Export-XRefData -Path $PersistPath -Force -WarningAction Ignore
+                    Export-XRefData -Path $PersistPath -Force 3> $null
 
                 }
 
