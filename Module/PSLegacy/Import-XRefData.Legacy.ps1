@@ -35,6 +35,7 @@ function Import-XRefData {
 
         $MappingWarning = $false
         $ConflictingData = $false
+        $NewKeyAdded = $false
 
     }
 
@@ -63,85 +64,33 @@ function Import-XRefData {
         # Process ApiKey (Check parameter set first since ConfigStaging won't exist in the ApiKey set)
         if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ImportStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrWhiteSpace($ImportStaging.ApiKey))) {
 
-            # Check if current API key is not set
-            if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey)) {
-                # API key is not set
+            if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
 
-                # Specify "Import" since there's nothing being replaced
-                if ($PSCmdlet.ShouldProcess("API key", "Import")) {
-
-                    if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
-
-                        # Handling import via ApiKey parameter
-                        $script:TwitchData.ApiKey = $ApiKey
-
-                        if (-not $Quiet) {
-
-                            Write-Host "API key imported."
-
-                        }
-
-                        return
-
-                    }
-                    else {
-
-                        # Import API key from input object
-                        $script:TwitchData.ApiKey = $ImportStaging.ApiKey
-
-                        if (-not $Quiet) {
-
-                            Write-Host "API key imported."
-
-                        }
-
-                    }
-
-                }
+                # Get key via ApiKey parameter
+                $NewApiKey = $ApiKey
 
             }
             else {
-                # API key already exists
+
+                # Get key from input object
+                $NewApiKey = $ImportStaging.ApiKey
+
+            }
+
+            if ($PSCmdlet.ShouldProcess("API key", "Import")) {
+
+                $script:TwitchData.ApiKey = $NewApiKey
+                $NewKeyAdded = $true
+
+                if (-not $Quiet) {
+
+                    Write-Host "API key imported."
+
+                }
 
                 if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
 
-                    # Get key via ApiKey parameter
-                    $NewApiKey = $ApiKey
-
-                }
-                else {
-
-                    # Get key from input object
-                    $NewApiKey = $ImportStaging.ApiKey
-
-                }
-
-                # Check if new key is different
-                if ($script:TwitchData.ApiKey -ine $NewApiKey) {
-
-                    # Specify "Replace" since previous value will be replaced
-                    if ($PSCmdlet.ShouldProcess("API key", "Replace")) {
-
-                        $script:TwitchData.ApiKey = $NewApiKey
-
-                        if (-not $Quiet) {
-
-                            Write-Host "API key replaced."
-
-                        }
-
-                        if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
-
-                            return
-
-                        }
-
-                    }
-
-                }
-                elseif (-not $Quiet) {
-
-                    Write-Host "API key is unchanged."
+                    return
 
                 }
 
@@ -435,7 +384,7 @@ function Import-XRefData {
         if ($PSCmdlet.ParameterSetName -eq "General") {
 
             if ($ConflictingData) {
-                Write-Error "Some data conflicts with existing values. Run with -Force to overwrite."
+                Write-Error "Some lookup data conflicts with existing values. Run with -Force to overwrite."
             }
 
             if ($MappingWarning) {
@@ -448,7 +397,7 @@ function Import-XRefData {
 
             }
 
-            if ($Persist -and $Counters.AllImported -gt 0) {
+            if ($Persist -and ($Counters.AllImported -gt 0 -or $NewKeyAdded)) {
 
                 if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
 
@@ -463,9 +412,13 @@ function Import-XRefData {
                 return $Counters
 
             }
-            else {
 
-                return
+        }
+        elseif ($Persist -and $NewKeyAdded) {
+
+            if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
+
+                [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Import-XRefData")
 
             }
 
