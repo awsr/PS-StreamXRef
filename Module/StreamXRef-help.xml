@@ -258,8 +258,9 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This function sets up automatic saving for all cached data to a file in the `StreamXRef` folder in your Application Data directory. If this file is detected when the module is loaded, persistence will automatically be enabled.</maml:para>
-      <maml:para>Note that automatic saving will only trigger when new data is added to the cache when running the `Find-TwitchXRef` function. Additionally, clips and videos older than 60 days will be automatically removed when loaded.</maml:para>
+      <maml:para>This function sets up automatic saving for all cached data to a file in the `StreamXRef` folder in your Application Data directory by default. If this file is detected when the module is loaded, persistence will automatically be enabled.</maml:para>
+      <maml:para>The path for persistence data can be overridden by specifying a path in the `$Env:XRefPersistPath` environment variable. The path must end with ".json" or else it will write an error and use the default path.</maml:para>
+      <maml:para>Note that automatic saving will only trigger when new data is added to the cache when running the `Find-TwitchXRef` function or if `Import-XRefData` is used with the `Persist` parameter. Additionally, clips and videos older than 60 days will be automatically removed when loaded.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -572,9 +573,9 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
-        <dev:code>PS &gt; Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefData -Path /path/to/XRefData.json}</dev:code>
+        <dev:code>PS &gt; Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefData -Path /full/path/to/datacache.json}</dev:code>
         <dev:remarks>
-          <maml:para>Automatically export the data cache whenever new data is added. Must use an absolute path or else it will change based on your current directory.</maml:para>
+          <maml:para>Automatically export the data cache whenever new data is added.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

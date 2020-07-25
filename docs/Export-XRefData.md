@@ -33,10 +33,10 @@ This will export the contents of the lookup data cache to a file.
 
 ### Example 2
 ```
-PS > Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefData -Path /path/to/XRefData.json}
+PS > Register-EngineEvent -SourceIdentifier XRefNewDataAdded -Action {Export-XRefData -Path /full/path/to/datacache.json}
 ```
 
-Automatically export the data cache whenever new data is added. Must use an absolute path or else it will change based on your current directory.
+Automatically export the data cache whenever new data is added.
 
 ## PARAMETERS
 
