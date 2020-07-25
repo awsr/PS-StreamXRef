@@ -141,7 +141,7 @@ Initial check for persistence path override
  Technically, uninitialized $Env: variables still resolve to $null even in strict mode,
  but this way guards against that behavior changing in the future.
 #>
- if ((Test-Path Env:XRefPersistPath) -and $null -ne $Env:XRefPersistPath) {
+if ((Test-Path Env:XRefPersistPath) -and $null -ne $Env:XRefPersistPath) {
 
     if ((Test-Path $Env:XRefPersistPath -IsValid) -and $Env:XRefPersistPath -like "*.json") {
 

@@ -51,6 +51,7 @@ function Enable-XRefPersistence {
 
                 if (Test-Path $PersistPath) {
 
+                    # ===== Import Data =====
                     Import-XRefData -Path $PersistPath -Quiet -Force
 
                     # Clean up entries older than 60 days (default Twitch retention policy)

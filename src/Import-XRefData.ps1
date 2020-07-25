@@ -1,4 +1,4 @@
-#.EnablePSCodeSets
+#.EnablePSCodeSets (process with ScriptBuilder.ps1)
 #.ExternalHelp StreamXRef-help.xml
 function Import-XRefData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low", DefaultParameterSetName = "General")]

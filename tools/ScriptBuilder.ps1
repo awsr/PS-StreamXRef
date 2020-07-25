@@ -30,6 +30,13 @@
 .PARAMETER LabelDefinitions
  Output file mappings for labels.
 
+.EXAMPLE
+ PS > ./ScriptBuilder.ps1 -File "/path/to/Find-TwitchXRef.ps1" -OutputRootPath "/path/to/Module/" `
+      -DefaultDirName "Shared" -LabelDefinitions "Current = PSCurrent/Find-TwitchXRef.ps1", `
+      "Legacy = PSLegacy/Find-TwitchXRef.Legacy.ps1"
+
+ Generate 2 outputs using Find-TwitchXRef.ps1 as a base and using the "Current" and "Legacy" PSCodeSet labels.
+
 #>
 [CmdletBinding()]
 Param (
@@ -107,7 +114,7 @@ if ($Source[0] -notlike "#.EnablePSCodeSets*") {
     if (-not (Test-Path $DefaultDirPath)) {
 
         # Create placeholder file and directories if missing
-        New-Item -Path $DefaultDirPath -ItemType Directory -Force -ErrorAction Stop | Out-Null
+        [void] (New-Item -Path $DefaultDirPath -ItemType Directory -Force -ErrorAction Stop)
 
     }
 
@@ -344,7 +351,7 @@ $Mappings.GetEnumerator() | ForEach-Object {
         if (-not (Test-Path $_.Value)) {
 
             # Create placeholder file and directories if missing
-            New-Item -Path $_.Value -ItemType File -Force -ErrorAction Stop | Out-Null
+            [void] (New-Item -Path $_.Value -ItemType File -Force -ErrorAction Stop)
 
         }
 
