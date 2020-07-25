@@ -9,12 +9,13 @@ function Enable-XRefPersistence {
 
     Process {
 
-        # Check for persistance path override
-        if (Test-Path Env:XRefPersistPath) {
+        # Check for persistance path override (except during import, where this was already done)
+        if ((Test-Path Env:XRefPersistPath) -and $null -ne $Env:XRefPersistPath -and $MyInvocation.PSCommandPath -notlike "*StreamXRef.psm1") {
 
             if ((Test-Path $Env:XRefPersistPath -IsValid) -and $Env:XRefPersistPath -like "*.json") {
 
                 $script:PersistPath = $Env:XRefPersistPath
+                $script:PersistCanUse = $true
 
             }
             else {

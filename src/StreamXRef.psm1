@@ -136,7 +136,28 @@ catch {
 
 }
 
-# If the data file is found in the default location, automatically enable persistence
+<#
+Initial check for persistence path override
+ Technically, uninitialized $Env: variables still resolve to $null even in strict mode,
+ but this way guards against that behavior changing in the future.
+#>
+ if ((Test-Path Env:XRefPersistPath) -and $null -ne $Env:XRefPersistPath) {
+
+    if ((Test-Path $Env:XRefPersistPath -IsValid) -and $Env:XRefPersistPath -like "*.json") {
+
+        $script:PersistPath = $Env:XRefPersistPath
+        $script:PersistCanUse = $true
+
+    }
+    else {
+
+        Write-Error "XRefPersistPath environment variable must specify a .json file"
+
+    }
+
+}
+
+# If the data file is found, automatically enable persistence
 if ($PersistCanUse -and (Test-Path $PersistPath)) {
 
     Enable-XRefPersistence -Quiet

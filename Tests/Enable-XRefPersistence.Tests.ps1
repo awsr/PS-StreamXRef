@@ -9,6 +9,10 @@ Describe "Functionality" {
         $Env:XRefPersistPath = Join-Path $TestDrive "StreamXRef/datacache.json"
         Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force
     }
+    AfterAll {
+        Disable-XRefPersistence -Quiet -Remove
+        $Env:XRefPersistPath = $null
+    }
     Context "Standalone" {
         It "Creates event subscriber" {
             Enable-XRefPersistence -Quiet
@@ -31,5 +35,4 @@ Describe "Functionality" {
             }
         }
     }
-
 }
