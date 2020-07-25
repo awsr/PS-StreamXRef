@@ -1,4 +1,3 @@
-#.EnablePSCodeSets
 #.ExternalHelp StreamXRef-help.xml
 function Import-XRefData {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low", DefaultParameterSetName = "General")]
@@ -65,31 +64,10 @@ function Import-XRefData {
         # Process ApiKey (Check parameter set first since ConfigStaging won't exist in the ApiKey set)
         if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ImportStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrWhiteSpace($ImportStaging.ApiKey))) {
 
-            #region @{ PSCodeSet = Legacy }
-            if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
-
-                # Get key via ApiKey parameter
-                $NewApiKey = $ApiKey
-
-            }
-            else {
-
-                # Get key from input object
-                $NewApiKey = $ImportStaging.ApiKey
-
-            }
-
-            #endregion @{ PSCodeSet = Legacy }
-
             if ($PSCmdlet.ShouldProcess("API key", "Import")) {
 
-                #region @{ PSCodeSet = Legacy }
-                $script:TwitchData.ApiKey = $NewApiKey
-                #endregion @{ PSCodeSet = Legacy }
-                #region @{ PSCodeSet = Current }
                 # Get key from parameter or input object
                 $script:TwitchData.ApiKey = ($PSCmdlet.ParameterSetName -eq "ApiKey") ? $ApiKey : $ImportStaging.ApiKey
-                #endregion @{ PSCodeSet = Current }
                 $NewKeyAdded = $true
 
                 if (-not $Quiet) {
