@@ -15,8 +15,8 @@ namespace StreamXRef
         public DataCache()
         {
             ApiKey = "";
-            UserInfoCache = new Dictionary<String, Int32>(StringComparer.InvariantCultureIgnoreCase);
-            ClipInfoCache = new Dictionary<String, ClipObject>(StringComparer.InvariantCultureIgnoreCase);
+            UserInfoCache = new Dictionary<String, Int32>(StringComparer.OrdinalIgnoreCase);
+            ClipInfoCache = new Dictionary<String, ClipObject>(StringComparer.OrdinalIgnoreCase);
             VideoInfoCache = new Dictionary<Int32, DateTime>();
         }
     }
@@ -30,7 +30,7 @@ namespace StreamXRef
 
         public ClipObject()
         {
-            Mapping = new Dictionary<String, String>(StringComparer.InvariantCultureIgnoreCase);
+            Mapping = new Dictionary<String, String>(StringComparer.OrdinalIgnoreCase);
         }
     }
 }
