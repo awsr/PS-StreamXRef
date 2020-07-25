@@ -52,10 +52,11 @@ function Enable-XRefPersistence {
 
                 }
 
+                # Populate path for event scriptblock in advance
+                $EventAction = [scriptblock]::Create("Export-XRefData -Path $script:PersistPath -Force")
+
                 # Suppress writing job info to host when registering
-                [void] (Register-EngineEvent -SourceIdentifier XRefNewDataAdded -ErrorAction Stop -Action {
-                    Export-XRefData -Path $script:PersistPath -Force
-                })
+                [void] (Register-EngineEvent -SourceIdentifier XRefNewDataAdded -ErrorAction Stop -Action $EventAction)
 
                 # Take note of the subscription id (might not be the same as the PSEventJob id)
                 $script:PersistId = (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded | Select-Object -Last 1).SubscriptionId
