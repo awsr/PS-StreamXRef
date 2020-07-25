@@ -50,10 +50,18 @@ function Find-TwitchXRef {
     Begin {
 
         $API = "https://api.twitch.tv/kraken"
+        $NewDataAdded = $false
 
         if ($PSBoundParameters.ContainsKey("ApiKey")) {
+
             $ClientID = $PSBoundParameters.ApiKey
+
+            if ($script:TwitchData.ApiKey -ine $PSBoundParameters.ApiKey) {
+                $NewDataAdded = $true
+            }
+
             $script:TwitchData.ApiKey = $PSBoundParameters.ApiKey
+
         }
         else {
             $ClientID = $script:TwitchData.ApiKey
@@ -63,8 +71,6 @@ function Find-TwitchXRef {
             "Client-ID" = $ClientID
             "Accept"    = "application/vnd.twitchtv.v5+json"
         }
-
-        $NewDataAdded = $false
 
         # Temporary list for suppressing additional API calls when the username isn't found while processing a list/array of inputs
         $NotFoundList = [System.Collections.Generic.List[string]]::new()
@@ -372,7 +378,7 @@ function Find-TwitchXRef {
 
                     [int]$UserIdNum = $UserLookup.users[0]._id
 
-                    # Save ID number in cache hashtable
+                    # Save ID number in user cache
                     $script:TwitchData.UserInfoCache[$XRef] = $UserIdNum
                     $NewDataAdded = $true
 
@@ -492,7 +498,7 @@ function Find-TwitchXRef {
                 $NewOffset = $EventTimestamp - $VideoToCompare.recorded_at
                 $NewUrl = "$($VideoToCompare.url)?t=$($NewOffset.Hours)h$($NewOffset.Minutes)m$($NewOffset.Seconds)s"
 
-                if (-not ($SourceIsVideo -and $XRefIsVideo)) {
+                if (-not $SourceIsVideo -and -not $XRefIsVideo) {
 
                     try {
 
@@ -502,7 +508,7 @@ function Find-TwitchXRef {
                     }
                     catch {
 
-                        Write-Verbose "Unable to add result to clip mapping hashtable"
+                        Write-Verbose "Unable to add result to clip mapping"
 
                     }
 

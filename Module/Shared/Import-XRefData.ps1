@@ -307,7 +307,7 @@ function Import-XRefData {
 
                             foreach ($entry in $_.mapping) {
 
-                                # Add to Mapping hashtable
+                                # Add to Mapping
                                 $script:TwitchData.ClipInfoCache[$_.slug].Mapping[$entry.user] = $entry.result
 
                             }

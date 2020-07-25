@@ -1,34 +1,13 @@
 
 <#PSScriptInfo
 
-.VERSION 2.1.0
+.VERSION 3.0.0
 
 .GUID e8807dc8-6efa-4a7c-a205-7d14a794f374
 
 .AUTHOR Alex Wiser
 
-.COMPANYNAME
-
-.COPYRIGHT
-
-.TAGS
-
-.LICENSEURI
-
-.PROJECTURI
-
-.ICONURI
-
-.EXTERNALMODULEDEPENDENCIES
-
-.REQUIREDSCRIPTS
-
-.EXTERNALSCRIPTDEPENDENCIES
-
-.RELEASENOTES
-
-
-.PRIVATEDATA
+.COPYRIGHT 'Copyright 2020 Alex Wiser. Licensed under MIT license.'
 
 #>
 
@@ -45,8 +24,8 @@
 .PARAMETER OutputRootPath
  Path to the main output directory.
 
-.PARAMETER CommonPath
- Output directory for shared files that skip processing.
+.PARAMETER DefaultDirName
+ Directory name for un-versioned scripts (sub-directory of $OutputRootPath).
 
 .PARAMETER LabelDefinitions
  Output file mappings for labels.
@@ -54,19 +33,19 @@
 #>
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true, Position = 0)]
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true)]
     [ValidateScript({ (Test-Path $_ -IsValid) -and ($_ -match '.*\.ps[dm]?1$') -and ($_ -notlike "*.Tests.ps1") })]
     [string]$File,
 
-    [Parameter(Mandatory = $true, Position = 1)]
+    [Parameter(Mandatory = $true, Position = 1, ValueFromPipelineByPropertyName = $true)]
     [ValidateScript({ Test-Path $_ -IsValid })]
     [string]$OutputRootPath,
 
-    [Parameter(Mandatory = $true, Position = 2)]
+    [Parameter(Mandatory = $true, Position = 2, ValueFromPipelineByPropertyName = $true)]
     [ValidateScript({ Test-Path $_ -IsValid })]
-    [string]$CommonPath,
+    [string]$DefaultDirName,
 
-    [Parameter(ValueFromRemainingArguments)]
+    [Parameter(ValueFromRemainingArguments, ValueFromPipelineByPropertyName = $true)]
     [string[]]$LabelDefinitions
 )
 
@@ -98,7 +77,9 @@ $Source = Get-Content $File -ErrorAction Stop | ForEach-Object {
 
 }
 
-$FileName = Split-Path $File -Leaf
+$FileItem = Get-Item $File
+$FileName = $FileItem.Name
+
 $RelativeFilePath = [System.IO.Path]::GetRelativePath($PWD.Path, $File)
 
 # Handle main module and manifest files
@@ -115,33 +96,26 @@ if ($File.EndsWith("psd1") -or $File.EndsWith("psm1")) {
 
 }
 
-# If not flagged, write to CommonPath directory
+# If not flagged, write to default directory for scripts
 if ($Source[0] -notlike "#.EnablePSCodeSets*") {
 
     Write-Verbose "EnablePSCodeSets flag not found"
 
-    if ([System.IO.Path]::IsPathFullyQualified($CommonPath)) {
+    $DefaultDirPath = Join-Path $OutputRootPath $DefaultDirName
 
-        $FullCommonPath = $CommonPath
-
-    }
-    else {
-
-        $FullCommonPath = Join-Path $OutputRootPath $CommonPath
-
-    }
-
-    # Check if path doesn't exist
-    if (-not (Test-Path $FullCommonPath)) {
+    # Check if directory doesn't exist
+    if (-not (Test-Path $DefaultDirPath)) {
 
         # Create placeholder file and directories if missing
-        New-Item -Path $FullCommonPath -ItemType File -Force -ErrorAction Stop | Out-Null
+        New-Item -Path $DefaultDirPath -ItemType Directory -Force -ErrorAction Stop | Out-Null
 
     }
 
-    $Source | Out-File $FullCommonPath -Force -ErrorAction Stop
+    $OutputFilePath = Join-Path $DefaultDirPath $FileName
 
-    Write-Verbose "$RelativeFilePath written to $FullCommonPath"
+    $Source | Out-File $OutputFilePath -Force -ErrorAction Stop
+
+    Write-Verbose "$RelativeFilePath written to $OutputFilePath"
 
     return
 
