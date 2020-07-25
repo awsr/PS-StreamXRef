@@ -9,6 +9,22 @@ function Enable-XRefPersistence {
 
     Process {
 
+        # Check for persistance path override
+        if (Test-Path Env:XRefPersistPath) {
+
+            if ((Test-Path $Env:XRefPersistPath -IsValid) -and $Env:XRefPersistPath -like "*.json") {
+
+                $script:PersistPath = $Env:XRefPersistPath
+
+            }
+            else {
+
+                Write-Error "XRefPersistPath environment variable must specify a .json file"
+
+            }
+
+        }
+
         if ($PersistCanUse) {
 
             if ($PersistEnabled) {
