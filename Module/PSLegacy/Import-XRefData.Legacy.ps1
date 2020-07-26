@@ -1,6 +1,6 @@
 #.ExternalHelp StreamXRef-help.xml
 function Import-XRefData {
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "Low", DefaultParameterSetName = "General")]
+    [CmdletBinding(DefaultParameterSetName = "General")]
     [OutputType([System.Void], [StreamXRef.ImportResults])]
     Param(
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ParameterSetName = "General")]
@@ -26,12 +26,6 @@ function Import-XRefData {
     )
 
     Begin {
-
-        if ($Force -and -not $PSBoundParameters.ContainsKey("Confirm")) {
-
-            $ConfirmPreference = "None"
-
-        }
 
         $MappingWarning = $false
         $ConflictingData = $false
@@ -64,33 +58,29 @@ function Import-XRefData {
         # Process ApiKey (Check parameter set first since ImportStaging won't exist in the ApiKey set)
         if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ImportStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrWhiteSpace($ImportStaging.ApiKey))) {
 
-            if ($PSCmdlet.ShouldProcess("API key", "Import")) {
+            if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
 
-                if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
+                # Get key via ApiKey parameter
+                $script:TwitchData.ApiKey = $ApiKey
 
-                    # Get key via ApiKey parameter
-                    $script:TwitchData.ApiKey = $ApiKey
+            }
+            else {
 
-                }
-                else {
+                # Get key from input object
+                $script:TwitchData.ApiKey = $ImportStaging.ApiKey
 
-                    # Get key from input object
-                    $script:TwitchData.ApiKey = $ImportStaging.ApiKey
+            }
+            $NewKeyAdded = $true
 
-                }
-                $NewKeyAdded = $true
+            if (-not $Quiet) {
 
-                if (-not $Quiet) {
+                Write-Host "API key imported."
 
-                    Write-Host "API key imported."
+            }
 
-                }
+            if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
 
-                if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
-
-                    return
-
-                }
+                return
 
             }
 
@@ -106,82 +96,78 @@ function Import-XRefData {
         # Process UserInfoCache
         if ($ImportStaging.psobject.Properties.Name -contains "UserInfoCache" -and $ImportStaging.UserInfoCache.Count -gt 0) {
 
-            # Check for confirm status here instead of for every single entry
-            if ($PSCmdlet.ShouldProcess("User ID lookup data", "Import")) {
+            $ImportStaging.UserInfoCache | ForEach-Object {
 
-                $ImportStaging.UserInfoCache | ForEach-Object {
+                try {
 
-                    try {
 
-                        # Check if entry already exists
-                        if ($script:TwitchData.UserInfoCache.ContainsKey($_.name)) {
+                    # Check if entry already exists
+                    if ($script:TwitchData.UserInfoCache.ContainsKey($_.name)) {
 
-                            # If so, is the data the same?
-                            if ($script:TwitchData.UserInfoCache[$_.name] -eq $_.id) {
+                        # If so, is the data the same?
+                        if ($script:TwitchData.UserInfoCache[$_.name] -eq $_.id) {
 
-                                # Already exists and can be skipped
-                                $Counters.User.Skipped++
-
-                            }
-                            else {
-
-                                if ($Force) {
-
-                                    # Overwrite
-                                    $script:TwitchData.UserInfoCache[$_.name] = $_.id
-                                    $Counters.User.Imported++
-
-                                }
-                                else {
-
-                                    $ConflictingData = $true
-                                    $Counters.User.Error++
-
-                                    if (-not $Quiet) {
-
-                                        Write-Warning "Conflict for $($_.name): [new] $($_.id) -> [old] $($script:TwitchData.UserInfoCache[$_.name])"
-
-                                    }
-
-                                }
-
-                            }
+                            # Already exists and can be skipped
+                            $Counters.User.Skipped++
 
                         }
                         else {
 
-                            # New data to add
-                            $script:TwitchData.UserInfoCache[$_.name] = $_.id
-                            $Counters.User.Imported++
+                            if ($Force) {
+
+                                # Overwrite
+                                $script:TwitchData.UserInfoCache[$_.name] = $_.id
+                                $Counters.User.Imported++
+
+                            }
+                            else {
+
+                                $ConflictingData = $true
+                                $Counters.User.Error++
+
+                                if (-not $Quiet) {
+
+                                    Write-Warning "Conflict for $($_.name): [new] $($_.id) -> [old] $($script:TwitchData.UserInfoCache[$_.name])"
+
+                                }
+
+                            }
 
                         }
 
                     }
-                    catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
-                    [System.Management.Automation.PropertyNotFoundException] {
+                    else {
 
-                        # Data formatting errors
-                        Write-Error "(User Data) $($_.Exception.Message)" -Category InvalidData
-                        $Counters.User.Error++
-
-                    }
-                    catch {
-
-                        # Halt to prevent potential data corruption from unknown error
-                        $PSCmdlet.ThrowTerminatingError($_)
+                        # New data to add
+                        $script:TwitchData.UserInfoCache[$_.name] = $_.id
+                        $Counters.User.Imported++
 
                     }
 
                 }
+                catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
+                [System.Management.Automation.PropertyNotFoundException] {
 
-                Write-Verbose "(User Data) $($Counters.User.Imported) entries imported."
-                if ($Counters.User.Skipped -gt 0) {
-                    Write-Verbose "(User Data) $($Counters.User.Skipped) duplicate entries skipped."
+                    # Data formatting errors
+                    Write-Error "(User Data) $($_.Exception.Message)" -Category InvalidData
+                    $Counters.User.Error++
+
                 }
-                if ($Counters.User.Error -gt 0) {
-                    Write-Verbose "(User Data) $($Counters.User.Error) entries could not be parsed or conflicted with existing data."
+                catch {
+
+                    # Halt to prevent potential data corruption from unknown error
+                    $PSCmdlet.ThrowTerminatingError($_)
+
                 }
 
+            }
+
+            Write-Verbose "(User Data) $($Counters.User.Imported) entries imported."
+            if ($Counters.User.Skipped -gt 0) {
+                Write-Verbose "(User Data) $($Counters.User.Skipped) duplicate entries skipped."
+            }
+            if ($Counters.User.Error -gt 0) {
+                Write-Verbose "(User Data) $($Counters.User.Error) entries could not be parsed or conflicted with existing data."
             }
 
         }
@@ -189,108 +175,104 @@ function Import-XRefData {
         # Process ClipInfoCache
         if ($ImportStaging.psobject.Properties.Name -contains "ClipInfoCache" -and $ImportStaging.ClipInfoCache.Count -gt 0) {
 
-            if ($PSCmdlet.ShouldProcess("Clip info lookup data", "Import")) {
+            $ImportStaging.ClipInfoCache | ForEach-Object {
 
-                $ImportStaging.ClipInfoCache | ForEach-Object {
+                try {
 
-                    try {
+                    # Enforce casting to [int]
+                    [int]$NewOffsetValue = $_.offset
+                    [int]$NewVideoIDValue = $_.video
 
-                        # Enforce casting to [int]
-                        [int]$NewOffsetValue = $_.offset
-                        [int]$NewVideoIDValue = $_.video
+                    $ConvertedDateTime = $_.created | ConvertTo-UtcDateTime
 
-                        $ConvertedDateTime = $_.created | ConvertTo-UtcDateTime
+                    if ($script:TwitchData.ClipInfoCache.ContainsKey($_.slug)) {
 
-                        if ($script:TwitchData.ClipInfoCache.ContainsKey($_.slug)) {
+                        # Shorter variable for using in the "if" statements and warning message
+                        $ExistingObject = $script:TwitchData.ClipInfoCache[$_.slug]
 
-                            # Shorter variable for using in the "if" statements and warning message
-                            $ExistingObject = $script:TwitchData.ClipInfoCache[$_.slug]
+                        # Results mapping info is low priority and not checked here
+                        if ($ExistingObject.Offset -eq $NewOffsetValue -and $ExistingObject.VideoID -eq $NewVideoIDValue -and $ExistingObject.Created -eq $ConvertedDateTime) {
 
-                            # Results mapping info is low priority and not checked here
-                            if ($ExistingObject.Offset -eq $NewOffsetValue -and $ExistingObject.VideoID -eq $NewVideoIDValue -and $ExistingObject.Created -eq $ConvertedDateTime) {
-
-                                $Counters.Clip.Skipped++
-
-                            }
-                            else {
-
-                                if ($Force) {
-
-                                    # Overwrite
-                                    $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
-                                    $Counters.Clip.Imported++
-
-                                }
-                                else {
-
-                                    $ConflictingData = $true
-                                    $Counters.Clip.Error++
-
-                                    if (-not $Quiet) {
-
-                                        Write-Warning (
-                                            "Conflict for $($_.slug):`n",
-                                            "[new] $NewOffsetValue, $NewVideoIDValue, $ConvertedDateTime`n",
-                                            "[old] $($ExistingObject.Offset), $($ExistingObject.VideoID), $($ExistingObject.Created)" -join ""
-                                        )
-
-                                    }
-
-                                }
-
-                            }
+                            $Counters.Clip.Skipped++
 
                         }
                         else {
 
-                            # New data to add
-                            $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
-                            $Counters.Clip.Imported++
+                            if ($Force) {
 
-                        }
+                                # Overwrite
+                                $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
+                                $Counters.Clip.Imported++
 
-                        # Try importing mapping subset
-                        try {
+                            }
+                            else {
 
-                            foreach ($entry in $_.mapping) {
+                                $ConflictingData = $true
+                                $Counters.Clip.Error++
 
-                                # Add to Mapping
-                                $script:TwitchData.ClipInfoCache[$_.slug].Mapping[$entry.user] = $entry.result
+                                if (-not $Quiet) {
+
+                                    Write-Warning (
+                                        "Conflict for $($_.slug):`n",
+                                        "[new] $NewOffsetValue, $NewVideoIDValue, $ConvertedDateTime`n",
+                                        "[old] $($ExistingObject.Offset), $($ExistingObject.VideoID), $($ExistingObject.Created)" -join ""
+                                    )
+
+                                }
 
                             }
 
                         }
-                        catch {
 
-                            $MappingWarning = $true
+                    }
+                    else {
+
+                        # New data to add
+                        $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
+                        $Counters.Clip.Imported++
+
+                    }
+
+                    # Try importing mapping subset
+                    try {
+
+                        foreach ($entry in $_.mapping) {
+
+                            # Add to Mapping
+                            $script:TwitchData.ClipInfoCache[$_.slug].Mapping[$entry.user] = $entry.result
 
                         }
 
                     }
-                    catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
-                    [System.Management.Automation.PropertyNotFoundException] {
-
-                        Write-Error "(Clip Data) $($_.Exception.Message)" -Category InvalidData
-                        $Counters.Clip.Error++
-
-                    }
                     catch {
 
-                        # Halt to prevent potential data corruption from unknown error
-                        $PSCmdlet.ThrowTerminatingError($_)
+                        $MappingWarning = $true
 
                     }
 
                 }
+                catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
+                [System.Management.Automation.PropertyNotFoundException] {
 
-                Write-Verbose "(Clip Data) $($Counters.Clip.Imported) entries imported."
-                if ($Counters.Clip.Skipped -gt 0) {
-                    Write-Verbose "(Clip Data) $($Counters.Clip.Skipped) duplicate entries skipped."
+                    Write-Error "(Clip Data) $($_.Exception.Message)" -Category InvalidData
+                    $Counters.Clip.Error++
+
                 }
-                if ($Counters.Clip.Error -gt 0) {
-                    Write-Verbose "(Clip Data) $($Counters.Clip.Error) entries could not be parsed or conflicted with existing data."
+                catch {
+
+                    # Halt to prevent potential data corruption from unknown error
+                    $PSCmdlet.ThrowTerminatingError($_)
+
                 }
 
+            }
+
+            Write-Verbose "(Clip Data) $($Counters.Clip.Imported) entries imported."
+            if ($Counters.Clip.Skipped -gt 0) {
+                Write-Verbose "(Clip Data) $($Counters.Clip.Skipped) duplicate entries skipped."
+            }
+            if ($Counters.Clip.Error -gt 0) {
+                Write-Verbose "(Clip Data) $($Counters.Clip.Error) entries could not be parsed or conflicted with existing data."
             }
 
         }
@@ -298,79 +280,75 @@ function Import-XRefData {
         # Process VideoInfoCache
         if ($ImportStaging.psobject.Properties.Name -contains "VideoInfoCache" -and $ImportStaging.VideoInfoCache.Count -gt 0) {
 
-            if ($PSCmdlet.ShouldProcess("Video timestamp lookup data", "Import")) {
+            $ImportStaging.VideoInfoCache | ForEach-Object {
 
-                $ImportStaging.VideoInfoCache | ForEach-Object {
+                try {
 
-                    try {
+                    $ConvertedDateTime = $_.timestamp | ConvertTo-UtcDateTime
 
-                        $ConvertedDateTime = $_.timestamp | ConvertTo-UtcDateTime
+                    if ($script:TwitchData.VideoInfoCache.ContainsKey($_.video)) {
 
-                        if ($script:TwitchData.VideoInfoCache.ContainsKey($_.video)) {
+                        if ($script:TwitchData.VideoInfoCache[$_.video] -eq $ConvertedDateTime) {
 
-                            if ($script:TwitchData.VideoInfoCache[$_.video] -eq $ConvertedDateTime) {
-
-                                $Counters.Video.Skipped++
-
-                            }
-                            else {
-
-                                if ($Force) {
-
-                                    # Overwrite
-                                    $script:TwitchData.VideoInfoCache[$_.video] = $ConvertedDateTime
-                                    $Counters.Video.Imported++
-
-                                }
-                                else {
-
-                                    $ConflictingData = $true
-                                    $Counters.Video.Error++
-
-                                    if (-not $Quiet) {
-
-                                        Write-Warning "For $($_.video): $ConvertedDateTime -> $($script:TwitchData.VideoInfoCache[$_.video])"
-
-                                    }
-
-                                }
-
-                            }
+                            $Counters.Video.Skipped++
 
                         }
                         else {
 
-                            # New data to add
-                            $script:TwitchData.VideoInfoCache[$_.video] = $ConvertedDateTime
-                            $Counters.Video.Imported++
+                            if ($Force) {
+
+                                # Overwrite
+                                $script:TwitchData.VideoInfoCache[$_.video] = $ConvertedDateTime
+                                $Counters.Video.Imported++
+
+                            }
+                            else {
+
+                                $ConflictingData = $true
+                                $Counters.Video.Error++
+
+                                if (-not $Quiet) {
+
+                                    Write-Warning "For $($_.video): $ConvertedDateTime -> $($script:TwitchData.VideoInfoCache[$_.video])"
+
+                                }
+
+                            }
 
                         }
 
                     }
-                    catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
-                    [System.Management.Automation.PropertyNotFoundException] {
+                    else {
 
-                        Write-Error "(Video Data) $($_.Exception.Message)" -Category InvalidData
-                        $Counters.Video.Error++
-
-                    }
-                    catch {
-
-                        # Halt to prevent potential data corruption from unknown error
-                        $PSCmdlet.ThrowTerminatingError($_)
+                        # New data to add
+                        $script:TwitchData.VideoInfoCache[$_.video] = $ConvertedDateTime
+                        $Counters.Video.Imported++
 
                     }
 
                 }
+                catch [System.Management.Automation.PSInvalidCastException], [System.FormatException],
+                [System.Management.Automation.PropertyNotFoundException] {
 
-                Write-Verbose "(Video Data) $($Counters.Video.Imported) entries imported."
-                if ($Counters.Video.Skipped -gt 0) {
-                    Write-Verbose "(Video Data) $($Counters.Video.Skipped) duplicate entries skipped."
+                    Write-Error "(Video Data) $($_.Exception.Message)" -Category InvalidData
+                    $Counters.Video.Error++
+
                 }
-                if ($Counters.Video.Error -gt 0) {
-                    Write-Verbose "(Video Data) $($Counters.Video.Error) entries could not be parsed or conflicted with existing data."
+                catch {
+
+                    # Halt to prevent potential data corruption from unknown error
+                    $PSCmdlet.ThrowTerminatingError($_)
+
                 }
 
+            }
+
+            Write-Verbose "(Video Data) $($Counters.Video.Imported) entries imported."
+            if ($Counters.Video.Skipped -gt 0) {
+                Write-Verbose "(Video Data) $($Counters.Video.Skipped) duplicate entries skipped."
+            }
+            if ($Counters.Video.Error -gt 0) {
+                Write-Verbose "(Video Data) $($Counters.Video.Error) entries could not be parsed or conflicted with existing data."
             }
 
         }
@@ -391,7 +369,7 @@ function Import-XRefData {
 
             if (-not $Quiet) {
 
-                $Counters.Values| Format-Table -AutoSize | Out-Host
+                $Counters.Values | Format-Table -AutoSize | Out-Host
 
             }
 

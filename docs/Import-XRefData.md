@@ -14,13 +14,12 @@ Import data to the lookup cache.
 
 ### General (Default)
 ```
-Import-XRefData [-Path] <String> [-PassThru] [-Persist] [-Quiet] [-Force] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Import-XRefData [-Path] <String> [-PassThru] [-Persist] [-Quiet] [-Force] [<CommonParameters>]
 ```
 
 ### ApiKey
 ```
-Import-XRefData [-ApiKey] <String> [-Persist] [-Quiet] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-XRefData [-ApiKey] <String> [-Persist] [-Quiet] [-Force] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -142,37 +141,6 @@ Suppress writing import results to host as well as per-item warning messages (bu
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Confirm
-Prompts you for confirmation before running the cmdlet.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: cf
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -WhatIf
-Shows what would happen if the cmdlet runs.
-The cmdlet is not run.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: wi
 
 Required: False
 Position: Named
