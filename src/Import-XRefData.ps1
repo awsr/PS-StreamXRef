@@ -38,21 +38,33 @@ function Import-XRefData {
 
         if ($PSCmdlet.ParameterSetName -eq "General") {
 
-            # Temporarily override ErrorActionPreference during required setup
-            $EAPrefSetting = $ErrorActionPreference
-            $ErrorActionPreference = "Stop"
+            try {
 
-            # This will now terminate the script if it fails
-            $ImportStaging = Get-Content $Path -Raw | ConvertFrom-Json
+                # Read file and convert from json
+                $ImportStaging = Get-Content $Path -Raw | ConvertFrom-Json
 
-            # Set up counters object
-            $Counters = [StreamXRef.ImportResults]::new()
-            $Counters.AddCounter("User")
-            $Counters.AddCounter("Clip")
-            $Counters.AddCounter("Video")
+            }
+            catch {
 
-            # Restore ErrorActionPreference
-            $ErrorActionPreference = $EAPrefSetting
+                $PSCmdlet.WriteError($_)
+                return
+
+            }
+
+            try {
+
+                # Set up counters object
+                $Counters = [StreamXRef.ImportResults]::new()
+                $Counters.AddCounter("User")
+                $Counters.AddCounter("Clip")
+                $Counters.AddCounter("Video")
+
+            }
+            catch {
+
+                $PSCmdlet.ThrowTerminatingError($_)
+
+            }
 
         }
 
@@ -106,7 +118,6 @@ function Import-XRefData {
             $ImportStaging.UserInfoCache | ForEach-Object {
 
                 try {
-
 
                     # Check if entry already exists
                     if ($script:TwitchData.UserInfoCache.ContainsKey($_.name)) {
