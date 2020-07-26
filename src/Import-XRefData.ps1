@@ -62,7 +62,7 @@ function Import-XRefData {
 
         }
 
-        # Process ApiKey (Check parameter set first since ConfigStaging won't exist in the ApiKey set)
+        # Process ApiKey (Check parameter set first since ImportStaging won't exist in the ApiKey set)
         if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ImportStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrWhiteSpace($ImportStaging.ApiKey))) {
 
             if ($PSCmdlet.ShouldProcess("API key", "Import")) {
