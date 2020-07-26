@@ -18,9 +18,9 @@ Export-XRefData [-Path] <String> [-ExcludeApiKey] [-ExcludeClipMapping] [-Force]
 ```
 
 ## DESCRIPTION
-This command exports the contents of the lookup data cache as JSON to a specified file.
+This cmdlet exports the contents of the lookup data cache as JSON to a specified file.
 
-The files created by this command can be used with `Import-XRefData`.
+The files created by this cmdlet can be used with `Import-XRefData`.
 
 ## EXAMPLES
 

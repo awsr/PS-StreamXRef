@@ -23,9 +23,9 @@ Import-XRefData [-ApiKey] <String> [-Persist] [-Quiet] [-Force] [<CommonParamete
 ```
 
 ## DESCRIPTION
-This command lets you import data into the lookup cache from a JSON file that was made using `Export-XRefData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.
+This cmdlet lets you import data into the lookup cache from a JSON file that was made using `Export-XRefData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` cmdlet.
 
-This command does not send an "**XRefNewDataAdded**" event by default.
+This cmdlet does not send an "**XRefNewDataAdded**" event by default.
 
 ## EXAMPLES
 
@@ -41,7 +41,7 @@ Import previously-exported data from a file.
 PS > Import-XRefData -ApiKey "1234567890abcdefghijklmnopqrst"
 ```
 
-Set your API key without invoking the main `Find-TwitchXRef` command.
+Set your API key without invoking the main `Find-TwitchXRef` cmdlet.
 
 ### Example 3
 ```powershell
@@ -105,7 +105,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-When specified, this function will return an object with the results of the import.
+When specified, this cmdlet will return an object with the results of the import.
 
 ```yaml
 Type: SwitchParameter
@@ -162,7 +162,7 @@ Only the `Path` parameter supports accepting a value from the pipeline.
 
 ### None or StreamXRef.ImportResults
 
-When the `PassThru` parameter is specified, this function returns a `[StreamXRef.ImportResults]` object (based on `[System.Collections.Generic.Dictionary]`) with the results of the import operation. Use `AllImported`, `AllSkipped`, `AllError`, or `AllTotal` properties to get the counts across all of the caches.
+When the `PassThru` parameter is specified, this cmdlet returns a `[StreamXRef.ImportResults]` object (based on `[System.Collections.Generic.Dictionary]`) with the results of the import operation. Use `AllImported`, `AllSkipped`, `AllError`, or `AllTotal` properties to get the counts across all of the caches.
 
 Each object includes counts for `Imported`, `Skipped`, `Error`, and `Total`.
 
