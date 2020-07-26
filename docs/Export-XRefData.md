@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-Forces overwriting of read-only files.
+Forces cmdlet to run and overwrite read-only files.
 
 ```yaml
 Type: SwitchParameter
