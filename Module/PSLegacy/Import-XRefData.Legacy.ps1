@@ -64,22 +64,20 @@ function Import-XRefData {
         # Process ApiKey (Check parameter set first since ConfigStaging won't exist in the ApiKey set)
         if ($PSCmdlet.ParameterSetName -eq "ApiKey" -or ($ImportStaging.psobject.Properties.Name -contains "ApiKey" -and -not [string]::IsNullOrWhiteSpace($ImportStaging.ApiKey))) {
 
-            if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
-
-                # Get key via ApiKey parameter
-                $NewApiKey = $ApiKey
-
-            }
-            else {
-
-                # Get key from input object
-                $NewApiKey = $ImportStaging.ApiKey
-
-            }
-
             if ($PSCmdlet.ShouldProcess("API key", "Import")) {
 
-                $script:TwitchData.ApiKey = $NewApiKey
+                if ($PSCmdlet.ParameterSetName -eq "ApiKey") {
+
+                    # Get key via ApiKey parameter
+                    $script:TwitchData.ApiKey = $ApiKey
+
+                }
+                else {
+
+                    # Get key from input object
+                    $script:TwitchData.ApiKey = $ImportStaging.ApiKey
+
+                }
                 $NewKeyAdded = $true
 
                 if (-not $Quiet) {
