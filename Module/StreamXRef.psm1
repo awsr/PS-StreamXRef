@@ -11,7 +11,6 @@ catch {
     throw "Unable to initialize StreamXRef data object"
 }
 
-
 #region Internal shared helper functions ================
 
 filter Get-LastUrlSegment {

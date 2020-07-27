@@ -87,7 +87,7 @@ function Find-TwitchXRef {
 
     Process {
 
-        <#  This trap is used for making all "404 Not Found" errors a non-terminating error
+        <#  This trap is used for making only "404 Not Found" errors a non-terminating error
             because, for some reason, Twitch also uses that with some (but not all...) API
             endpoints to indicate that no results were found. #>
         #region @{ PSCodeSet = Current }
@@ -169,7 +169,7 @@ function Find-TwitchXRef {
             #endregion @{ PSCodeSet = Current }
             #region @{ PSCodeSet = Legacy}
             $OffsetArgs = @{
-                Hours = 0
+                Hours   = 0
                 Minutes = 0
                 Seconds = 0
             }

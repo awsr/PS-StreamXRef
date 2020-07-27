@@ -123,7 +123,7 @@ function Export-XRefData {
     Process {
 
         # Save Json string ("-Depth 4" required in order to include clip/username mapping)
-        [string]$DataAsJson = $StagedTwitchData | ConvertTo-Json -Compress:$Compress -Depth 4
+        $DataAsJson = $StagedTwitchData | ConvertTo-Json -Compress:$Compress -Depth 4
 
         # Check if path exists
         if (Test-Path $Path) {

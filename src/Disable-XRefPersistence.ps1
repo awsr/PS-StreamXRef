@@ -16,7 +16,7 @@ function Disable-XRefPersistence {
 
             if ($Remove) {
 
-                if (Test-Path $PersistPath*) {
+                if (Test-Path "$PersistPath*") {
 
                     # Delete file (and/or .bak version)
                     Remove-Item "$PersistPath*" -Force
