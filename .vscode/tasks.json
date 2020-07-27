@@ -4,13 +4,13 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build versioned scripts",
+      "label": "Build This Script",
       "type": "shell",
       "command": "${workspaceFolder}/tools/ScriptBuilder.ps1",
       "args": [
         "${file}",
         "${workspaceFolder}/Module/",
-        "-DefaultDirName", "Shared",
+        "Shared",
         "Current = PSCurrent/${fileBasename}",
         "Legacy = PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
       ],
@@ -19,7 +19,7 @@
         "args": [
           "${file}",
           "${workspaceFolder}\\Module\\",
-          "-DefaultDirName", "Shared",
+          "Shared",
           "Current = PSCurrent\\${fileBasename}",
           "Legacy = PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
         ]
@@ -31,61 +31,82 @@
       }
     },
     {
-      "label": "Build scripts for debugging",
+      "label": "Build All Scripts",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/ScriptBuilder.ps1",
+      "command": "${workspaceFolder}/tools/BuildAll.ps1",
       "args": [
-        "${file}",
-        "${workspaceFolder}/debug/",
-        "-DefaultDirName", "Shared",
-        "-Verbose",
-        "Current = PSCurrent/${fileBasename}",
-        "Legacy = PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
+        "-Verbose"
       ],
       "windows": {
-        "command": "${workspaceFolder}\\tools\\ScriptBuilder.ps1",
+        "command": "${workspaceFolder}\\tools\\BuildAll.ps1",
         "args": [
-          "${file}",
-          "${workspaceFolder}\\debug\\",
-          "-DefaultDirName", "Shared",
-          "-Verbose",
-          "Current = PSCurrent\\${fileBasename}",
-          "Legacy = PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
+          "-Verbose"
         ]
       },
       "problemMatcher": []
     },
     {
-      "label": "Generate help from markdown",
+      "label": "Build Debug Module",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/BuildAll.ps1",
+      "args": [
+        "-ForDebug",
+        "-Verbose"
+      ],
+      "windows": {
+        "command": "${workspaceFolder}\\tools\\BuildAll.ps1",
+        "args": [
+          "-ForDebug",
+          "-Verbose"
+        ]
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Help From Markdown",
       "type": "shell",
       "command": "New-ExternalHelp",
       "args": [
-        "-Path", "${workspaceFolder}/docs/",
-        "-OutputPath", "${workspaceFolder}/Module/",
+        "-Path",
+        "${workspaceFolder}/docs/",
+        "-OutputPath",
+        "${workspaceFolder}/Module/",
         "-Force"
       ],
       "windows": {
         "command": "New-ExternalHelp",
         "args": [
-          "-Path", "${workspaceFolder}\\docs\\",
-          "-OutputPath", "${workspaceFolder}\\Module\\",
+          "-Path",
+          "${workspaceFolder}\\docs\\",
+          "-OutputPath",
+          "${workspaceFolder}\\Module\\",
           "-Force"
         ]
       },
       "problemMatcher": []
     },
     {
-        "label": "Build .NET assembly",
-        "command": "dotnet",
-        "type": "process",
-        "args": [
-            "build",
-            "-c", "Release",
-            "${workspaceFolder}/src/dotnet/StreamXRefTypes.csproj",
-            "/property:GenerateFullPaths=true",
-            "/consoleloggerparameters:NoSummary"
-        ],
-        "problemMatcher": "$msCompile"
+      "label": "Build .NET Assembly",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "-c",
+        "Release",
+        "${workspaceFolder}/src/dotnet/StreamXRefTypes.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Build Everything",
+      "dependsOn": [
+        "Build All Scripts",
+        "Build .NET Assembly",
+        "Generate Help From Markdown"
+      ],
+      "problemMatcher": []
     }
   ]
 }
