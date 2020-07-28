@@ -198,5 +198,5 @@ Structure of StreamXRef.DataCache:
         Key   = [int] Video ID number
         Value = [datetime] Starting timestamp in UTC
 
-(All dictionaries use InvariantCultureIgnoreCase)
+(All dictionaries use case-insensitive keys)
 #>
