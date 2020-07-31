@@ -46,6 +46,7 @@ function Clear-XRefData {
             }
 
             if ($PSBoundParameters.ContainsKey("DaysToKeep")) {
+                # Only remove old entries
 
                 $Cutoff = [datetime]::UtcNow - (New-TimeSpan -Days $DaysToKeep)
 
@@ -81,7 +82,6 @@ function Clear-XRefData {
 
             }
             else {
-
                 # Clear all entries
 
                 if ($Name -icontains "Clip") {
@@ -97,11 +97,7 @@ function Clear-XRefData {
                     Write-Verbose "(Video) Data cleared"
 
                 }
-
             }
-
         }
-
     }
-
 }
