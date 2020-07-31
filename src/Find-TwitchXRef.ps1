@@ -201,9 +201,9 @@ function Find-TwitchXRef {
             if (-not $Force -and $script:TwitchData.ClipInfoCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
-                # Quick return path using cached data
                 if (-not $XRefIsVideo -and $script:TwitchData.ClipInfoCache[$Slug].Mapping.ContainsKey($XRef)) {
 
+                    # Quick return path using cached data
                     return $script:TwitchData.ClipInfoCache[$Slug].Mapping[$XRef]
 
                 }
