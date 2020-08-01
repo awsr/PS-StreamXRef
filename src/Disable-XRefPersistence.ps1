@@ -28,8 +28,8 @@ function Disable-XRefPersistence {
                 }
                 elseif (-not $Quiet) {
 
-                    Write-Host "No XtreamXRef persistence files to delete."
 
+                    Write-Host "No StreamXRef persistence files to delete."
                 }
 
             }
