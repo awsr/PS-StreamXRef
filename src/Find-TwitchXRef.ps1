@@ -301,8 +301,8 @@ function Find-TwitchXRef {
 
         }
 
-        # Set absolute timestamp of event
 
+        # Get absolute timestamp of event
         # Check cache to see if this video is already known
         if (-not $Force -and $script:TwitchData.VideoInfoCache.ContainsKey($VideoID)) {
 
@@ -411,10 +411,9 @@ function Find-TwitchXRef {
 
             }
 
-            # Check ID cache for user
+            # Get cached user ID number if available or call API if not
             if (-not $Force -and $script:TwitchData.UserInfoCache.ContainsKey($XRef)) {
 
-                # Get cached ID number
                 $UserIdNum = $script:TwitchData.UserInfoCache[$XRef]
 
             }
