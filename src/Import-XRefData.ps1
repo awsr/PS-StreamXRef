@@ -96,22 +96,21 @@ function Import-XRefData {
                     if ($script:TwitchData.UserInfoCache.ContainsKey($_.name)) {
                         # If so, is the data the same?
                         if ($script:TwitchData.UserInfoCache[$_.name] -eq $_.id) {
-                            # Already exists and can be skipped
+                            # Data is the same and can be skipped
                             $Counters.User.Skipped++
                         }
+                        elseif ($Force) {
+                            # Data is different and "Force" was specified, so overwrite the data
+                            $script:TwitchData.UserInfoCache[$_.name] = $_.id
+                            $Counters.User.Imported++
+                        }
                         else {
-                            if ($Force) {
-                                # Overwrite
-                                $script:TwitchData.UserInfoCache[$_.name] = $_.id
-                                $Counters.User.Imported++
-                            }
-                            else {
-                                $ConflictingData = $true
-                                $Counters.User.Error++
+                            # Data is different and "Force" was not specified
+                            $ConflictingData = $true
+                            $Counters.User.Error++
 
-                                if (-not $Quiet) {
-                                    Write-Warning "Conflict for $($_.name): [new] $($_.id) -> [old] $($script:TwitchData.UserInfoCache[$_.name])"
-                                }
+                            if (-not $Quiet) {
+                                Write-Warning "Conflict for $($_.name): [new] $($_.id) -> [old] $($script:TwitchData.UserInfoCache[$_.name])"
                             }
                         }
                     }
@@ -128,7 +127,7 @@ function Import-XRefData {
                     $Counters.User.Error++
                 }
                 catch {
-                    # Halt to prevent potential data corruption from unknown error
+                    # Halt on unknown error
                     $PSCmdlet.ThrowTerminatingError($_)
                 }
             }
@@ -160,23 +159,20 @@ function Import-XRefData {
                         if ($ExistingObject.Offset -eq $NewOffsetValue -and $ExistingObject.VideoID -eq $NewVideoIDValue -and $ExistingObject.Created -eq $ConvertedDateTime) {
                             $Counters.Clip.Skipped++
                         }
+                        elseif ($Force) {
+                            $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
+                            $Counters.Clip.Imported++
+                        }
                         else {
-                            if ($Force) {
-                                # Overwrite
-                                $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
-                                $Counters.Clip.Imported++
-                            }
-                            else {
-                                $ConflictingData = $true
-                                $Counters.Clip.Error++
+                            $ConflictingData = $true
+                            $Counters.Clip.Error++
 
-                                if (-not $Quiet) {
-                                    Write-Warning (
-                                        "Conflict for $($_.slug):`n",
-                                        "[new] $NewOffsetValue, $NewVideoIDValue, $ConvertedDateTime`n",
-                                        "[old] $($ExistingObject.Offset), $($ExistingObject.VideoID), $($ExistingObject.Created)" -join ""
-                                    )
-                                }
+                            if (-not $Quiet) {
+                                Write-Warning (
+                                    "Conflict for $($_.slug):`n",
+                                    "[new] $NewOffsetValue, $NewVideoIDValue, $ConvertedDateTime`n",
+                                    "[old] $($ExistingObject.Offset), $($ExistingObject.VideoID), $($ExistingObject.Created)" -join ""
+                                )
                             }
                         }
                     }
@@ -203,7 +199,7 @@ function Import-XRefData {
                     $Counters.Clip.Error++
                 }
                 catch {
-                    # Halt to prevent potential data corruption from unknown error
+                    # Halt on unknown error
                     $PSCmdlet.ThrowTerminatingError($_)
                 }
             }
@@ -227,19 +223,16 @@ function Import-XRefData {
                         if ($script:TwitchData.VideoInfoCache[$_.video] -eq $ConvertedDateTime) {
                             $Counters.Video.Skipped++
                         }
+                        elseif ($Force) {
+                            $script:TwitchData.VideoInfoCache[$_.video] = $ConvertedDateTime
+                            $Counters.Video.Imported++
+                        }
                         else {
-                            if ($Force) {
-                                # Overwrite
-                                $script:TwitchData.VideoInfoCache[$_.video] = $ConvertedDateTime
-                                $Counters.Video.Imported++
-                            }
-                            else {
-                                $ConflictingData = $true
-                                $Counters.Video.Error++
+                            $ConflictingData = $true
+                            $Counters.Video.Error++
 
-                                if (-not $Quiet) {
-                                    Write-Warning "For $($_.video): $ConvertedDateTime -> $($script:TwitchData.VideoInfoCache[$_.video])"
-                                }
+                            if (-not $Quiet) {
+                                Write-Warning "For $($_.video): $ConvertedDateTime -> $($script:TwitchData.VideoInfoCache[$_.video])"
                             }
                         }
                     }
@@ -255,7 +248,7 @@ function Import-XRefData {
                     $Counters.Video.Error++
                 }
                 catch {
-                    # Halt to prevent potential data corruption from unknown error
+                    # Halt on unknown error
                     $PSCmdlet.ThrowTerminatingError($_)
                 }
             }
