@@ -821,6 +821,7 @@
         <maml:para>* `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.</maml:para>
         <maml:para>* `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.</maml:para>
         <maml:para></maml:para>
+        <maml:para>The FullyQualifiedErrorId will be in the format of `&lt;ErrorId&gt;,Find-TwitchXRef`.</maml:para>
         <maml:para>When one of these errors occur, the cmdlet will move on to the next item from the pipeline (if any). If `ExplicitNull` is specified, the cmdlet will first return a value of `$null` before moving on to the next item.</maml:para>
       </maml:alert>
     </maml:alertSet>

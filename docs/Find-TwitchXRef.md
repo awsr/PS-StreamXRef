@@ -199,6 +199,8 @@ The following ErrorIds are defined:
 * `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.
 * `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.
 
+The FullyQualifiedErrorId will be in the format of `<ErrorId>,Find-TwitchXRef`.
+
 When one of these errors occur, the cmdlet will move on to the next item from the pipeline (if any). If `ExplicitNull` is specified, the cmdlet will first return a value of `$null` before moving on to the next item.
 
 ## RELATED LINKS
