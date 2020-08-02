@@ -30,6 +30,7 @@ BeforeAll {
             # Legacy exception
             $Status = [System.Net.WebExceptionStatus]::ProtocolError
             $Response = [System.Net.HttpWebResponse]::new()
+            # Workaround for being unable to set response code normally
             $Response | Add-Member -MemberType NoteProperty -Name StatusCode -Value ($ErrorData[$Code].Code) -Force
             $Exception = [System.Net.WebException]::new($ErrorData[$Code].String, $null, $Status, $Response)
         }
@@ -59,16 +60,14 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         else {
             $global:TestErrorOffset = 0
         }
+
+        Import-XRefData -ApiKey notreal -Quiet -Force
     }
     AfterAll {
         Remove-Variable -Name TestErrorOffset -Scope Global -ErrorAction Ignore
     }
-    BeforeEach {
-        Clear-XRefData -RemoveAll
-        Import-XRefData -ApiKey notreal -Quiet -Force
-    }
     Context "404 Not Found" {
-        BeforeEach {
+        BeforeAll {
             Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -notlike "*ValidClipName" } -MockWith {
                 $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 404))
             }
@@ -92,30 +91,33 @@ Describe "HTTP response errors" -Tag HTTPResponse {
             $Result | Should -BeNullOrEmpty
         }
         It "Continues with next entry in the pipeline" {
-            InModuleScope StreamXRef {
-                Mock Invoke-RestMethod -ParameterFilter { $Uri -like "*ValidClipName" } -MockWith {
-                    return [pscustomobject]@{
-                        broadcaster = [pscustomobject]@{
-                            id   = 22446688
-                            name = "someone"
-                        }
-                        vod         = [pscustomobject]@{
-                            id     = 123456789
-                            offset = 2468
-                            url    = "https://notimportant.com/because/not/being/checked/in/this/test"
-                        }
-                        created_at  = [datetime]::UtcNow
+            Mock Invoke-RestMethod -ParameterFilter { $Uri -like "*ValidClipName" } -MockWith {
+                return [pscustomobject]@{
+                    broadcaster = [pscustomobject]@{
+                        id        = 22446688
+                        name      = "someone"
                     }
+                    vod         = [pscustomobject]@{
+                        id        = 123456789
+                        offset    = 2468
+                        url       = "https://notimportant.com/because/not/being/checked/in/this/test"
+                    }
+                    created_at  = [datetime]::UtcNow
                 }
-                $TestArray = @()
-                $TestArray += [pscustomobject]@{ Source = "BadClipName"; XRef = "TestVal" }
-                $TestArray += [pscustomobject]@{ Source = "ValidClipName"; XRef = "TestVal" }
+            }
+            $TestArray = @(
+                [pscustomobject]@{ Source = "BadClipName"; XRef = "TestVal" },
+                [pscustomobject]@{ Source = "ValidClipName"; XRef = "TestVal" }
+            )
 
-                $Result = $TestArray | Find-TwitchXRef -ErrorVariable TestErrs -ErrorAction SilentlyContinue
+            $Result = $TestArray | Find-TwitchXRef -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
-                $TestErrs[$global:TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
-                Should -Invoke "Invoke-RestMethod" -Exactly 3  # 1 404 response, 1 response with data, then 1 404 response
-                $Result | Should -BeNullOrEmpty
+            $TestErrs[$global:TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
+            Should -Invoke "Invoke-RestMethod" -Exactly 3  # 1 404 response, 1 response with data, then 1 404 response
+            $Result | Should -BeNullOrEmpty
+        }
+        It "Added valid data to cache before encountering 404" {
+            InModuleScope StreamXRef {
                 $TwitchData.ClipInfoCache.Keys | Should -Contain "validclipname"
                 $TwitchData.ClipInfoCache["validclipname"].offset | Should -Be 2468
             }
@@ -161,7 +163,6 @@ Describe "Data caching" {
             }
             return $MultiObject
         }
-
     }
     It "Uses cached clip and UserID" {
         # Mock won't be invoked if function doesn't read the cached data
@@ -182,5 +183,4 @@ Describe "Data caching" {
         $Result = Find-TwitchXRef MADEUPNAMEFORACLIP ONE
         $Result | Should -Be 'https://www.twitch.tv/videos/111222333?t=0h40m4s'
     }
-
 }
