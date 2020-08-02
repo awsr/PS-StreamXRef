@@ -169,6 +169,11 @@ Describe "Data caching" {
         Should -Invoke 'Invoke-RestMethod' -ModuleName StreamXRef -Exactly 1
         $Result | Should -Be 'https://www.twitch.tv/videos/111222333?t=0h40m4s'
     }
+    It "Created Clip to User mapping entry" {
+        InModuleScope StreamXRef {
+            $TwitchData.ClipInfoCache['madeupnameforaclip'].Mapping.Keys | Should -Contain 'one'
+        }
+    }
     It "Uses cached Clip to User mapping data for quick result" {
         [void] (Find-TwitchXRef madeupnameforaclip one)
         Should -Invoke 'Invoke-RestMethod' -ModuleName StreamXRef -Exactly 0
