@@ -78,36 +78,33 @@ Describe "HTTP response errors" -Tag HTTPResponse {
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
-
         }
         It "Clip URL not found" {
             $Result = Find-TwitchXRef -Source https://clip.twitch.tv/AnotherBadClipName -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
-
         }
         It "Video URL not found" {
             $Result = Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=1h23m45s" -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
-
         }
         It "Continues with next entry in the pipeline" {
             InModuleScope StreamXRef {
                 Mock Invoke-RestMethod -ParameterFilter { $Uri -like "*ValidClipName" } -MockWith {
                     return [pscustomobject]@{
                         broadcaster = [pscustomobject]@{
-                            id = 22446688
+                            id   = 22446688
                             name = "someone"
                         }
-                        vod = [pscustomobject]@{
-                            id = 123456789
+                        vod         = [pscustomobject]@{
+                            id     = 123456789
                             offset = 2468
-                            url = "https://notimportant.com/because/not/being/checked/in/this/test"
+                            url    = "https://notimportant.com/because/not/being/checked/in/this/test"
                         }
-                        created_at = [datetime]::UtcNow
+                        created_at  = [datetime]::UtcNow
                     }
                 }
                 $TestArray = @()
@@ -121,7 +118,6 @@ Describe "HTTP response errors" -Tag HTTPResponse {
                 $Result | Should -BeNullOrEmpty
                 $TwitchData.ClipInfoCache.Keys | Should -Contain "validclipname"
                 $TwitchData.ClipInfoCache["validclipname"].offset | Should -Be 2468
-
             }
         }
     }
@@ -131,7 +127,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
                 $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 503))
             }
 
-            {Find-TwitchXRef -Source https://clip.twitch.tv/WhatCouldGoWrong -XRef TestVal} | Should -Throw
+            { Find-TwitchXRef -Source https://clip.twitch.tv/WhatCouldGoWrong -XRef TestVal } | Should -Throw
         }
     }
 }
@@ -143,7 +139,7 @@ Describe "Data caching" {
 
         # Catchall mock to ensure Invoke-RestMethod doesn't leak
         Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
-            $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 404))
+            $PSCmdlet.ThrowTerminatingError( (MakeMockHTTPError -Code 404) )
         }
 
         Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*11111111/videos" } -MockWith {
@@ -153,15 +149,15 @@ Describe "Data caching" {
             }
             $MultiObject.videos += [pscustomobject]@{
                 broadcast_type = "archive"
-                recorded_at = ([datetime]::Parse("2020-05-31T03:14:15Z")).ToUniversalTime()
-                length = 3000
-                url = "https://www.twitch.tv/videos/111444111"
+                recorded_at    = ([datetime]::Parse("2020-05-31T03:14:15Z")).ToUniversalTime()
+                length         = 3000
+                url            = "https://www.twitch.tv/videos/111444111"
             }
             $MultiObject.videos += [pscustomobject]@{
                 broadcast_type = "archive"
-                recorded_at = ([datetime]::Parse("2020-05-31T01:22:44Z")).ToUniversalTime()
-                length = 5000
-                url = "https://www.twitch.tv/videos/111222333"
+                recorded_at    = ([datetime]::Parse("2020-05-31T01:22:44Z")).ToUniversalTime()
+                length         = 5000
+                url            = "https://www.twitch.tv/videos/111222333"
             }
             return $MultiObject
         }

@@ -14,19 +14,19 @@ Describe "Custom type data" {
     }
     Context "Constructors" {
         It "ImportCounter can be created" {
-            {[StreamXRef.ImportCounter]::new("Test")} | Should -Not -Throw
+            { [StreamXRef.ImportCounter]::new("Test") } | Should -Not -Throw
         }
         It "ImportCounter requires input value" {
-            {[StreamXRef.ImportCounter]::new()} | Should -Throw
+            { [StreamXRef.ImportCounter]::new() } | Should -Throw
         }
         It "ImportResults can be created" {
-            {[StreamXRef.ImportResults]::new()} | Should -Not -Throw
+            { [StreamXRef.ImportResults]::new() } | Should -Not -Throw
         }
         It "ClipObject can be created" {
-            {[StreamXRef.ClipObject]::new()} | Should -Not -Throw
+            { [StreamXRef.ClipObject]::new() } | Should -Not -Throw
         }
         It "DataCache can be created" {
-            {[StreamXRef.DataCache]::new()} | Should -Not -Throw
+            { [StreamXRef.DataCache]::new() } | Should -Not -Throw
         }
     }
     Context "Members" {
@@ -126,7 +126,7 @@ Describe "Internal function validation" {
 
 Describe "System environment" {
     It "Application Data folder can be determined" {
-        {[System.Environment]::GetFolderPath("ApplicationData")} | Should -Not -Throw
+        { [System.Environment]::GetFolderPath("ApplicationData") } | Should -Not -Throw
         [string]::IsNullOrWhiteSpace([System.Environment]::GetFolderPath("ApplicationData")) | Should -BeFalse
     }
 }
