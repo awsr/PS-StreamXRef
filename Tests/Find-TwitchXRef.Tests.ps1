@@ -4,8 +4,8 @@ BeforeAll {
     Get-Module StreamXRef | Remove-Module
     $ProjectRoot = Split-Path -Parent $PSScriptRoot
 
-    # Use Pester automatic variable $TestDrive for temporary location
-    $Env:XRefPersistPath = Join-Path $TestDrive "StreamXRef/datacache.json"
+    # Manual setup for temporary path
+    $Env:XRefPersistPath = Join-Path ([System.IO.Path]::GetTempPath()) "StreamXRef/$(Get-Random)/datacache.json"
 
     Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force
     Import-Module Microsoft.PowerShell.Utility -Force

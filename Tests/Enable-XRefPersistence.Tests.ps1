@@ -6,6 +6,7 @@ Describe "Functionality" {
         $ProjectRoot = Split-Path -Parent $PSScriptRoot
 
         # Use Pester automatic variable $TestDrive for temporary location
+        # This is currently the only test script that is set up in a way that works with it
         $Env:XRefPersistPath = Join-Path $TestDrive "StreamXRef/datacache.json"
 
         Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force
