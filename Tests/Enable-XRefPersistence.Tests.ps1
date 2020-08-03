@@ -13,15 +13,18 @@ Describe "Functionality" {
         Disable-XRefPersistence -Quiet -Remove
         $Env:XRefPersistPath = $null
     }
+
     Context "Standalone" {
         It "Creates event subscriber" {
             Enable-XRefPersistence -Quiet
             Get-EventSubscriber XRefNewDataAdded | Should -HaveCount 1
         }
+
         It "Creates placeholder file on first enable" {
             Test-Path $Env:XRefPersistPath | Should -BeTrue
         }
     }
+
     Context "Automatic" {
         It "Enables persistence on module load" {
             Import-XRefData -ApiKey "TestValue" -Quiet -Persist

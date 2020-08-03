@@ -66,30 +66,35 @@ Describe "HTTP response errors" -Tag HTTPResponse {
     AfterAll {
         Remove-Variable -Name TestErrorOffset -Scope Global -ErrorAction Ignore
     }
+
     Context "404 Not Found" {
         BeforeAll {
             Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -notlike "*ValidClipName" } -MockWith {
                 $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 404))
             }
         }
+
         It "Clip name not found" {
             $Result = Find-TwitchXRef -Source ClipNameThatResultsIn404Error -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
         }
+
         It "Clip URL not found" {
             $Result = Find-TwitchXRef -Source "https://clip.twitch.tv/AnotherBadClipName" -XRef "TestVal" -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
         }
+
         It "Video URL not found" {
             $Result = Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=1h23m45s" -XRef "TestVal" -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
         }
+
         It "Continues with next entry in the pipeline" {
             Mock Invoke-RestMethod -ParameterFilter { $Uri -like "*ValidClipName" } -MockWith {
                 return [pscustomobject]@{
@@ -116,6 +121,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
             Should -Invoke "Invoke-RestMethod" -Exactly 3  # 1 404 response, 1 response with data, then 1 404 response
             $Result | Should -BeNullOrEmpty
         }
+
         It "Added valid data to cache before encountering 404" {
             InModuleScope StreamXRef {
                 $TwitchData.ClipInfoCache.Keys | Should -Contain "validclipname"
@@ -123,6 +129,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
             }
         }
     }
+
     Context "503 Service Unavailable" {
         It "503 during clip lookup" {
             Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
@@ -164,21 +171,25 @@ Describe "Data caching" {
             return $MultiObject
         }
     }
+
     It "Uses cached clip and UserID" {
         # Mock won't be invoked if function doesn't read the cached data
         $Result = Find-TwitchXRef madeupnameforaclip one
         Should -Invoke "Invoke-RestMethod" -ModuleName StreamXRef -Exactly 1
         $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
     }
+
     It "Created Clip to User mapping entry" {
         InModuleScope StreamXRef {
             $TwitchData.ClipInfoCache["madeupnameforaclip"].Mapping.Keys | Should -Contain "one"
         }
     }
+
     It "Uses cached Clip to User mapping data for quick result" {
         [void] (Find-TwitchXRef madeupnameforaclip one)
         Should -Invoke "Invoke-RestMethod" -ModuleName StreamXRef -Exactly 0
     }
+
     It "Matches cached data with different capitalization" {
         $Result = Find-TwitchXRef MADEUPNAMEFORACLIP ONE
         $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
@@ -190,9 +201,11 @@ Describe "Custom ErrorIds" {
         Clear-XRefData -RemoveAll
         Import-XRefData $ProjectRoot/Tests/TestData.json -Quiet -Force
     }
+
     It "MissingTimestamp" {
         { Find-TwitchXRef "https://twitch.tv/videos/123456789" "TestVal" -ErrorAction Stop } | Should -Throw -ErrorId "MissingTimestamp,Find-TwitchXRef"
     }
+
     It "VideoNotFound" {
         Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
             return [pscustomobject]@{
@@ -204,6 +217,7 @@ Describe "Custom ErrorIds" {
 
         { Find-TwitchXRef ClipThatIsNotCached TestVal -ErrorAction Stop } | Should -Throw -ErrorId "VideoNotFound,Find-TwitchXRef"
     }
+
     It "InvalidVideoType" {
         Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
             return [pscustomobject]@{
@@ -215,6 +229,7 @@ Describe "Custom ErrorIds" {
         { Find-TwitchXRef "https://twitch.tv/videos/444444444?t=1h23m45s" "TestVal" -ErrorAction Stop } | Should -Throw -ErrorId "InvalidVideoType,Find-TwitchXRef"
         { Find-TwitchXRef "madeupnameforaclip" "https://twitch.tv/videos/444444444" -ErrorAction Stop } | Should -Throw -ErrorId "InvalidVideoType,Find-TwitchXRef"
     }
+
     It "UserNotFound" {
         Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*/users" } -MockWith {
             return [pscustomobject]@{
@@ -225,6 +240,7 @@ Describe "Custom ErrorIds" {
 
         { Find-TwitchXRef madeupnameforaclip NotAUsername -ErrorAction Stop } | Should -Throw -ErrorId "UserNotFound,Find-TwitchXRef"
     }
+
     It "EventNotInRange" {
         Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*/videos/*" } -MockWith {
             return [pscustomobject]@{
@@ -237,6 +253,7 @@ Describe "Custom ErrorIds" {
 
         { Find-TwitchXRef "madeupnameforaclip" "https://twitch.tv/videos/444444444" -ErrorAction Stop } | Should -Throw -ErrorId "EventNotInRange,Find-TwitchXRef"
     }
+
     It "EventNotFound" {
         Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
             $MultiObject = [pscustomobject]@{
@@ -267,6 +284,7 @@ Describe "Other exceptions" {
         Clear-XRefData -RemoveAll
         Import-XRefData -ApiKey notreal -Quiet -Force
     }
+
     It "Throws terminating error when API response doesn't match expected format" {
         Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
             return [pscustomobject]@{
