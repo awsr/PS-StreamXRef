@@ -14,16 +14,6 @@
         "Current = PSCurrent/${fileBasename}",
         "Legacy = PSLegacy/${fileBasenameNoExtension}.Legacy.ps1"
       ],
-      "windows": {
-        "command": "${workspaceFolder}\\tools\\ScriptBuilder.ps1",
-        "args": [
-          "${file}",
-          "${workspaceFolder}\\Module\\",
-          "Shared",
-          "Current = PSCurrent\\${fileBasename}",
-          "Legacy = PSLegacy\\${fileBasenameNoExtension}.Legacy.ps1"
-        ]
-      },
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -37,12 +27,6 @@
       "args": [
         "-Verbose"
       ],
-      "windows": {
-        "command": "${workspaceFolder}\\tools\\BuildAll.ps1",
-        "args": [
-          "-Verbose"
-        ]
-      },
       "problemMatcher": []
     },
     {
@@ -53,13 +37,6 @@
         "-ForDebug",
         "-Verbose"
       ],
-      "windows": {
-        "command": "${workspaceFolder}\\tools\\BuildAll.ps1",
-        "args": [
-          "-ForDebug",
-          "-Verbose"
-        ]
-      },
       "problemMatcher": []
     },
     {
@@ -73,16 +50,6 @@
         "${workspaceFolder}/Module/",
         "-Force"
       ],
-      "windows": {
-        "command": "New-ExternalHelp",
-        "args": [
-          "-Path",
-          "${workspaceFolder}\\docs\\",
-          "-OutputPath",
-          "${workspaceFolder}\\Module\\",
-          "-Force"
-        ]
-      },
       "problemMatcher": []
     },
     {
