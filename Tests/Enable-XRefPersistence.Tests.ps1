@@ -7,6 +7,7 @@ Describe "Functionality" {
 
         # Use Pester automatic variable $TestDrive for temporary location
         $Env:XRefPersistPath = Join-Path $TestDrive "StreamXRef/datacache.json"
+
         Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force
     }
     AfterAll {

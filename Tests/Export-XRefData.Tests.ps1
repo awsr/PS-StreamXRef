@@ -3,6 +3,10 @@
 BeforeAll {
     Get-Module StreamXRef | Remove-Module
     $ProjectRoot = Split-Path -Parent $PSScriptRoot
+
+    # Use Pester automatic variable $TestDrive for temporary location
+    $Env:XRefPersistPath = Join-Path $TestDrive "StreamXRef/datacache.json"
+
     Import-Module "$ProjectRoot/Module/StreamXRef.psd1" -Force
 }
 
