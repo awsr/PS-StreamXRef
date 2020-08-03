@@ -184,3 +184,99 @@ Describe "Data caching" {
         $Result | Should -Be 'https://www.twitch.tv/videos/111222333?t=0h40m4s'
     }
 }
+
+Describe "Custom ErrorIds" {
+    BeforeAll {
+        Clear-XRefData -RemoveAll
+        Import-XRefData $ProjectRoot/Tests/TestData.json -Quiet -Force
+    }
+    It "MissingTimestamp" {
+        { Find-TwitchXRef "https://twitch.tv/videos/123456789" "TestVal" -ErrorAction Stop } | Should -Throw -ErrorId "MissingTimestamp,Find-TwitchXRef"
+    }
+    It "VideoNotFound" {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
+            return [pscustomobject]@{
+                slug = "ClipDoesNotMatterHere"
+                url  = "https://clips.twitch.tv/ClipDoesNotMatterHere"
+                vod  = $null
+            }
+        }
+
+        { Find-TwitchXRef ClipThatIsNotCached TestVal -ErrorAction Stop } | Should -Throw -ErrorId "VideoNotFound,Find-TwitchXRef"
+    }
+    It "InvalidVideoType" {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*/videos/*"} -MockWith {
+            return [pscustomobject]@{
+                title          = "Mocked video response"
+                broadcast_type = "highlight"
+            }
+        }
+
+        { Find-TwitchXRef "https://twitch.tv/videos/444444444?t=1h23m45s" "TestVal" -ErrorAction Stop } | Should -Throw -ErrorId "InvalidVideoType,Find-TwitchXRef"
+        { Find-TwitchXRef "madeupnameforaclip" "https://twitch.tv/videos/444444444" -ErrorAction Stop } | Should -Throw -ErrorId "InvalidVideoType,Find-TwitchXRef"
+    }
+    It "UserNotFound" {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*/users" } -MockWith {
+            return [pscustomobject]@{
+                _total = 0
+                users  = @()
+            }
+        }
+
+        { Find-TwitchXRef madeupnameforaclip NotAUsername -ErrorAction Stop } | Should -Throw -ErrorId "UserNotFound,Find-TwitchXRef"
+    }
+    It "EventNotInRange" {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*/videos/*" } -MockWith {
+            return [pscustomobject]@{
+                title          = "Mocked video response"
+                broadcast_type = "archive"
+                recorded_at    = [datetime]::new(2099, 12, 31, 23, 59, 59, [System.DateTimeKind]::Utc)
+                length         = 2000
+            }
+        }
+
+        { Find-TwitchXRef "madeupnameforaclip" "https://twitch.tv/videos/444444444" -ErrorAction Stop } | Should -Throw -ErrorId "EventNotInRange,Find-TwitchXRef"
+    }
+    It "EventNotFound" {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*/channels/*/videos" } -MockWith {
+            $MultiObject = [pscustomobject]@{
+                _total = 1234
+                videos = @()
+            }
+            $MultiObject.videos += [pscustomobject]@{
+                title          = "Mocked video response 1"
+                broadcast_type = "archive"
+                recorded_at    = [datetime]::new(2000, 1, 2, 0, 0, 0, [System.DateTimeKind]::Utc)
+                length         = 2000
+            }
+            $MultiObject.videos += [pscustomobject]@{
+                title          = "Mocked video response 2"
+                broadcast_type = "archive"
+                recorded_at    = [datetime]::new(2000, 1, 1, 0, 0, 0, [System.DateTimeKind]::Utc)
+                length         = 2000
+            }
+            return $MultiObject
+        }
+
+        { Find-TwitchXRef madeupnameforaclip one -ErrorAction Stop } | Should -Throw -ErrorId "EventNotFound,Find-TwitchXRef"
+    }
+}
+
+Describe "Other exceptions" {
+    BeforeAll {
+        Clear-XRefData -RemoveAll
+        Import-XRefData -ApiKey notreal -Quiet -Force
+    }
+    It "Throws terminating error when API response doesn't match expected format" {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
+            return [pscustomobject]@{
+                "wait"  = "this"
+                "seems" = "wrong"
+                "where" = "is"
+                "the"   = "data?"
+            }
+        }
+
+        { Find-TwitchXRef -Source TestClipName -XRef TestVal } | Should -Throw
+    }
+}

@@ -10,6 +10,9 @@ Describe "Import validation" {
     BeforeEach {
         Clear-XRefData -RemoveAll
     }
+    It "Imports without error" {
+        { Import-XRefData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop } | Should -Not -Throw
+    }
     It "Times are in UTC" {
         Import-XRefData "$ProjectRoot/Tests/TestData.json" -Quiet -Force -ErrorAction Stop
         InModuleScope StreamXRef {
