@@ -231,10 +231,6 @@ function Find-TwitchXRef {
                         return
                     }
                 }
-                catch [System.Management.Automation.PropertyNotFoundException] {
-                    Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
-                    $PSCmdlet.ThrowTerminatingError($_)
-                }
                 catch {
                     $PSCmdlet.ThrowTerminatingError($_)
                 }
@@ -288,10 +284,6 @@ function Find-TwitchXRef {
                 else {
                     return
                 }
-            }
-            catch [System.Management.Automation.PropertyNotFoundException] {
-                Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
-                $PSCmdlet.ThrowTerminatingError($_)
             }
             catch {
                 $PSCmdlet.ThrowTerminatingError($_)
@@ -363,10 +355,6 @@ function Find-TwitchXRef {
                         return
                     }
                 }
-                catch [System.Management.Automation.PropertyNotFoundException] {
-                    Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
-                    $PSCmdlet.ThrowTerminatingError($_)
-                }
                 catch {
                     $PSCmdlet.ThrowTerminatingError($_)
                 }
@@ -418,10 +406,6 @@ function Find-TwitchXRef {
                 return
             }
         }
-        catch [System.Management.Automation.PropertyNotFoundException] {
-            Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
-            $PSCmdlet.ThrowTerminatingError($_)
-        }
         catch {
             $PSCmdlet.ThrowTerminatingError($_)
         }
@@ -467,10 +451,6 @@ function Find-TwitchXRef {
             else {
                 return
             }
-        }
-        catch [System.Management.Automation.PropertyNotFoundException] {
-            Write-Host -BackgroundColor Black -ForegroundColor Red "Expected data missing from Twitch API response! Halting:`n"
-            $PSCmdlet.ThrowTerminatingError($_)
         }
         catch {
             $PSCmdlet.ThrowTerminatingError($_)
