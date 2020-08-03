@@ -68,6 +68,12 @@
     },
     {
       "label": "Build Everything",
+      "type": "shell",
+      "command": "Copy-Item",
+      "args": [
+        "${workspaceFolder}/src/dotnet/bin/Release/netstandard2.0/StreamXRefTypes.dll",
+        "${workspaceFolder}/Module/typedata/StreamXRefTypes.dll"
+      ],
       "dependsOn": [
         "Build All Scripts",
         "Build .NET Assembly",
