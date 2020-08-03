@@ -79,13 +79,13 @@ Describe "HTTP response errors" -Tag HTTPResponse {
             $Result | Should -BeNullOrEmpty
         }
         It "Clip URL not found" {
-            $Result = Find-TwitchXRef -Source https://clip.twitch.tv/AnotherBadClipName -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
+            $Result = Find-TwitchXRef -Source "https://clip.twitch.tv/AnotherBadClipName" -XRef "TestVal" -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
         }
         It "Video URL not found" {
-            $Result = Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=1h23m45s" -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
+            $Result = Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=1h23m45s" -XRef "TestVal" -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
@@ -129,7 +129,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
                 $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 503))
             }
 
-            { Find-TwitchXRef -Source https://clip.twitch.tv/WhatCouldGoWrong -XRef TestVal } | Should -Throw
+            { Find-TwitchXRef -Source "https://clip.twitch.tv/WhatCouldGoWrong" -XRef "TestVal" } | Should -Throw
         }
     }
 }
@@ -151,13 +151,13 @@ Describe "Data caching" {
             }
             $MultiObject.videos += [pscustomobject]@{
                 broadcast_type = "archive"
-                recorded_at    = ([datetime]::Parse("2020-05-31T03:14:15Z")).ToUniversalTime()
+                recorded_at    = [datetime]::new(2020, 5, 31, 3, 14, 15, [System.DateTimeKind]::Utc)
                 length         = 3000
                 url            = "https://www.twitch.tv/videos/111444111"
             }
             $MultiObject.videos += [pscustomobject]@{
                 broadcast_type = "archive"
-                recorded_at    = ([datetime]::Parse("2020-05-31T01:22:44Z")).ToUniversalTime()
+                recorded_at    = [datetime]::new(2020, 5, 31, 1, 22, 44, [System.DateTimeKind]::Utc)
                 length         = 5000
                 url            = "https://www.twitch.tv/videos/111222333"
             }
@@ -167,21 +167,21 @@ Describe "Data caching" {
     It "Uses cached clip and UserID" {
         # Mock won't be invoked if function doesn't read the cached data
         $Result = Find-TwitchXRef madeupnameforaclip one
-        Should -Invoke 'Invoke-RestMethod' -ModuleName StreamXRef -Exactly 1
-        $Result | Should -Be 'https://www.twitch.tv/videos/111222333?t=0h40m4s'
+        Should -Invoke "Invoke-RestMethod" -ModuleName StreamXRef -Exactly 1
+        $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
     }
     It "Created Clip to User mapping entry" {
         InModuleScope StreamXRef {
-            $TwitchData.ClipInfoCache['madeupnameforaclip'].Mapping.Keys | Should -Contain 'one'
+            $TwitchData.ClipInfoCache["madeupnameforaclip"].Mapping.Keys | Should -Contain "one"
         }
     }
     It "Uses cached Clip to User mapping data for quick result" {
         [void] (Find-TwitchXRef madeupnameforaclip one)
-        Should -Invoke 'Invoke-RestMethod' -ModuleName StreamXRef -Exactly 0
+        Should -Invoke "Invoke-RestMethod" -ModuleName StreamXRef -Exactly 0
     }
     It "Matches cached data with different capitalization" {
         $Result = Find-TwitchXRef MADEUPNAMEFORACLIP ONE
-        $Result | Should -Be 'https://www.twitch.tv/videos/111222333?t=0h40m4s'
+        $Result | Should -Be "https://www.twitch.tv/videos/111222333?t=0h40m4s"
     }
 }
 
@@ -205,7 +205,7 @@ Describe "Custom ErrorIds" {
         { Find-TwitchXRef ClipThatIsNotCached TestVal -ErrorAction Stop } | Should -Throw -ErrorId "VideoNotFound,Find-TwitchXRef"
     }
     It "InvalidVideoType" {
-        Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*/videos/*"} -MockWith {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
             return [pscustomobject]@{
                 title          = "Mocked video response"
                 broadcast_type = "highlight"
@@ -238,7 +238,7 @@ Describe "Custom ErrorIds" {
         { Find-TwitchXRef "madeupnameforaclip" "https://twitch.tv/videos/444444444" -ErrorAction Stop } | Should -Throw -ErrorId "EventNotInRange,Find-TwitchXRef"
     }
     It "EventNotFound" {
-        Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*/channels/*/videos" } -MockWith {
+        Mock Invoke-RestMethod -ModuleName StreamXRef -MockWith {
             $MultiObject = [pscustomobject]@{
                 _total = 1234
                 videos = @()
