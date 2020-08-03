@@ -18,9 +18,9 @@ Export-XRefData [-Path] <String> [-ExcludeApiKey] [-ExcludeClipMapping] [-Force]
 ```
 
 ## DESCRIPTION
-This command exports the contents of the lookup data cache as JSON to a specified file.
+This cmdlet exports the contents of the lookup data cache as JSON to a specified file.
 
-The files created by this command can be used with `Import-XRefData`.
+The files created by this cmdlet can be used with `Import-XRefData`.
 
 ## EXAMPLES
 
@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-Forces overwriting of read-only files.
+Forces cmdlet to run and overwrite read-only files.
 
 ```yaml
 Type: SwitchParameter

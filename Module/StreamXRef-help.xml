@@ -258,9 +258,9 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This function sets up automatic saving for all cached data to a file in the `StreamXRef` folder in your Application Data directory by default. If this file is detected when the module is loaded, persistence will automatically be enabled.</maml:para>
-      <maml:para>The path for persistence data can be overridden by specifying a path in the `$Env:XRefPersistPath` environment variable. The path must end with ".json" or else it will write an error and use the default path.</maml:para>
-      <maml:para>Note that automatic saving will only trigger when new data is added to the cache when running the `Find-TwitchXRef` function or if `Import-XRefData` is used with the `Persist` parameter. Additionally, clips and videos older than 60 days will be automatically removed when loaded.</maml:para>
+      <maml:para>This cmdlet sets up automatic saving for all cached data to a file in the `StreamXRef` folder in your Application Data directory by default. If this file is detected when the module is loaded, persistence will automatically be enabled.</maml:para>
+      <maml:para>The path for persistence data can be overridden by specifying a path in the `$Env:XRefPersistPath` environment variable. The path must end with ".json" or else it will write an error and use the default path. The value is read when the `StreamXRef` module is loaded and when this cmdlet is run.</maml:para>
+      <maml:para>Note that automatic saving will only trigger when new data is added to the cache when running the `Find-TwitchXRef` cmdlet or if `Import-XRefData` is used with the `Persist` parameter. Additionally, clips and videos older than 60 days will be automatically removed when loaded.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -343,8 +343,8 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This command exports the contents of the lookup data cache as JSON to a specified file.</maml:para>
-      <maml:para>The files created by this command can be used with `Import-XRefData`.</maml:para>
+      <maml:para>This cmdlet exports the contents of the lookup data cache as JSON to a specified file.</maml:para>
+      <maml:para>The files created by this cmdlet can be used with `Import-XRefData`.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -397,7 +397,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>Forces overwriting of read-only files.</maml:para>
+            <maml:para>Forces cmdlet to run and overwrite read-only files.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -480,7 +480,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:Description>
-          <maml:para>Forces overwriting of read-only files.</maml:para>
+          <maml:para>Forces cmdlet to run and overwrite read-only files.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -667,7 +667,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:Description>
-            <maml:para>When specified, this function will skip reading from the internal lookup cache.</maml:para>
+            <maml:para>When specified, this cmdlet will skip reading from the internal lookup cache.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -678,7 +678,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="en">
           <maml:name>ExplicitNull</maml:name>
           <maml:Description>
-            <maml:para>When specified, this function will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.</maml:para>
+            <maml:para>When specified, this cmdlet will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -753,7 +753,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:Description>
-          <maml:para>When specified, this function will skip reading from the internal lookup cache.</maml:para>
+          <maml:para>When specified, this cmdlet will skip reading from the internal lookup cache.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -765,7 +765,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="en">
         <maml:name>ExplicitNull</maml:name>
         <maml:Description>
-          <maml:para>When specified, this function will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.</maml:para>
+          <maml:para>When specified, this cmdlet will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -821,7 +821,8 @@
         <maml:para>* `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.</maml:para>
         <maml:para>* `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.</maml:para>
         <maml:para></maml:para>
-        <maml:para>When one of these errors occur, the function will move on to the next item from the pipeline (if any). If `ExplicitNull` is specified, the function will first return a value of `$null` before moving on to the next item.</maml:para>
+        <maml:para>The FullyQualifiedErrorId will be in the format of `&lt;ErrorId&gt;,Find-TwitchXRef`.</maml:para>
+        <maml:para>When one of these errors occur, the cmdlet will move on to the next item from the pipeline (if any). If `ExplicitNull` is specified, the cmdlet will first return a value of `$null` before moving on to the next item.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -870,8 +871,8 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This command lets you import data into the lookup cache from a JSON file that was made using `Export-XRefData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` command.</maml:para>
-      <maml:para>This command does not send an " XRefNewDataAdded " event by default.</maml:para>
+      <maml:para>This cmdlet lets you import data into the lookup cache from a JSON file that was made using `Export-XRefData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` cmdlet.</maml:para>
+      <maml:para>This cmdlet does not send an " XRefNewDataAdded " event by default.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -921,28 +922,6 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-          <maml:name>Confirm</maml:name>
-          <maml:Description>
-            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
-          <maml:name>WhatIf</maml:name>
-          <maml:Description>
-            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Import-XRefData</maml:name>
@@ -972,7 +951,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:Description>
-            <maml:para>When specified, this function will return an object with the results of the import.</maml:para>
+            <maml:para>When specified, this cmdlet will return an object with the results of the import.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -995,28 +974,6 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           <maml:name>Quiet</maml:name>
           <maml:Description>
             <maml:para>Suppress writing import results to host as well as per-item warning messages (but not errors).</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-          <maml:name>Confirm</maml:name>
-          <maml:Description>
-            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-          </maml:Description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
-          <maml:name>WhatIf</maml:name>
-          <maml:Description>
-            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1066,7 +1023,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
         <maml:Description>
-          <maml:para>When specified, this function will return an object with the results of the import.</maml:para>
+          <maml:para>When specified, this cmdlet will return an object with the results of the import.</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1099,30 +1056,6 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
-        <maml:name>Confirm</maml:name>
-        <maml:Description>
-          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
-        <maml:name>WhatIf</maml:name>
-        <maml:Description>
-          <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
-        </maml:Description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
     </command:parameters>
     <command:inputTypes>
       <command:inputType>
@@ -1140,7 +1073,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
           <maml:name>None or StreamXRef.ImportResults</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>When the `PassThru` parameter is specified, this function returns a `[StreamXRef.ImportResults]` object (based on `[System.Collections.Generic.Dictionary]`) with the results of the import operation. Use `AllImported`, `AllSkipped`, `AllError`, or `AllTotal` properties to get the counts across all of the caches.</maml:para>
+          <maml:para>When the `PassThru` parameter is specified, this cmdlet returns a `[StreamXRef.ImportResults]` object (based on `[System.Collections.Generic.Dictionary]`) with the results of the import operation. Use `AllImported`, `AllSkipped`, `AllError`, or `AllTotal` properties to get the counts across all of the caches.</maml:para>
           <maml:para>Each object includes counts for `Imported`, `Skipped`, `Error`, and `Total`.</maml:para>
           <maml:para>* Imported: Number of entries successfully imported.</maml:para>
           <maml:para>* Skipped: Number of duplicate entries skipped.</maml:para>
@@ -1166,7 +1099,7 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
         <dev:code>PS &gt; Import-XRefData -ApiKey "1234567890abcdefghijklmnopqrst"</dev:code>
         <dev:remarks>
-          <maml:para>Set your API key without invoking the main `Find-TwitchXRef` command.</maml:para>
+          <maml:para>Set your API key without invoking the main `Find-TwitchXRef` cmdlet.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>

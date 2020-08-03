@@ -29,17 +29,12 @@ function Export-XRefData {
     )
 
     Begin {
-
         if ([string]::IsNullOrWhiteSpace($script:TwitchData.ApiKey) -and $script:TwitchData.GetTotalCount() -eq 0) {
-
             Write-Warning "No cached data. Exported file will not contain any entries."
-
         }
 
         if ($Force -and -not $PSBoundParameters.ContainsKey("Confirm")) {
-
             $ConfirmPreference = "None"
-
         }
 
         # DateTime string formatting ("yyyy-MM-ddTHH:mm:ssZ" -> "2020-05-09T05:35:45Z")
@@ -59,25 +54,22 @@ function Export-XRefData {
 
         # Convert UserInfoCache to List
         $script:TwitchData.UserInfoCache.GetEnumerator() | ForEach-Object {
-
             $ConvertedUserInfoCache.Add(
                 [pscustomobject]@{
                     name = $_.Key
                     id   = $_.Value
                 }
             )
-
         }
 
         # Convert ClipInfoCache to List
         $script:TwitchData.ClipInfoCache.GetEnumerator() | ForEach-Object {
-
-            $ClipInfoMapping = [List[pscustomobject]]::new()
+            $ClipMappingList = [List[pscustomobject]]::new()
 
             if (-not $ExcludeClipMapping) {
                 # Convert clip mapping data to List
                 $_.Value.Mapping.GetEnumerator() | ForEach-Object {
-                    $ClipInfoMapping.Add(
+                    $ClipMappingList.Add(
                         [pscustomobject]@{
                             user   = $_.Key
                             result = $_.Value
@@ -92,64 +84,49 @@ function Export-XRefData {
                     offset  = $_.Value.Offset
                     video   = $_.Value.VideoID
                     created = $_.Value.Created.ToString($DateTimeFormatting)
-                    mapping = $ClipInfoMapping
+                    mapping = $ClipMappingList
                 }
             )
-
         }
 
         # Convert VideoInfoCache to List
         $script:TwitchData.VideoInfoCache.GetEnumerator() | ForEach-Object {
-
             $ConvertedVideoInfoCache.Add(
                 [pscustomobject]@{
                     video     = $_.Key
                     timestamp = $_.Value.ToString($DateTimeFormatting)
                 }
             )
-
         }
 
         # Bundle data together for converting to JSON (for compatibility with potential Javascript-based version)
-        $TXRConfigData = [pscustomobject]@{
+        $StagedTwitchData = [pscustomobject]@{
             ApiKey         = $ExportApiKey
             UserInfoCache  = $ConvertedUserInfoCache
             ClipInfoCache  = $ConvertedClipInfoCache
             VideoInfoCache = $ConvertedVideoInfoCache
         }
-
     }
 
     Process {
-
         # Save Json string ("-Depth 4" required in order to include clip/username mapping)
-        [string]$DataAsJson = $TXRConfigData | ConvertTo-Json -Compress:$Compress -Depth 4
+        $DataAsJson = $StagedTwitchData | ConvertTo-Json -Compress:$Compress -Depth 4
 
         # Check if path exists
         if (Test-Path $Path) {
-
             if ($PSCmdlet.ShouldProcess($Path, "Write File")) {
-
                 $DataAsJson | Out-File $Path -Force:$Force -NoClobber:$NoClobber -Confirm:$false
-
             }
-
         }
         else {
-
             # Path doesn't exist
 
             if ($PSCmdlet.ShouldProcess($Path, "Create File")) {
-
                 # Create placeholder file, including any missing directories
                 # Override ErrorAction preferences because Out-File does not create missing directories and will fail anyway
-                New-Item $Path -ItemType File -Force:$Force -Confirm:$false -ErrorAction Stop | Out-Null
+                [void] (New-Item $Path -ItemType File -Force:$Force -Confirm:$false -ErrorAction Stop)
                 $DataAsJson | Out-File $Path -Confirm:$false
-
             }
-
         }
-
     }
-
 }

@@ -21,6 +21,7 @@ Describe "Export validation" {
     AfterAll {
         Remove-Item $TempPath -Force
     }
+
     It "Exports correct JSON data" {
         # Store known good data and trim newline characters since it doesn't matter if those are different
         $KnownGood = (Get-Content -Path "$ProjectRoot/Tests/TestDataCompressed.json").Trim()

@@ -12,23 +12,28 @@ Describe "Custom type data" {
         $PesterPreference = [PesterConfiguration]::Default
         $PesterPreference.Should.ErrorAction = "Continue"
     }
+
     Context "Constructors" {
         It "ImportCounter can be created" {
-            {[StreamXRef.ImportCounter]::new("Test")} | Should -Not -Throw
+            { [StreamXRef.ImportCounter]::new("Test") } | Should -Not -Throw
         }
         It "ImportCounter requires input value" {
-            {[StreamXRef.ImportCounter]::new()} | Should -Throw
+            { [StreamXRef.ImportCounter]::new() } | Should -Throw
         }
+
         It "ImportResults can be created" {
-            {[StreamXRef.ImportResults]::new()} | Should -Not -Throw
+            { [StreamXRef.ImportResults]::new() } | Should -Not -Throw
         }
+
         It "ClipObject can be created" {
-            {[StreamXRef.ClipObject]::new()} | Should -Not -Throw
+            { [StreamXRef.ClipObject]::new() } | Should -Not -Throw
         }
+
         It "DataCache can be created" {
-            {[StreamXRef.DataCache]::new()} | Should -Not -Throw
+            { [StreamXRef.DataCache]::new() } | Should -Not -Throw
         }
     }
+
     Context "Members" {
         It "ImportCounter contains all properties" {
             $Properties = [StreamXRef.ImportCounter].DeclaredProperties.Name
@@ -39,6 +44,7 @@ Describe "Custom type data" {
             $Properties | Should -Contain Error
             $Properties | Should -Contain Total
         }
+
         It "ImportResults contains all properties" {
             $Properties = [StreamXRef.ImportResults].DeclaredProperties.Name
 
@@ -47,11 +53,13 @@ Describe "Custom type data" {
             $Properties | Should -Contain AllError
             $Properties | Should -Contain AllTotal
         }
+
         It "ImportResults contains AddCounter method" {
             $Properties = [StreamXRef.ImportResults].DeclaredMethods.Name
 
             $Properties | Should -Contain AddCounter
         }
+
         It "ClipObject contains all properties" {
             $Properties = [StreamXRef.ClipObject].DeclaredProperties.Name
 
@@ -60,6 +68,7 @@ Describe "Custom type data" {
             $Properties | Should -Contain Created
             $Properties | Should -Contain Mapping
         }
+
         It "DataCache contains all properties" {
             $Properties = [StreamXRef.DataCache].DeclaredProperties.Name
 
@@ -68,12 +77,14 @@ Describe "Custom type data" {
             $Properties | Should -Contain ClipInfoCache
             $Properties | Should -Contain VideoInfoCache
         }
+
         It "DataCache contains GetTotalCount method" {
             $Properties = [StreamXRef.DataCache].DeclaredMethods.Name
 
             $Properties | Should -Contain GetTotalCount
         }
     }
+
     Context "Functionality" {
         It "ImportCounter.Total sums all counter properties" {
             $TestObj = [StreamXRef.ImportCounter]::new("Test")
@@ -83,6 +94,7 @@ Describe "Custom type data" {
 
             $TestObj.Total | Should -Be 27
         }
+
         It "ImportResults.AddCounter(...) adds counter object" {
             $ResultObj = [StreamXRef.ImportResults]::new()
             $ResultObj.AddCounter("Test1")
@@ -90,6 +102,7 @@ Describe "Custom type data" {
             $ResultObj.Keys | Should -Contain "Test1"
             $ResultObj["Test1"] | Should -BeOfType "StreamXRef.ImportCounter"
         }
+
         It "DataCache.GetTotalCount() sums all dictionary counts" {
             $TestCache = [StreamXRef.DataCache]::new()
             $TestCache.UserInfoCache.Add("TestName", 12345678)
@@ -108,12 +121,14 @@ Describe "Internal function validation" {
                 '2020-06-06T07:09:15Z' | ConvertTo-UtcDateTime | Should -Be ([datetime]::new(2020, 6, 6, 7, 9, 15, [System.DateTimeKind]::Utc))
             }
         }
+
         It "Converts strings with a time zone offset" {
             InModuleScope StreamXRef {
                 '2020-06-06T09:09:15+02:00' | ConvertTo-UtcDateTime | Should -Be ([datetime]::new(2020, 6, 6, 7, 9, 15, [System.DateTimeKind]::Utc))
             }
         }
     }
+
     Context "URL filtering" {
         It "Removes junk from clip URL" {
             InModuleScope StreamXRef {
@@ -126,7 +141,7 @@ Describe "Internal function validation" {
 
 Describe "System environment" {
     It "Application Data folder can be determined" {
-        {[System.Environment]::GetFolderPath("ApplicationData")} | Should -Not -Throw
+        { [System.Environment]::GetFolderPath("ApplicationData") } | Should -Not -Throw
         [string]::IsNullOrWhiteSpace([System.Environment]::GetFolderPath("ApplicationData")) | Should -BeFalse
     }
 }

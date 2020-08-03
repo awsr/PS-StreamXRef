@@ -17,11 +17,11 @@ Enable-XRefPersistence [-Quiet] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This function sets up automatic saving for all cached data to a file in the `StreamXRef` folder in your Application Data directory by default. If this file is detected when the module is loaded, persistence will automatically be enabled.
+This cmdlet sets up automatic saving for all cached data to a file in the `StreamXRef` folder in your Application Data directory by default. If this file is detected when the module is loaded, persistence will automatically be enabled.
 
-The path for persistence data can be overridden by specifying a path in the `$Env:XRefPersistPath` environment variable. The path must end with ".json" or else it will write an error and use the default path.
+The path for persistence data can be overridden by specifying a path in the `$Env:XRefPersistPath` environment variable. The path must end with ".json" or else it will write an error and use the default path. The value is read when the `StreamXRef` module is loaded and when this cmdlet is run.
 
-Note that automatic saving will only trigger when new data is added to the cache when running the `Find-TwitchXRef` function or if `Import-XRefData` is used with the `Persist` parameter. Additionally, clips and videos older than 60 days will be automatically removed when loaded.
+Note that automatic saving will only trigger when new data is added to the cache when running the `Find-TwitchXRef` cmdlet or if `Import-XRefData` is used with the `Persist` parameter. Additionally, clips and videos older than 60 days will be automatically removed when loaded.
 
 ## EXAMPLES
 

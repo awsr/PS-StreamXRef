@@ -135,7 +135,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-When specified, this function will skip reading from the internal lookup cache.
+When specified, this cmdlet will skip reading from the internal lookup cache.
 
 ```yaml
 Type: SwitchParameter
@@ -150,7 +150,7 @@ Accept wildcard characters: False
 ```
 
 ### -ExplicitNull
-When specified, this function will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.
+When specified, this cmdlet will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.
 
 ```yaml
 Type: SwitchParameter
@@ -199,6 +199,8 @@ The following ErrorIds are defined:
 * `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.
 * `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.
 
-When one of these errors occur, the function will move on to the next item from the pipeline (if any). If `ExplicitNull` is specified, the function will first return a value of `$null` before moving on to the next item.
+The FullyQualifiedErrorId will be in the format of `<ErrorId>,Find-TwitchXRef`.
+
+When one of these errors occur, the cmdlet will move on to the next item from the pipeline (if any). If `ExplicitNull` is specified, the cmdlet will first return a value of `$null` before moving on to the next item.
 
 ## RELATED LINKS

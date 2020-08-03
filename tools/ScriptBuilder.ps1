@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 3.0.0
+.VERSION 3.1.0
 
 .GUID e8807dc8-6efa-4a7c-a205-7d14a794f374
 
@@ -30,6 +30,16 @@
 .PARAMETER LabelDefinitions
  Output file mappings for labels.
 
+.PARAMETER ScriptToGlobal
+ Change all instances of "script:" to "global:"
+
+.EXAMPLE
+ PS > ./ScriptBuilder.ps1 -File "/path/to/Find-TwitchXRef.ps1" -OutputRootPath "/path/to/Module/" `
+      -DefaultDirName "Shared" -LabelDefinitions "Current = PSCurrent/Find-TwitchXRef.ps1", `
+      "Legacy = PSLegacy/Find-TwitchXRef.Legacy.ps1"
+
+ Generate 2 outputs using Find-TwitchXRef.ps1 as a base and using the "Current" and "Legacy" PSCodeSet labels.
+
 #>
 [CmdletBinding()]
 Param (
@@ -44,6 +54,9 @@ Param (
     [Parameter(Mandatory = $true, Position = 2, ValueFromPipelineByPropertyName = $true)]
     [ValidateScript({ Test-Path $_ -IsValid })]
     [string]$DefaultDirName,
+
+    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [switch]$ScriptToGlobal,
 
     [Parameter(ValueFromRemainingArguments, ValueFromPipelineByPropertyName = $true)]
     [string[]]$LabelDefinitions
@@ -67,6 +80,11 @@ $Source = Get-Content $File -ErrorAction Stop | ForEach-Object {
     if ([string]::IsNullOrWhiteSpace($_)) {
 
         Write-Output ([string]::Empty)
+
+    }
+    elseif ($ScriptToGlobal) {
+
+        $_ -ireplace 'script:', 'global:' | Write-Output
 
     }
     else {
@@ -107,7 +125,7 @@ if ($Source[0] -notlike "#.EnablePSCodeSets*") {
     if (-not (Test-Path $DefaultDirPath)) {
 
         # Create placeholder file and directories if missing
-        New-Item -Path $DefaultDirPath -ItemType Directory -Force -ErrorAction Stop | Out-Null
+        [void] (New-Item -Path $DefaultDirPath -ItemType Directory -Force -ErrorAction Stop)
 
     }
 
@@ -344,7 +362,7 @@ $Mappings.GetEnumerator() | ForEach-Object {
         if (-not (Test-Path $_.Value)) {
 
             # Create placeholder file and directories if missing
-            New-Item -Path $_.Value -ItemType File -Force -ErrorAction Stop | Out-Null
+            [void] (New-Item -Path $_.Value -ItemType File -Force -ErrorAction Stop)
 
         }
 

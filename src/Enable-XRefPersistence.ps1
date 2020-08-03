@@ -8,49 +8,35 @@ function Enable-XRefPersistence {
     )
 
     Process {
-
         # Check for persistance path override (except during import, where this was already done)
         if ((Test-Path Env:XRefPersistPath) -and $null -ne $Env:XRefPersistPath -and $MyInvocation.PSCommandPath -notlike "*StreamXRef.psm1") {
-
             if ((Test-Path $Env:XRefPersistPath -IsValid) -and $Env:XRefPersistPath -like "*.json") {
-
                 $script:PersistPath = $Env:XRefPersistPath
                 $script:PersistCanUse = $true
-
             }
             else {
-
                 Write-Error "XRefPersistPath environment variable must specify a .json file"
-
             }
-
         }
 
         if ($PersistCanUse) {
-
             if ($PersistEnabled) {
-
                 if (-not $Quiet) {
                     Write-Host "StreamXRef persistence is already enabled."
                 }
                 return
-
             }
             else {
-
                 # Restore previously-disabled persistence file if it exists
                 if (Test-Path "$PersistPath.bak") {
-
                     Move-Item "$PersistPath.bak" $PersistPath -Force
-
                     if (-not $Quiet) {
                         Write-Host "Restoring previous StreamXRef persistence data."
                     }
-
                 }
 
                 if (Test-Path $PersistPath) {
-
+                    # ===== Import Data =====
                     Import-XRefData -Path $PersistPath -Quiet -Force
 
                     # Clean up entries older than 60 days (default Twitch retention policy)
@@ -58,15 +44,12 @@ function Enable-XRefPersistence {
 
                     # Export cleaned data back to persistent storage
                     Export-XRefData -Path $PersistPath -Force -WarningAction SilentlyContinue
-
                 }
                 else {
-
                     <#  Try creating placeholder here before registering event subscriber so
                         that there's only one error message if the path can't be written to. #>
                     [void] (New-Item -Path $PersistPath -ItemType File -Force -ErrorAction Stop)
                     Export-XRefData -Path $PersistPath -Force 3> $null
-
                 }
 
                 # Populate path for event scriptblock in advance
@@ -83,16 +66,10 @@ function Enable-XRefPersistence {
                 if (-not $Quiet) {
                     Write-Host -BackgroundColor Black -ForegroundColor Green "StreamXRef persistence enabled."
                 }
-
             }
-
         }
         else {
-
             Write-Error "Unable to determine Application Data path"
-
         }
-
     }
-
 }
