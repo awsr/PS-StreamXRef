@@ -48,5 +48,5 @@ Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <I
 
 ## Known Quirks
 
-- Twitch currently rounds the start of video playback down in 10-second intervals. If you visit a video with a timestamp of `1h10m49s`, the video playback is going to start at `1h10m40s`.
+- Twitch currently rounds the start of video playback down in chunks (typically up to 10-second intervals). If you visit a video with a timestamp of `1h10m49s`, the video playback itself may start as early as `1h10m40s`.
 - Video playback can sometimes start from the beginning of the stream instead of at the timestamp. Try refreshing the page if this happens.
