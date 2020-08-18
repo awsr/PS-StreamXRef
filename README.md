@@ -1,6 +1,6 @@
 # StreamXRef for PowerShell
 
-![PowerShell Gallery Version (including pre-releases)](https://img.shields.io/powershellgallery/v/StreamXRef)
+[![PowerShell Gallery Version (including pre-releases)](https://img.shields.io/powershellgallery/v/StreamXRef)](https://www.powershellgallery.com/packages/StreamXRef/)
 
 Have you ever seen a clip from several people streaming together and wanted to see what it looked like from other perspectives? Find the same moment in time based on either a Twitch clip or a Twitch video URL with time offset.
 
