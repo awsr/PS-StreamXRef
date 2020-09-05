@@ -160,7 +160,12 @@ function Import-XRefData {
                             $Counters.Clip.Skipped++
                         }
                         elseif ($Force) {
-                            $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
+                            $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{
+                                Offset  = $NewOffsetValue
+                                VideoID = $NewVideoIDValue
+                                Created = $ConvertedDateTime
+                                Mapping = @{}
+                            }
                             $Counters.Clip.Imported++
                         }
                         else {
@@ -178,7 +183,12 @@ function Import-XRefData {
                     }
                     else {
                         # New data to add
-                        $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
+                        $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{
+                            Offset  = $NewOffsetValue
+                            VideoID = $NewVideoIDValue
+                            Created = $ConvertedDateTime
+                            Mapping = @{}
+                        }
                         $Counters.Clip.Imported++
                     }
 
