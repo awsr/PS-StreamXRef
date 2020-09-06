@@ -13,7 +13,7 @@ Enables the built-in data persistence option for the StreamXRef module.
 ## SYNTAX
 
 ```
-Enable-XRefPersistence [-Quiet] [<CommonParameters>]
+Enable-XRefPersistence [-Compress] [-ExcludeClipMapping] [-Quiet] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -21,7 +21,9 @@ This cmdlet sets up automatic saving for all cached data to a file in the `Strea
 
 The path for persistence data can be overridden by specifying a path in the `$Env:XRefPersistPath` environment variable. The path must end with ".json" or else it will write an error and use the default path. The value is read when the `StreamXRef` module is loaded and when this cmdlet is run.
 
-Note that automatic saving will only trigger when new data is added to the cache when running the `Find-TwitchXRef` cmdlet or if `Import-XRefData` is used with the `Persist` parameter. Additionally, clips and videos older than 60 days will be automatically removed when loaded.
+Note that automatic saving will only trigger when new data is added to the cache when running the `Find-TwitchXRef` cmdlet or if `Import-XRefData` is used with the `Persist` parameter.
+
+Additionally, clips and videos older than 60 days will be automatically removed when loaded.
 
 ## EXAMPLES
 
@@ -32,7 +34,44 @@ PS > Enable-XRefPersistence
 
 Enable the built-in data persistence.
 
+### Example 2
+```powershell
+PS > Enable-XRefPersistence -Compress -ExcludeClipMapping
+```
+
+Use compression on the persistence data file and don't include clip result mappings.
+
 ## PARAMETERS
+
+### -Compress
+Removes unnecessary whitespace from the persistence data file.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ExcludeClipMapping
+Excludes the cached Clip to Username results from the persistence data file.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: NoMapping, ECM
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -Quiet
 Suppress writing information messages to host.
