@@ -400,6 +400,7 @@ function Find-TwitchXRef {
 
                 if (-not $SourceIsVideo -and -not $XRefIsVideo) {
                     try {
+                        # Add to clip result mapping
                         $script:TwitchData.ClipInfoCache[$Slug].Mapping[$XRef] = $NewUrl
                         $NewDataAdded = $true
                     }

@@ -52,7 +52,6 @@ function Import-XRefData {
             catch {
                 $PSCmdlet.ThrowTerminatingError($_)
             }
-
         }
 
         # Process ApiKey (Check parameter set first since ImportStaging won't exist in the ApiKey set)

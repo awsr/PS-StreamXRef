@@ -112,7 +112,7 @@ function Export-XRefData {
             )
         }
 
-        # Bundle data together for converting to JSON (for compatibility with potential Javascript-based version)
+        # Bundle data together for converting to JSON
         $StagedTwitchData = [pscustomobject]@{
             ApiKey         = $ExportApiKey
             UserInfoCache  = $ConvertedUserInfoCache
