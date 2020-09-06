@@ -24,8 +24,8 @@ function Disable-XRefPersistence {
                     Write-Host "No StreamXRef persistence files to delete."
                 }
             }
-            else {
-                # Add ".bak" to name to prevent auto-loading
+            elseif ($MyInvocation.PSCommandPath -notlike "*Enable-XRefPersistence.ps1") {
+                # Add ".bak" to name to prevent auto-loading (except when resetting via Enable-XRefPersistence)
                 Move-Item $PersistPath "$PersistPath.bak" -Force
             }
 

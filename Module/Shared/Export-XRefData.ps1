@@ -25,7 +25,10 @@ function Export-XRefData {
         [switch]$NoClobber,
 
         [Parameter()]
-        [switch]$Compress
+        [switch]$Compress,
+
+        [Parameter(DontShow)]
+        [switch]$_PersistConfig
     )
 
     Begin {
@@ -39,6 +42,16 @@ function Export-XRefData {
 
         # DateTime string formatting ("yyyy-MM-ddTHH:mm:ssZ" -> "2020-05-09T05:35:45Z")
         $DateTimeFormatting = "yyyy-MM-ddTHH:mm:ssZ"
+
+        # Persistence parameter overrides
+        if ($_PersistConfig) {
+            if ($script:PersistFormatting.HasFlag([SXRPersistFormat]::Compress)) {
+                $Compress = $true
+            }
+            if ($script:PersistFormatting.HasFlag([SXRPersistFormat]::NoMapping)) {
+                $ExcludeClipMapping = $true
+            }
+        }
 
         # Handle API key
         if ($ExcludeApiKey) {
@@ -105,6 +118,10 @@ function Export-XRefData {
             UserInfoCache  = $ConvertedUserInfoCache
             ClipInfoCache  = $ConvertedClipInfoCache
             VideoInfoCache = $ConvertedVideoInfoCache
+        }
+
+        if ($_PersistConfig) {
+            $StagedTwitchData | Add-Member -NotePropertyName "_persist" -NotePropertyValue $script:PersistFormatting
         }
     }
 

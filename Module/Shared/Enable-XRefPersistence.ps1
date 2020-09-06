@@ -4,6 +4,13 @@ function Enable-XRefPersistence {
     [OutputType([System.Void])]
     Param(
         [Parameter()]
+        [switch]$Compress,
+
+        [Parameter()]
+        [Alias("NoMapping", "ECM")]
+        [switch]$ExcludeClipMapping,
+
+        [Parameter()]
         [switch]$Quiet
     )
 
@@ -21,51 +28,58 @@ function Enable-XRefPersistence {
 
         if ($PersistCanUse) {
             if ($PersistEnabled) {
+                # Disable persistance before recreating with new settings
+                Disable-XRefPersistence -Quiet
+            }
+            elseif (Test-Path "$PersistPath.bak") {
+                # Restore previously-disabled persistence file
+                Move-Item "$PersistPath.bak" $PersistPath -Force
                 if (-not $Quiet) {
-                    Write-Host "StreamXRef persistence is already enabled."
+                    Write-Host "Restoring previous StreamXRef persistence data."
                 }
-                return
+            }
+
+            if (Test-Path $PersistPath) {
+                # ===== Import Data =====
+                Import-XRefData -Path $PersistPath -Quiet -Force
+                # PersistFormatting is now set from imported data if it was specified
+
+                # Clean up entries older than 60 days (default Twitch retention policy)
+                Clear-XRefData -Name Clip, Video -DaysToKeep 60
             }
             else {
-                # Restore previously-disabled persistence file if it exists
-                if (Test-Path "$PersistPath.bak") {
-                    Move-Item "$PersistPath.bak" $PersistPath -Force
-                    if (-not $Quiet) {
-                        Write-Host "Restoring previous StreamXRef persistence data."
-                    }
+                <#  Try creating placeholder here before registering event subscriber so
+                    that there's only one error message if the path can't be written to. #>
+                [void] (New-Item -Path $PersistPath -ItemType File -Force -ErrorAction Stop)
+            }
+
+            # Update PersistFormatting if not called during module import
+            if ($MyInvocation.PSCommandPath -notlike "*StreamXRef.psm1") {
+                $script:PersistFormatting = [SXRPersistFormat]::None
+                if ($Compress) {
+                    $script:PersistFormatting += [SXRPersistFormat]::Compress
                 }
-
-                if (Test-Path $PersistPath) {
-                    # ===== Import Data =====
-                    Import-XRefData -Path $PersistPath -Quiet -Force
-
-                    # Clean up entries older than 60 days (default Twitch retention policy)
-                    Clear-XRefData -Name Clip, Video -DaysToKeep 60
-
-                    # Export cleaned data back to persistent storage
-                    Export-XRefData -Path $PersistPath -Force -WarningAction SilentlyContinue
+                if ($ExcludeClipMapping) {
+                    $script:PersistFormatting += [SXRPersistFormat]::NoMapping
                 }
-                else {
-                    <#  Try creating placeholder here before registering event subscriber so
-                        that there's only one error message if the path can't be written to. #>
-                    [void] (New-Item -Path $PersistPath -ItemType File -Force -ErrorAction Stop)
-                    Export-XRefData -Path $PersistPath -Force 3> $null
-                }
+            }
 
-                # Populate path for event scriptblock in advance
-                $EventAction = [scriptblock]::Create("Export-XRefData -Path $script:PersistPath -Force")
+            # Export data to persistent storage
+            Export-XRefData -Path $PersistPath -_PersistConfig -Force -WarningAction SilentlyContinue
 
-                # Suppress writing job info to host when registering
-                [void] (Register-EngineEvent -SourceIdentifier XRefNewDataAdded -ErrorAction Stop -Action $EventAction)
+            # Populate path for event scriptblock in advance
+            $EventAction = [scriptblock]::Create("Export-XRefData -Path $script:PersistPath -_PersistConfig -Force")
 
-                # Take note of the subscription id (might not be the same as the PSEventJob id)
-                $script:PersistId = (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded | Select-Object -Last 1).SubscriptionId
+            # Suppress writing job info to host when registering
+            [void] (Register-EngineEvent -SourceIdentifier XRefNewDataAdded -ErrorAction Stop -Action $EventAction)
 
-                $script:PersistEnabled = $true
+            # Take note of the subscription id (might not be the same as the PSEventJob id)
+            $script:PersistId = (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded | Select-Object -Last 1).SubscriptionId
 
-                if (-not $Quiet) {
-                    Write-Host -BackgroundColor Black -ForegroundColor Green "StreamXRef persistence enabled."
-                }
+            $script:PersistEnabled = $true
+
+            if (-not $Quiet) {
+                Write-Host -BackgroundColor Black -ForegroundColor Green "StreamXRef persistence enabled."
             }
         }
         else {

@@ -258,6 +258,11 @@ function Import-XRefData {
                 Write-Verbose "(Video Data) $($Counters.Video.Error) entries could not be parsed or conflicted with existing data."
             }
         }
+
+        # Process optional persistence formatting data
+        if ($ImportStaging.psobject.Properties.Name -contains "_persist") {
+            $script:PersistFormatting = [SXRPersistFormat]$ImportStaging._persist
+        }
     }
 
     End {

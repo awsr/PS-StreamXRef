@@ -92,9 +92,16 @@ Export-ModuleMember -Function $FunctionNames
 
 #region Persistent data ========================
 
+[Flags()] enum SXRPersistFormat {
+    None = 0
+    Compress = 1
+    NoMapping = 2
+}
+
 $script:PersistCanUse = $false
 $script:PersistEnabled = $false
 $script:PersistId = 0
+$script:PersistFormatting = [SXRPersistFormat]::None
 
 try {
     # Get path inside try/catch in case of problems resolving the path
