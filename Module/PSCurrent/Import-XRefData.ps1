@@ -29,10 +29,12 @@ function Import-XRefData {
         $MappingWarning = $false
         $ConflictingData = $false
         $NewKeyAdded = $false
+
+        $IsGeneral = $PSCmdlet.ParameterSetName -eq "General"
     }
 
     Process {
-        if ($PSCmdlet.ParameterSetName -eq "General") {
+        if ($IsGeneral) {
             try {
                 # Read file and convert from json
                 $ImportStaging = Get-Content $Path -Raw | ConvertFrom-Json
@@ -265,32 +267,24 @@ function Import-XRefData {
     }
 
     End {
-        if ($PSCmdlet.ParameterSetName -eq "General") {
+        if ($Persist -and ($NewKeyAdded -or ($IsGeneral -and $Counters.AllImported -gt 0))) {
+            if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
+                [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Import-XRefData")
+            }
+        }
+
+        if ($IsGeneral) {
             if ($ConflictingData) {
                 Write-Error "Some lookup data conflicts with existing values. Run with -Force to overwrite."
             }
-
             if ($MappingWarning) {
-                Write-Warning "Some clip -> user mapping data could not be imported or was missing"
+                Write-Warning "Some Clip -> User mapping data could not be imported or was missing"
             }
-
             if (-not $Quiet) {
                 $Counters.Values | Format-Table -AutoSize | Out-Host
             }
-
-            if ($Persist -and ($Counters.AllImported -gt 0 -or $NewKeyAdded)) {
-                if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
-                    [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Import-XRefData")
-                }
-            }
-
             if ($PassThru) {
                 return $Counters
-            }
-        }
-        elseif ($Persist -and $NewKeyAdded) {
-            if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
-                [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Import-XRefData")
             }
         }
     }
