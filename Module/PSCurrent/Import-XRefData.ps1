@@ -275,7 +275,7 @@ function Import-XRefData {
 
         if ($IsGeneral) {
             if ($ConflictingData) {
-                Write-Error "Some lookup data conflicts with existing values. Run with -Force to overwrite."
+                Write-Warning "Some lookup data conflicts with existing values. Run with -Force to overwrite."
             }
             if ($MappingWarning) {
                 Write-Warning "Some Clip -> User mapping data could not be imported or was missing"
