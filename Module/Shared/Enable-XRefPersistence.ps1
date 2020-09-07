@@ -28,6 +28,9 @@ function Enable-XRefPersistence {
 
         if ($PersistCanUse) {
             if ($PersistEnabled) {
+                if (-not $Quiet) {
+                    Write-Host "Updating persistence settings"
+                }
                 # Disable persistance before recreating with new settings
                 Disable-XRefPersistence -Quiet
             }
@@ -35,7 +38,7 @@ function Enable-XRefPersistence {
                 # Restore previously-disabled persistence file
                 Move-Item "$PersistPath.bak" $PersistPath -Force
                 if (-not $Quiet) {
-                    Write-Host "Restoring previous StreamXRef persistence data."
+                    Write-Host "Restoring previous StreamXRef persistence data"
                 }
             }
 
@@ -79,7 +82,7 @@ function Enable-XRefPersistence {
             $script:PersistEnabled = $true
 
             if (-not $Quiet) {
-                Write-Host -BackgroundColor Black -ForegroundColor Green "StreamXRef persistence enabled."
+                Write-Host -BackgroundColor Black -ForegroundColor Green "StreamXRef persistence enabled"
             }
         }
         else {
