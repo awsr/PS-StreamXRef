@@ -19,7 +19,7 @@
       "slug": "madeupnameforaclip",
       "offset": "ham",
       "video": "cheese",
-      "created": "2020-05-31T02:04:14Z"
+      "created": "9999-05-31T02:04:14Z"
     },
     {
       "slug": "WaitWhereIsTheRestOfIt"
@@ -28,18 +28,18 @@
       "slug": "thisnamedoesnotexisteither",
       "offset": 4321,
       "video": 987654321,
-      "created": "2020-06-05T02:07:33Z",
+      "created": "9999-06-05T02:07:33Z",
       "mapping": []
     }
   ],
   "VideoInfoCache": [
     {
       "video": 123456789,
-      "timestamp": "2020-05-31T00:27:16Z"
+      "timestamp": "9999-05-31T00:27:16Z"
     },
     {
       "video": "oops",
-      "timestamp": "2020-05-31T00:27:16Z"
+      "timestamp": "9999-05-31T00:27:16Z"
     },
     {
       "video": 123456789,
@@ -47,7 +47,7 @@
     },
     {
       "video": 987654321,
-      "timestamp": "2020-06-05T00:54:56Z"
+      "timestamp": "9999-06-05T00:54:56Z"
     }
   ]
 }
