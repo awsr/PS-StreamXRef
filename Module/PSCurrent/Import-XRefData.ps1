@@ -31,6 +31,19 @@ function Import-XRefData {
         $NewKeyAdded = $false
 
         $IsGeneral = $PSCmdlet.ParameterSetName -eq "General"
+
+        if ($IsGeneral) {
+            try {
+                # Set up counters object
+                $Counters = [StreamXRef.ImportResults]::new()
+                $Counters.AddCounter("User")
+                $Counters.AddCounter("Clip")
+                $Counters.AddCounter("Video")
+            }
+            catch {
+                $PSCmdlet.ThrowTerminatingError($_)
+            }
+        }
     }
 
     Process {
@@ -42,17 +55,6 @@ function Import-XRefData {
             catch {
                 $PSCmdlet.WriteError($_)
                 return
-            }
-
-            try {
-                # Set up counters object
-                $Counters = [StreamXRef.ImportResults]::new()
-                $Counters.AddCounter("User")
-                $Counters.AddCounter("Clip")
-                $Counters.AddCounter("Video")
-            }
-            catch {
-                $PSCmdlet.ThrowTerminatingError($_)
             }
         }
 
