@@ -42,22 +42,24 @@ function Enable-XRefPersistence {
                 }
             }
 
-            if (Test-Path $PersistPath) {
-                # ===== Import Data =====
-                Import-XRefData -Path $PersistPath -Quiet -Force
-                # PersistFormatting is now set from imported data if it was specified
+            if ($MyInvocation.PSCommandPath -like "*StreamXRef.psm1") {
+                # Perform setup during module import
+                if (Test-Path $PersistPath) {
+                    # ===== Import Data =====
+                    Import-XRefData -Path $PersistPath -Quiet -Force
+                    # PersistFormatting is now set from imported data if it was specified
 
-                # Clean up entries older than 60 days (default Twitch retention policy)
-                Clear-XRefData -Name Clip, Video -DaysToKeep 60
+                    # Clean up entries older than 60 days (default Twitch retention policy)
+                    Clear-XRefData -Name Clip, Video -DaysToKeep 60
+                }
+                else {
+                    <#  Try creating placeholder here before registering event subscriber so
+                        that there's only one error message if the path can't be written to. #>
+                    [void] (New-Item -Path $PersistPath -ItemType File -Force -ErrorAction Stop)
+                }
             }
             else {
-                <#  Try creating placeholder here before registering event subscriber so
-                    that there's only one error message if the path can't be written to. #>
-                [void] (New-Item -Path $PersistPath -ItemType File -Force -ErrorAction Stop)
-            }
-
-            # Update PersistFormatting if not called during module import
-            if ($MyInvocation.PSCommandPath -notlike "*StreamXRef.psm1") {
+                # Update PersistFormatting if not called during module import
                 $script:PersistFormatting = [SXRPersistFormat]::None
                 if ($Compress) {
                     $script:PersistFormatting += [SXRPersistFormat]::Compress
