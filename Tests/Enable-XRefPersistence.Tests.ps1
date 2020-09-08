@@ -1,6 +1,6 @@
 #Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.2' }
 
-Describe "Functionality" {
+Describe "Persistence functionality" {
     BeforeAll {
         Get-Module StreamXRef | Remove-Module
         $ProjectRoot = Split-Path -Parent $PSScriptRoot

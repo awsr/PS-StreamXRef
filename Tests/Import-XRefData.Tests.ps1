@@ -33,7 +33,7 @@ Describe "Import validation" {
     }
 }
 
-Describe "Results object" {
+Describe "Import results object" {
     BeforeAll {
         Clear-XRefData -RemoveAll
         $Results = Import-XRefData "$ProjectRoot/Tests/TestData.json" -PassThru -Quiet
