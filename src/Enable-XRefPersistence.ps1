@@ -11,66 +11,73 @@ function Enable-XRefPersistence {
         [switch]$ExcludeClipMapping,
 
         [Parameter()]
+        [switch]$Force,
+
+        [Parameter()]
         [switch]$Quiet
     )
 
     Process {
-        # Check for persistance path override (except during import, where this was already done)
-        if ((Test-Path Env:XRefPersistPath) -and $null -ne $Env:XRefPersistPath -and $MyInvocation.PSCommandPath -notlike "*StreamXRef.psm1") {
-            if ((Test-Path $Env:XRefPersistPath -IsValid) -and $Env:XRefPersistPath -like "*.json") {
-                $script:PersistPath = $Env:XRefPersistPath
-                $script:PersistCanUse = $true
+        $FormatOptions = [SXRPersistFormat]::Standard
+        if ($Compress) {
+            $FormatOptions += [SXRPersistFormat]::Compress
+        }
+        if ($ExcludeClipMapping) {
+            $FormatOptions += [SXRPersistFormat]::NoMapping
+        }
+
+        if ($PersistCanUse -and $PersistEnabled) {
+            if ($Force) {
+                # Disable old persistance before recreating with new settings
+                Disable-XRefPersistence -Quiet -_Reset
             }
             else {
-                Write-Error "XRefPersistPath environment variable must specify a .json file"
+                if (-not $Quiet) {
+                    Write-Host "StreamXRef persistence is already enabled."
+                    Write-Host "To update formatting options, run with -Force."
+                }
+                return
             }
         }
 
+        if ($PSCmdlet.MyInvocation -notlike "*StreamXRef.psm1") {
+            # Get persistence path to use
+            Get-PersistPath
+        }
+
         if ($PersistCanUse) {
-            if ($PersistEnabled) {
-                if (-not $Quiet) {
-                    Write-Host "Updating persistence settings"
-                }
-                # Disable persistance before recreating with new settings
-                Disable-XRefPersistence -Quiet
-            }
-            elseif (Test-Path "$PersistPath.bak") {
+            if ((Test-Path "$PersistPath.bak") -and -not (Test-Path $PersistPath)) {
                 # Restore previously-disabled persistence file
-                Move-Item "$PersistPath.bak" $PersistPath -Force
                 if (-not $Quiet) {
-                    Write-Host "Restoring previous StreamXRef persistence data"
+                    Write-Host "Resuming StreamXRef persistence"
                 }
+                Move-Item "$PersistPath.bak" $PersistPath -Force -ErrorAction Stop
             }
 
-            if ($MyInvocation.PSCommandPath -like "*StreamXRef.psm1") {
-                # Perform setup during module import
-                if (Test-Path $PersistPath) {
-                    # ===== Import Data =====
-                    Import-XRefData -Path $PersistPath -Quiet -Force
-                    # PersistFormatting is now set from imported data if it was specified
+            if (Test-Path $PersistPath) {
+                Import-XRefData -Path $PersistPath -Quiet -Force -WarningAction SilentlyContinue
+                # PersistFormatting is now set from imported data if it was specified
 
-                    # Clean up entries older than 60 days (default Twitch retention policy)
-                    Clear-XRefData -Name Clip, Video -DaysToKeep 60
+                # Clean up entries older than 60 days (default Twitch retention policy)
+                Clear-XRefData -Name Clip, Video -DaysToKeep 60
+
+                if ($Force) {
+                    # Override imported persistence formatting with new values
+                    $script:PersistFormatting = $FormatOptions
                 }
-                else {
-                    <#  Try creating placeholder here before registering event subscriber so
-                        that there's only one error message if the path can't be written to. #>
-                    [void] (New-Item -Path $PersistPath -ItemType File -Force -ErrorAction Stop)
-                }
+
+                # Export cleaned data back to persistent storage
+                Export-XRefData -Path $PersistPath -_PersistConfig -Force -WarningAction SilentlyContinue
             }
             else {
-                # Update PersistFormatting if not called during module import
-                $script:PersistFormatting = [SXRPersistFormat]::None
-                if ($Compress) {
-                    $script:PersistFormatting += [SXRPersistFormat]::Compress
-                }
-                if ($ExcludeClipMapping) {
-                    $script:PersistFormatting += [SXRPersistFormat]::NoMapping
-                }
-            }
+                # Create placeholder file to ensure path can be written to
+                [void] (New-Item -Path $PersistPath -ItemType File -Force -ErrorAction Stop)
 
-            # Export data to persistent storage
-            Export-XRefData -Path $PersistPath -_PersistConfig -Force -WarningAction SilentlyContinue
+                # Force parameter isn't needed here since there's nothing to override
+                $script:PersistFormatting = $FormatOptions
+
+                Export-XRefData -Path $PersistPath -_PersistConfig -Force -WarningAction SilentlyContinue
+            }
 
             # Populate path for event scriptblock in advance
             $EventAction = [scriptblock]::Create("Export-XRefData -Path $script:PersistPath -_PersistConfig -Force")
@@ -84,11 +91,8 @@ function Enable-XRefPersistence {
             $script:PersistEnabled = $true
 
             if (-not $Quiet) {
-                Write-Host -BackgroundColor Black -ForegroundColor Green "StreamXRef persistence enabled"
+                Write-Host -BackgroundColor Black -ForegroundColor Green "StreamXRef persistence enabled ($script:PersistFormatting)"
             }
-        }
-        else {
-            Write-Error "Unable to determine Application Data path"
         }
     }
 }
