@@ -150,7 +150,7 @@ Accept wildcard characters: False
 ```
 
 ### -ExplicitNull
-When specified, this cmdlet will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `get-help Find-TwitchXRef -full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.
+When specified, this cmdlet will explicitly return a value of `$null` when encountering a predefined error (see Notes section in `Get-Help Find-TwitchXRef -Full`). This can be helpful when used in an environment where `Set-StrictMode` is enabled.
 
 ```yaml
 Type: SwitchParameter

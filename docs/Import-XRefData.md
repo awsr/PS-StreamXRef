@@ -23,9 +23,9 @@ Import-XRefData [-ApiKey] <String> [-Persist] [-Quiet] [-Force] [<CommonParamete
 ```
 
 ## DESCRIPTION
-This cmdlet lets you import data into the lookup cache from a JSON file that was made using `Export-XRefData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` cmdlet.
+The `Import-XRefData` cmdlet lets you import data into the lookup cache from a JSON file that was made using `Export-XRefData`. If you use the `ApiKey` parameter, you can instead import just your API key from a string without having to invoke the main `Find-TwitchXRef` cmdlet.
 
-This cmdlet does not send an "**XRefNewDataAdded**" event by default.
+This cmdlet does not send an "**XRefNewDataAdded**" event when new data is added unless the `Persist` parameter is used.
 
 ## EXAMPLES
 

@@ -8,7 +8,7 @@ schema: 2.0.0
 # Clear-XRefData
 
 ## SYNOPSIS
-Clears data from the internal lookup caches for the StreamXRef module.
+Clears data from the internal lookup cache for the StreamXRef module.
 
 ## SYNTAX
 
@@ -23,7 +23,7 @@ Clear-XRefData [-RemoveAll] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Clears either all data or any combination of the following for the StreamXRef module: API key, User lookup cache, Clip lookup cache, Video lookup cache.
+The `Clear-XRefData` cmdlet clears either all data or any combination of the following for the `StreamXRef` module: API key, User lookup cache, Clip lookup cache, Video lookup cache.
 
 ## EXAMPLES
 

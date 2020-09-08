@@ -17,7 +17,7 @@ Disable-XRefPersistence [-Quiet] [-Remove] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Disables the built-in data persistence option by renaming the file and unregistering the event subscriber. The `Remove` parameter can be specified to delete all persistent data files.
+The `Disable-XRefPersistence` cmdlet disables the built-in data persistence option by renaming the file and unregistering the event subscriber. The `Remove` parameter can be specified to delete all persistent data files.
 
 ## EXAMPLES
 
