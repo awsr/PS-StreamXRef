@@ -55,7 +55,10 @@ Describe "Persistence functionality" {
 
             $CheckContent | Should -Match " "
             $CheckData.config._persist | Should -Be 0
-            $CheckData.ClipInfoCache.mapping.Count | Should -Be 1
+
+            $MappingCount = 0
+            $CheckData.ClipInfoCache.ForEach({$MappingCount += $_.mapping.Count})
+            $MappingCount | Should -Be 1
         }
 
         It "Compress formatting option" {
@@ -65,7 +68,10 @@ Describe "Persistence functionality" {
 
             $CheckContent | Should -Not -Match " " # No whitespace when compressed
             $CheckData.config._persist | Should -Be 1
-            $CheckData.ClipInfoCache.mapping.Count | Should -Be 1
+
+            $MappingCount = 0
+            $CheckData.ClipInfoCache.ForEach({$MappingCount += $_.mapping.Count})
+            $MappingCount | Should -Be 1
         }
 
         It "NoMapping formatting option" {
@@ -75,7 +81,10 @@ Describe "Persistence functionality" {
 
             $CheckContent | Should -Match " "
             $CheckData.config._persist | Should -Be 2
-            $CheckData.ClipInfoCache.mapping.Count | Should -Be 0
+
+            $MappingCount = 0
+            $CheckData.ClipInfoCache.ForEach({$MappingCount += $_.mapping.Count})
+            $MappingCount | Should -Be 0
         }
 
         It "Both formatting options" {
@@ -85,7 +94,10 @@ Describe "Persistence functionality" {
 
             $CheckContent | Should -Not -Match " " # No whitespace when compressed
             $CheckData.config._persist | Should -Be 3
-            $CheckData.ClipInfoCache.mapping.Count | Should -Be 0
+
+            $MappingCount = 0
+            $CheckData.ClipInfoCache.ForEach({$MappingCount += $_.mapping.Count})
+            $MappingCount | Should -Be 0
         }
     }
 }
