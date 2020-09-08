@@ -282,9 +282,11 @@ function Import-XRefData {
             }
         }
 
-        # Process optional persistence formatting data
-        if ($ImportStaging.psobject.Properties.Name -contains "_persist") {
-            $script:PersistFormatting = [SXRPersistFormat]$ImportStaging._persist
+        if ($SchemaVersion -ge 1) {
+            # Process optional persistence formatting data
+            if ($ImportStaging.config.psobject.Properties.Name -contains "_persist") {
+                $script:PersistFormatting = [SXRPersistFormat]$ImportStaging.config._persist
+            }
         }
     }
 

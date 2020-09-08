@@ -57,6 +57,10 @@ function Export-XRefData {
         $Metadata = [pscustomobject]@{
             schema = 1
         }
+        if ($_PersistConfig) {
+            $Metadata | Add-Member -NotePropertyName "_persist" -NotePropertyValue $script:PersistFormatting
+        }
+
         # Handle API key
         if ($ExcludeApiKey) {
             $ExportApiKey = ""
@@ -123,10 +127,6 @@ function Export-XRefData {
             UserInfoCache  = $ConvertedUserInfoCache
             ClipInfoCache  = $ConvertedClipInfoCache
             VideoInfoCache = $ConvertedVideoInfoCache
-        }
-
-        if ($_PersistConfig) {
-            $StagedTwitchData | Add-Member -NotePropertyName "_persist" -NotePropertyValue $script:PersistFormatting
         }
     }
 
