@@ -40,4 +40,52 @@ Describe "Persistence functionality" {
             }
         }
     }
+
+    Context "Formatting" {
+        BeforeAll {
+            Disable-XRefPersistence -Quiet -Remove
+            Clear-XRefData -RemoveAll
+            Import-XRefData "$ProjectRoot/Tests/TestDataCompressedMapping.json" -Quiet
+        }
+
+        It "No special formatting options" {
+            Enable-XRefPersistence -Force -Quiet
+            $CheckContent = Get-Content $Env:XRefPersistPath -Raw
+            $CheckData = $CheckContent | ConvertFrom-Json
+
+            $CheckContent | Should -Match " "
+            $CheckData.config._persist | Should -Be 0
+            $CheckData.ClipInfoCache.mapping.Count | Should -Be 1
+        }
+
+        It "Compress formatting option" {
+            Enable-XRefPersistence -Compress -Force -Quiet
+            $CheckContent = Get-Content $Env:XRefPersistPath -Raw
+            $CheckData = $CheckContent | ConvertFrom-Json
+
+            $CheckContent | Should -Not -Match " " # No whitespace when compressed
+            $CheckData.config._persist | Should -Be 1
+            $CheckData.ClipInfoCache.mapping.Count | Should -Be 1
+        }
+
+        It "NoMapping formatting option" {
+            Enable-XRefPersistence -ExcludeClipMapping -Force -Quiet
+            $CheckContent = Get-Content $Env:XRefPersistPath -Raw
+            $CheckData = $CheckContent | ConvertFrom-Json
+
+            $CheckContent | Should -Match " "
+            $CheckData.config._persist | Should -Be 2
+            $CheckData.ClipInfoCache.mapping.Count | Should -Be 0
+        }
+
+        It "Both formatting options" {
+            Enable-XRefPersistence -Compress -ExcludeClipMapping -Force -Quiet
+            $CheckContent = Get-Content $Env:XRefPersistPath -Raw
+            $CheckData = $CheckContent | ConvertFrom-Json
+
+            $CheckContent | Should -Not -Match " " # No whitespace when compressed
+            $CheckData.config._persist | Should -Be 3
+            $CheckData.ClipInfoCache.mapping.Count | Should -Be 0
+        }
+    }
 }

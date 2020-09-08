@@ -35,4 +35,18 @@ Describe "Export validation" {
 
         $CheckData | Should -Be $KnownGood
     }
+
+    It "Exports mapped clip results" {
+        $KnownGood = (Get-Content -Path "$ProjectRoot/Tests/TestDataCompressedMapping.json").Trim()
+
+        # Mock just the behavior of adding data to mapping
+        InModuleScope StreamXRef {
+            $script:TwitchData.ClipInfoCache["madeupnameforaclip"].Mapping["one"] = "https://www.twitch.tv/videos/123456789?t=1h35m32s"
+        }
+
+        Export-XRefData -Path "$TempPath/CheckData.json" -Compress -Force
+        $CheckData = (Get-Content -Path "$TempPath/CheckData.json").Trim()
+
+        $CheckData | Should -Be $KnownGood
+    }
 }
