@@ -48,10 +48,17 @@ function Import-XRefData {
     }
 
     Process {
+        $SchemaVersion = 0
+
         if ($IsGeneral) {
             try {
                 # Read file and convert from json
                 $ImportStaging = Get-Content $Path -Raw | ConvertFrom-Json
+
+                # Read metadata
+                if ($ImportStaging.psobject.Properties.Name -contains "config") {
+                    $SchemaVersion = $ImportStaging.config.schema
+                }
             }
             catch {
                 $PSCmdlet.WriteError($_)

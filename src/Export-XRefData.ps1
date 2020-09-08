@@ -53,6 +53,10 @@ function Export-XRefData {
             }
         }
 
+        # ==== METADATA ====
+        $Metadata = [pscustomobject]@{
+            schema = 1
+        }
         # Handle API key
         if ($ExcludeApiKey) {
             $ExportApiKey = ""
@@ -114,6 +118,7 @@ function Export-XRefData {
 
         # Bundle data together for converting to JSON
         $StagedTwitchData = [pscustomobject]@{
+            config         = $Metadata
             ApiKey         = $ExportApiKey
             UserInfoCache  = $ConvertedUserInfoCache
             ClipInfoCache  = $ConvertedClipInfoCache
