@@ -6,7 +6,7 @@
 
     CompanyName = 'Alex Wiser'
 
-    ModuleVersion = '3.0.0'
+    ModuleVersion = '3.1.0'
 
     GUID = '8c89ef10-5110-4406-a876-82b8eadf5bb2'
 
@@ -41,6 +41,12 @@
             IconUri = ''
 
             ReleaseNotes = @'
+## 3.1.0
+
+* Persistence: Added options for compressing and excluding clip mapping.
+* Persistence: Default filename is used for persistence override path if environment variable XRefPersistPath is not a *.json file.
+* Import: Fixed counter only showing values from last file if pipelined multiple paths.
+
 ## 3.0.0
 
 First version released as a full PowerShell Module.
