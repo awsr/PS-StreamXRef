@@ -138,6 +138,7 @@ Export-ModuleMember -Function $FunctionNames
 
 $script:PersistCanUse = $false
 $script:PersistEnabled = $false
+$script:PersistPath = ""
 $script:PersistId = 0
 $script:PersistFormatting = [SXRPersistFormat]::Standard
 
