@@ -295,7 +295,7 @@ function Import-XRefData {
                 Write-Warning "Some lookup data conflicts with existing values. Run with -Force to overwrite."
             }
             if ($MappingWarning) {
-                Write-Warning "Some Clip -> User mapping data could not be imported or was missing"
+                Write-Warning "Some Clip -> User mapping data could not be imported or was missing."
             }
             if (-not $Quiet) {
                 $Counters.Values | Format-Table -AutoSize | Out-Host

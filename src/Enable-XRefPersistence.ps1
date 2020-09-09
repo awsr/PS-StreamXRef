@@ -49,7 +49,7 @@ function Enable-XRefPersistence {
             if ((Test-Path "$PersistPath.bak") -and -not (Test-Path $PersistPath)) {
                 # Restore previously-disabled persistence file
                 if (-not $Quiet) {
-                    Write-Host "Resuming StreamXRef persistence"
+                    Write-Host "Resuming StreamXRef persistence."
                 }
                 Move-Item "$PersistPath.bak" $PersistPath -Force -ErrorAction Stop
             }

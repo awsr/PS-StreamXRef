@@ -47,7 +47,7 @@ function Disable-XRefPersistence {
             $script:PersistEnabled = $false
         }
         else {
-            Write-Error "Unable to determine path for data persistence"
+            Write-Error "Data persistence path is not set."
         }
     }
 }

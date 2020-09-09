@@ -123,7 +123,7 @@ function Find-TwitchXRef {
 
             # Check if missing timestamp
             if ($Source -inotmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
-                Write-Error "(Video) URL missing timestamp parameter" -ErrorId MissingTimestamp -Category InvalidArgument -CategoryTargetName Source -TargetObject $Source
+                Write-Error "(Video) URL missing timestamp parameter." -ErrorId MissingTimestamp -Category InvalidArgument -CategoryTargetName Source -TargetObject $Source
                 if ($ExplicitNull) {
                     return $null
                 }
@@ -187,7 +187,7 @@ function Find-TwitchXRef {
                 try {
                     # Verify that the source video was not removed
                     if ($null -eq $ClipResponse.vod) {
-                        Write-Error "(Clip) Source video unavailable or deleted" -ErrorId VideoNotFound -Category ObjectNotFound -CategoryTargetName Source -TargetObject $Source -ErrorAction Stop
+                        Write-Error "(Clip) Source video unavailable or deleted." -ErrorId VideoNotFound -Category ObjectNotFound -CategoryTargetName Source -TargetObject $Source -ErrorAction Stop
                     }
 
                     # Get offset from API response
@@ -262,7 +262,7 @@ function Find-TwitchXRef {
                     }
 
                     # Use "ErrorAction Stop" with specific catch block for forwarding
-                    Write-Error "$ErrSrc video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -ErrorAction Stop
+                    Write-Error "$ErrSrc video is not an archived broadcast." -ErrorId InvalidVideoType -Category InvalidOperation -ErrorAction Stop
                 }
 
                 # Ensure timestamp was converted correctly
@@ -310,7 +310,7 @@ function Find-TwitchXRef {
 
             # Check if repeated search using a name that wasn't found during this instance
             if ($NotFoundList -icontains $XRef) {
-                Write-Error "(XRef Username) `"$XRef`" not found" -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef
+                Write-Error "(XRef Username) `"$XRef`" not found." -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef
                 if ($ExplicitNull) {
                     return $null
                 }
@@ -336,7 +336,7 @@ function Find-TwitchXRef {
                     # Unlike other API requests, this doesn't return a 404 error if not found
                     if ($UserLookup._total -eq 0) {
                         $NotFoundList.Add($XRef)
-                        Write-Error "(XRef Username) `"$XRef`" not found" -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
+                        Write-Error "(XRef Username) `"$XRef`" not found." -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
                     }
 
                     [int]$UserIdNum = $UserLookup.users[0]._id
@@ -377,7 +377,7 @@ function Find-TwitchXRef {
         try {
             # Check for incorrect video type if XRef is a video URL ($Multi will be $false)
             if (-not $Multi -and $XRefResponse.broadcast_type -ine "archive") {
-                Write-Error "(XRef Video) Video is not an archived broadcast" -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
+                Write-Error "(XRef Video) Video is not an archived broadcast." -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
             }
 
             if ($Multi) {
@@ -419,11 +419,11 @@ function Find-TwitchXRef {
             $VideoToCompare = $XRefSet | Where-Object { $_.recorded_at -lt $EventTimestamp } | Select-Object -First 1
 
             if ($null -eq $VideoToCompare) {
-                Write-Error "Event occurs before search range" -ErrorId EventNotInRange -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source -ErrorAction Stop
+                Write-Error "Event occurs before search range." -ErrorId EventNotInRange -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source -ErrorAction Stop
             }
             elseif ($EventTimestamp -gt $VideoToCompare.recorded_at.AddSeconds($VideoToCompare.length)) {
                 # Event timestamp is after the end of stream
-                Write-Error "Event not found during stream" -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source -ErrorAction Stop
+                Write-Error "Event not found during stream." -ErrorId EventNotFound -Category ObjectNotFound -CategoryTargetName EventTimestamp -TargetObject $Source -ErrorAction Stop
             }
             else {
                 $NewOffset = $EventTimestamp - $VideoToCompare.recorded_at

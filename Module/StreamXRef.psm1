@@ -54,11 +54,11 @@ function Get-PersistPath {
                 $script:PersistCanUse = $true
             }
             else {
-                Write-Error "Persistence path override `"$Env:XRefPersistPath`" is not valid path syntax"
+                Write-Error "Persistence path override `"$Env:XRefPersistPath`" is not valid path syntax."
             }
         }
         else {
-            Write-Error "Persistence path override `"$Env:XRefPersistPath`" is not an absolute path"
+            Write-Error "Persistence path override `"$Env:XRefPersistPath`" is not an absolute path."
         }
     }
     else {
@@ -69,7 +69,7 @@ function Get-PersistPath {
             $script:PersistCanUse = $true
         }
         catch {
-            Write-Error "Unable to resolve default persistence path"
+            Write-Error "Unable to resolve default persistence path."
         }
     }
 }
