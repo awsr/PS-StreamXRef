@@ -30,19 +30,10 @@ function Import-XRefData {
         $MappingWarning = $false
         $ConflictingData = $false
         $NewKeyAdded = $false
-    }
 
-    Process {
-        if ($PSCmdlet.ParameterSetName -eq "General") {
-            try {
-                # Read file and convert from json
-                $ImportStaging = Get-Content $Path -Raw | ConvertFrom-Json
-            }
-            catch {
-                $PSCmdlet.WriteError($_)
-                return
-            }
+        $IsGeneral = $PSCmdlet.ParameterSetName -eq "General"
 
+        if ($IsGeneral) {
             try {
                 # Set up counters object
                 $Counters = [StreamXRef.ImportResults]::new()
@@ -53,7 +44,26 @@ function Import-XRefData {
             catch {
                 $PSCmdlet.ThrowTerminatingError($_)
             }
+        }
+    }
 
+    Process {
+        $SchemaVersion = 0
+
+        if ($IsGeneral) {
+            try {
+                # Read file and convert from json
+                $ImportStaging = Get-Content $Path -Raw | ConvertFrom-Json
+
+                # Read metadata
+                if ($ImportStaging.psobject.Properties.Name -contains "config") {
+                    $SchemaVersion = $ImportStaging.config.schema
+                }
+            }
+            catch {
+                $PSCmdlet.WriteError($_)
+                return
+            }
         }
 
         # Process ApiKey (Check parameter set first since ImportStaging won't exist in the ApiKey set)
@@ -160,7 +170,12 @@ function Import-XRefData {
                             $Counters.Clip.Skipped++
                         }
                         elseif ($Force) {
-                            $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
+                            $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{
+                                Offset  = $NewOffsetValue
+                                VideoID = $NewVideoIDValue
+                                Created = $ConvertedDateTime
+                                Mapping = @{}
+                            }
                             $Counters.Clip.Imported++
                         }
                         else {
@@ -178,7 +193,12 @@ function Import-XRefData {
                     }
                     else {
                         # New data to add
-                        $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{ Offset = $NewOffsetValue; VideoID = $NewVideoIDValue; Created = $ConvertedDateTime; Mapping = @{} }
+                        $script:TwitchData.ClipInfoCache[$_.slug] = [StreamXRef.ClipObject]@{
+                            Offset  = $NewOffsetValue
+                            VideoID = $NewVideoIDValue
+                            Created = $ConvertedDateTime
+                            Mapping = @{}
+                        }
                         $Counters.Clip.Imported++
                     }
 
@@ -261,35 +281,34 @@ function Import-XRefData {
                 Write-Verbose "(Video Data) $($Counters.Video.Error) entries could not be parsed or conflicted with existing data."
             }
         }
+
+        if ($SchemaVersion -ge 1) {
+            # Process optional persistence formatting data
+            if ($ImportStaging.config.psobject.Properties.Name -contains "_persist") {
+                $script:PersistFormatting = [SXRPersistFormat]$ImportStaging.config._persist
+            }
+        }
     }
 
     End {
-        if ($PSCmdlet.ParameterSetName -eq "General") {
+        if ($Persist -and ($NewKeyAdded -or ($IsGeneral -and $Counters.AllImported -gt 0))) {
+            if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
+                [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Import-XRefData")
+            }
+        }
+
+        if ($IsGeneral) {
             if ($ConflictingData) {
-                Write-Error "Some lookup data conflicts with existing values. Run with -Force to overwrite."
+                Write-Warning "Some lookup data conflicts with existing values. Run with -Force to overwrite."
             }
-
             if ($MappingWarning) {
-                Write-Warning "Some clip -> user mapping data could not be imported or was missing"
+                Write-Warning "Some Clip -> User mapping data could not be imported or was missing."
             }
-
             if (-not $Quiet) {
                 $Counters.Values | Format-Table -AutoSize | Out-Host
             }
-
-            if ($Persist -and ($Counters.AllImported -gt 0 -or $NewKeyAdded)) {
-                if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
-                    [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Import-XRefData")
-                }
-            }
-
             if ($PassThru) {
                 return $Counters
-            }
-        }
-        elseif ($Persist -and $NewKeyAdded) {
-            if (Get-EventSubscriber -SourceIdentifier XRefNewDataAdded -Force -ErrorAction Ignore) {
-                [void] (New-Event -SourceIdentifier XRefNewDataAdded -Sender "Import-XRefData")
             }
         }
     }

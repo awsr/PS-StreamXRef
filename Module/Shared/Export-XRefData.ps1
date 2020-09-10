@@ -25,7 +25,10 @@ function Export-XRefData {
         [switch]$NoClobber,
 
         [Parameter()]
-        [switch]$Compress
+        [switch]$Compress,
+
+        [Parameter(DontShow)]
+        [switch]$_PersistConfig
     )
 
     Begin {
@@ -39,6 +42,24 @@ function Export-XRefData {
 
         # DateTime string formatting ("yyyy-MM-ddTHH:mm:ssZ" -> "2020-05-09T05:35:45Z")
         $DateTimeFormatting = "yyyy-MM-ddTHH:mm:ssZ"
+
+        # Persistence parameter overrides
+        if ($_PersistConfig) {
+            if ($script:PersistFormatting.HasFlag([SXRPersistFormat]::Compress)) {
+                $Compress = $true
+            }
+            if ($script:PersistFormatting.HasFlag([SXRPersistFormat]::NoMapping)) {
+                $ExcludeClipMapping = $true
+            }
+        }
+
+        # ==== METADATA ====
+        $Metadata = [pscustomobject]@{
+            schema = 1
+        }
+        if ($_PersistConfig) {
+            $Metadata | Add-Member -NotePropertyName "_persist" -NotePropertyValue $script:PersistFormatting
+        }
 
         # Handle API key
         if ($ExcludeApiKey) {
@@ -99,8 +120,9 @@ function Export-XRefData {
             )
         }
 
-        # Bundle data together for converting to JSON (for compatibility with potential Javascript-based version)
+        # Bundle data together for converting to JSON
         $StagedTwitchData = [pscustomobject]@{
+            config         = $Metadata
             ApiKey         = $ExportApiKey
             UserInfoCache  = $ConvertedUserInfoCache
             ClipInfoCache  = $ConvertedClipInfoCache

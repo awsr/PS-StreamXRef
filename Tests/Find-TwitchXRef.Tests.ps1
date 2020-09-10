@@ -162,13 +162,13 @@ Describe "Data caching" {
             }
             $MultiObject.videos += [pscustomobject]@{
                 broadcast_type = "archive"
-                recorded_at    = [datetime]::new(2020, 5, 31, 3, 14, 15, [System.DateTimeKind]::Utc)
+                recorded_at    = [datetime]::new(3020, 5, 31, 3, 14, 15, [System.DateTimeKind]::Utc)
                 length         = 3000
                 url            = "https://www.twitch.tv/videos/111444111"
             }
             $MultiObject.videos += [pscustomobject]@{
                 broadcast_type = "archive"
-                recorded_at    = [datetime]::new(2020, 5, 31, 1, 22, 44, [System.DateTimeKind]::Utc)
+                recorded_at    = [datetime]::new(3020, 5, 31, 1, 22, 44, [System.DateTimeKind]::Utc)
                 length         = 5000
                 url            = "https://www.twitch.tv/videos/111222333"
             }
@@ -250,7 +250,7 @@ Describe "Custom ErrorIds" {
             return [pscustomobject]@{
                 title          = "Mocked video response"
                 broadcast_type = "archive"
-                recorded_at    = [datetime]::new(2099, 12, 31, 23, 59, 59, [System.DateTimeKind]::Utc)
+                recorded_at    = [datetime]::new(9999, 12, 31, 23, 59, 59, [System.DateTimeKind]::Utc)
                 length         = 2000
             }
         }

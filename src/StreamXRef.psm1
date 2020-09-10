@@ -36,6 +36,44 @@ filter ConvertTo-UtcDateTime {
     }
 }
 
+function Get-PersistPath {
+    # Reset to default value
+    $script:PersistCanUse = $false
+
+    <#
+        Technically, uninitialized $Env: variables still resolve to $null even in strict mode,
+        but Test-Path guards against that behavior changing in the future and causing issues.
+    #>
+    if ((Test-Path Env:XRefPersistPath) -and -not [string]::IsNullorEmpty($Env:XRefPersistPath)) {
+        if ([System.IO.Path]::IsPathRooted($Env:XRefPersistPath)) {
+            if ($Env:XRefPersistPath -notlike "*.json") {
+                $Env:XRefPersistPath = Join-Path $Env:XRefPersistPath "datacache.json"
+            }
+            if (Test-Path $Env:XRefPersistPath -IsValid) {
+                $script:PersistPath = $Env:XRefPersistPath
+                $script:PersistCanUse = $true
+            }
+            else {
+                Write-Error "Persistence path override `"$Env:XRefPersistPath`" is not valid path syntax."
+            }
+        }
+        else {
+            Write-Error "Persistence path override `"$Env:XRefPersistPath`" is not an absolute path."
+        }
+    }
+    else {
+        # Use default path if override not set
+        try {
+            # Get path inside try/catch in case of problems resolving the folder path
+            $script:PersistPath = Join-Path ([System.Environment]::GetFolderPath("ApplicationData")) "StreamXRef/datacache.json"
+            $script:PersistCanUse = $true
+        }
+        catch {
+            Write-Error "Unable to resolve default persistence path."
+        }
+    }
+}
+
 #endregion Shared helper functions -------------
 
 #region Load and setup commands ================
@@ -92,33 +130,20 @@ Export-ModuleMember -Function $FunctionNames
 
 #region Persistent data ========================
 
+[Flags()] enum SXRPersistFormat {
+    Standard = 0
+    Compress = 1
+    NoMapping = 2
+}
+
 $script:PersistCanUse = $false
 $script:PersistEnabled = $false
+$script:PersistPath = ""
 $script:PersistId = 0
+$script:PersistFormatting = [SXRPersistFormat]::Standard
 
-try {
-    # Get path inside try/catch in case of problems resolving the path
-    $script:PersistPath = Join-Path ([System.Environment]::GetFolderPath("ApplicationData")) "StreamXRef/datacache.json"
-    $script:PersistCanUse = $true
-}
-catch {
-    $script:PersistCanUse = $false
-}
-
-<#
-Initial check for persistence path override
- Technically, uninitialized $Env: variables still resolve to $null even in strict mode,
- but this way guards against that behavior changing in the future.
-#>
-if ((Test-Path Env:XRefPersistPath) -and $null -ne $Env:XRefPersistPath) {
-    if ((Test-Path $Env:XRefPersistPath -IsValid) -and $Env:XRefPersistPath -like "*.json") {
-        $script:PersistPath = $Env:XRefPersistPath
-        $script:PersistCanUse = $true
-    }
-    else {
-        Write-Error "XRefPersistPath environment variable must specify a .json file"
-    }
-}
+# Get default persistence path or override if it exists
+Get-PersistPath
 
 # If the data file is found, automatically enable persistence
 if ($PersistCanUse -and (Test-Path $PersistPath)) {

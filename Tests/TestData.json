@@ -1,4 +1,7 @@
 {
+  "config": {
+    "schema": 1
+  },
   "ApiKey": "fakeapikey",
   "UserInfoCache": [
     {
@@ -19,25 +22,25 @@
       "slug": "madeupnameforaclip",
       "offset": 5732,
       "video": 123456789,
-      "created": "2020-05-31T02:04:14Z",
+      "created": "3020-05-31T02:04:14Z",
       "mapping": []
     },
     {
       "slug": "thisnamedoesnotexisteither",
       "offset": 4321,
       "video": 987654321,
-      "created": "2020-06-05T02:07:33Z",
+      "created": "3020-06-05T02:07:33Z",
       "mapping": []
     }
   ],
   "VideoInfoCache": [
     {
       "video": 123456789,
-      "timestamp": "2020-05-31T00:27:16Z"
+      "timestamp": "3020-05-31T00:27:16Z"
     },
     {
       "video": 987654321,
-      "timestamp": "2020-06-05T00:54:56Z"
+      "timestamp": "3020-06-05T00:54:56Z"
     }
   ]
 }

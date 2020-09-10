@@ -3,3 +3,5 @@ debug/
 build/
 src/dotnet/obj/
 src/dotnet/bin/
+
+publish.ps1

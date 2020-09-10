@@ -7,7 +7,10 @@ function Disable-XRefPersistence {
         [switch]$Quiet,
 
         [Parameter()]
-        [switch]$Remove
+        [switch]$Remove,
+
+        [Parameter(DontShow)]
+        [switch]$_Reset
     )
 
     Process {
@@ -24,8 +27,8 @@ function Disable-XRefPersistence {
                     Write-Host "No StreamXRef persistence files to delete."
                 }
             }
-            else {
-                # Add ".bak" to name to prevent auto-loading
+            elseif (-not $_Reset -and (Test-Path $PersistPath)) {
+                # Add ".bak" to name to prevent auto-loading (except when resetting)
                 Move-Item $PersistPath "$PersistPath.bak" -Force
             }
 
@@ -44,7 +47,7 @@ function Disable-XRefPersistence {
             $script:PersistEnabled = $false
         }
         else {
-            Write-Error "Unable to determine Application Data path"
+            Write-Error "Data persistence path is not set."
         }
     }
 }
