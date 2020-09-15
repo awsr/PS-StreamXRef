@@ -144,8 +144,23 @@ Describe "Internal function validation" {
 }
 
 Describe "System environment" {
-    It "Application Data folder can be determined" {
+    AfterAll {
+        try {
+            $DefaultTestPath = Join-Path ([System.Environment]::GetFolderPath("ApplicationData")) "SXRTest"
+            if (Test-Path $DefaultTestPath) {
+                Remove-Item $DefaultTestPath -Recurse -Force -ErrorAction Stop
+            }
+        }
+        catch {
+            throw $_
+        }
+    }
+    It "Default Application Data folder can be determined" {
         { [System.Environment]::GetFolderPath("ApplicationData") } | Should -Not -Throw
         [string]::IsNullOrWhiteSpace([System.Environment]::GetFolderPath("ApplicationData")) | Should -BeFalse
+    }
+    It "Default Application Data folder can be written to" {
+        $TestFilePath = Join-Path ([System.Environment]::GetFolderPath("ApplicationData")) "SXRTest/file.txt"
+        { New-Item $TestFilePath -ItemType File -Value "test string" -Force -ErrorAction Stop } | Should -Not -Throw
     }
 }
