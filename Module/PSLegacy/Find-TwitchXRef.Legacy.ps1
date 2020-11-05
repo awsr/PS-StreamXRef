@@ -153,7 +153,8 @@ function Find-TwitchXRef {
             $TimeOffset = New-TimeSpan @OffsetArgs
             #endregion
 
-            [int]$VideoID = $Source | Get-LastUrlSegment
+            # Twitch backend currently uses a signed 32-bit integer for Video IDs
+            [Int32]$VideoID = $Source | Get-LastUrlSegment
 
             $RestArgs["Uri"] = "$API/videos/$VideoID"
         }
@@ -297,7 +298,8 @@ function Find-TwitchXRef {
         if ($XRefIsVideo) {
             # Using VOD link
 
-            [int]$XRefID = $XRef | Get-LastUrlSegment
+            # 32-bit integer to match Twitch backend
+            [Int32]$XRefID = $XRef | Get-LastUrlSegment
             $RestArgs["Uri"] = "$API/videos/$XRefID"
 
             $Multi = $false
