@@ -110,8 +110,8 @@ function Find-TwitchXRef {
         if ($SourceIsVideo) {
             # Video URL provided
 
-            # Check if missing timestamp
-            if ($Source -inotmatch ".*twitch\.tv/videos/.+[?&]t=.+") {
+            # Get offset from URL parameters or return if no match
+            if ($Source -inotmatch "[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?") {
                 Write-Error "(Video) URL missing timestamp parameter." -ErrorId MissingTimestamp -Category InvalidArgument -CategoryTargetName Source -TargetObject $Source
                 if ($ExplicitNull) {
                     return $null
@@ -121,16 +121,12 @@ function Find-TwitchXRef {
                 }
             }
 
-            #region Get offset from URL parameters
-            [void] ($Source -imatch ".*[?&]t=((?<Hours>\d+)h)?((?<Minutes>\d+)m)?((?<Seconds>\d+)s)?.*")
-
             $OffsetArgs = @{ }
             $OffsetArgs["Hours"] = $Matches.ContainsKey("Hours") ? $Matches.Hours : 0
             $OffsetArgs["Minutes"] = $Matches.ContainsKey("Minutes") ? $Matches.Minutes : 0
             $OffsetArgs["Seconds"] = $Matches.ContainsKey("Seconds") ? $Matches.Seconds : 0
 
             $TimeOffset = New-TimeSpan @OffsetArgs
-            #endregion
 
             # Twitch backend currently uses a signed 32-bit integer for Video IDs
             [Int32]$VideoID = $Source | Get-LastUrlSegment
