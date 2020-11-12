@@ -6,7 +6,7 @@
 
     CompanyName = 'Alex Wiser'
 
-    ModuleVersion = '3.1.1'
+    ModuleVersion = '3.2.0'
 
     GUID = '8c89ef10-5110-4406-a876-82b8eadf5bb2'
 
@@ -38,9 +38,13 @@
 
             ProjectUri = 'https://github.com/awsr/PS-StreamXRef'
 
-            IconUri = ''
+            IconUri = 'https://raw.githubusercontent.com/awsr/PS-StreamXRef/master/sxr.png'
 
             ReleaseNotes = @'
+## 3.2.0
+
+* Find: Allow shorthand format for video sources ("v/...", "video/...").
+
 ## 3.1.1
 
 * Persistence: Added options for compressing and excluding clip mapping.
