@@ -59,6 +59,8 @@ function Find-TwitchXRef {
         $API = "https://api.twitch.tv/kraken"
         $NewDataAdded = $false
 
+        $VideoPattern = "(?:twitch\.tv/|^)v(?:ideos?)?/"
+
         if ($PSBoundParameters.ContainsKey("ApiKey")) {
             $ClientID = $PSBoundParameters.ApiKey
 
@@ -116,18 +118,18 @@ function Find-TwitchXRef {
 
         # Initial basic sorting
         #region @{ PSCodeSet = Current }
-        $SourceIsVideo = $Source -imatch ".*twitch\.tv/videos/.+" ? $true : $false
-        $XRefIsVideo = $XRef -imatch ".*twitch\.tv/videos/.+" ? $true : $false
+        $SourceIsVideo = $Source -imatch $VideoPattern ? $true : $false
+        $XRefIsVideo = $XRef -imatch $VideoPattern ? $true : $false
         #endregion @{ PSCodeSet = Current }
         #region @{ PSCodeSet = Legacy }
-        if ($Source -imatch ".*twitch\.tv/videos/.+") {
+        if ($Source -imatch $VideoPattern) {
             $SourceIsVideo = $true
         }
         else {
             $SourceIsVideo = $false
         }
 
-        if ($XRef -imatch ".*twitch\.tv/videos/.+") {
+        if ($XRef -imatch $VideoPattern) {
             $XRefIsVideo = $true
         }
         else {
