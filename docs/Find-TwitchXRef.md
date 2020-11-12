@@ -53,10 +53,19 @@ https://www.twitch.tv/videos/122333444?t=1h04m42s
 
 This will search through ChannelName2's 60 most recent broadcasts using a video URL with a timestamp as the source and return the corresponding URL that goes to the same moment from ChannelName2's perspective.
 
+### Example 4
+```powershell
+PS > Find-TwitchXRef "v/123456789?t=32m54s" "ChannelName2" -Count 60
+
+https://www.twitch.tv/videos/122333444?t=1h04m42s
+```
+
+This is the same search as shown in Example 3, but abbreviated using the shorthand syntax for videos.
+
 ## PARAMETERS
 
 ### -Source
-Specifies either a Twitch clip URL (or just the ID) or a video URL that includes a timestamp.
+Specifies what you're using for your point of reference. Accepts either a Twitch clip (as a URL or just the ID) or an archived Twitch broadcast with timestamp (as a URL or shorthand "v/...").
 
 ```yaml
 Type: String
@@ -71,7 +80,7 @@ Accept wildcard characters: False
 ```
 
 ### -XRef
-Accepts either a video URL, a channel URL, or a channel/user name.
+Specifies where you want to perform the cross-reference lookup. Accepts either a Twitch channel/user (as a URL or just the name) or a Twitch video (as a URL or shorthand "v/...").
 
 ```yaml
 Type: String

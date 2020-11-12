@@ -1,6 +1,9 @@
+<img align="right" src="https://raw.githubusercontent.com/awsr/PS-StreamXRef/master/sxr.png">
+
 # StreamXRef for PowerShell
 
 [![PowerShell Gallery Version (including pre-releases)](https://img.shields.io/powershellgallery/v/StreamXRef)](https://www.powershellgallery.com/packages/StreamXRef/)
+<br/>
 
 Have you ever seen a clip from several people streaming together and wanted to see what it looked like from other perspectives? Find the same moment in time based on either a Twitch clip or a Twitch video URL with time offset.
 
@@ -9,6 +12,7 @@ The following are all valid formats for sources:
 - `https://www.twitch.tv/twitch/clip/OilyDignifiedHamburgerHoneyBadger`
 - `OilyDignifiedHamburgerHoneyBadger`
 - `https://www.twitch.tv/videos/92248237?t=0h0m2s`
+- `v/92248237?t=2s`
 
 ---
 
@@ -25,13 +29,13 @@ Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <I
  -ApiKey <String> [-ExplicitNull] [<CommonParameters>]
 ```
 
-**-Source** accepts Twitch clip URLs (either format), Twitch clip IDs, and video URLs that include a timestamp parameter.
+**-Source** accepts Twitch clips (as a URL or just the ID) and videos with timestamps (as a URL or shorthand "v/...").
 
-**-XRef** accepts either a video URL, a channel URL, or a channel/user name.
+**-XRef** accepts Twitch channels/users (as a URL or just the name) and videos (as a URL or shorthand "v/...").
 
-**-Count** (*default 20*) determines the number of videos to request when **-XRef** is a name.
+**-Count** (*default 20*) determines the number of videos to request when **-XRef** is a channel/user.
 
-**-Offset** (*default 0*) sets the starting offset for search results when **-XRef** is a name.
+**-Offset** (*default 0*) sets the starting offset for search results when **-XRef** is a channel/user.
 
 **-Force** tells the function to skip reading from the internal lookup cache.
 

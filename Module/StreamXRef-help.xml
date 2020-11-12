@@ -685,7 +685,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="none">
           <maml:name>Source</maml:name>
           <maml:Description>
-            <maml:para>Specifies either a Twitch clip URL (or just the ID) or a video URL that includes a timestamp.</maml:para>
+            <maml:para>Specifies what you're using for your point of reference. Accepts either a Twitch clip (as a URL or just the ID) or an archived Twitch broadcast with timestamp (as a URL or shorthand "v/...").</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -697,7 +697,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="none">
           <maml:name>XRef</maml:name>
           <maml:Description>
-            <maml:para>Accepts either a video URL, a channel URL, or a channel/user name.</maml:para>
+            <maml:para>Specifies where you want to perform the cross-reference lookup. Accepts either a Twitch channel/user (as a URL or just the name) or a Twitch video (as a URL or shorthand "v/...").</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -771,7 +771,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="none">
         <maml:name>Source</maml:name>
         <maml:Description>
-          <maml:para>Specifies either a Twitch clip URL (or just the ID) or a video URL that includes a timestamp.</maml:para>
+          <maml:para>Specifies what you're using for your point of reference. Accepts either a Twitch clip (as a URL or just the ID) or an archived Twitch broadcast with timestamp (as a URL or shorthand "v/...").</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -783,7 +783,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="none">
         <maml:name>XRef</maml:name>
         <maml:Description>
-          <maml:para>Accepts either a video URL, a channel URL, or a channel/user name.</maml:para>
+          <maml:para>Specifies where you want to perform the cross-reference lookup. Accepts either a Twitch channel/user (as a URL or just the name) or a Twitch video (as a URL or shorthand "v/...").</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -930,6 +930,15 @@ https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
 https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <dev:remarks>
           <maml:para>This will search through ChannelName2's 60 most recent broadcasts using a video URL with a timestamp as the source and return the corresponding URL that goes to the same moment from ChannelName2's perspective.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- Example 4 --------------------------</maml:title>
+        <dev:code>PS &gt; Find-TwitchXRef "v/123456789?t=32m54s" "ChannelName2" -Count 60
+
+https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
+        <dev:remarks>
+          <maml:para>This is the same search as shown in Example 3, but abbreviated using the shorthand syntax for videos.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
