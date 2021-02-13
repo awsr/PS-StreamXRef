@@ -694,8 +694,8 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="none">
-          <maml:name>XRef</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="XRef">
+          <maml:name>Target</maml:name>
           <maml:Description>
             <maml:para>Specifies where you want to perform the cross-reference lookup. Accepts either a Twitch channel/user (as a URL or just the name) or a Twitch video (as a URL or shorthand "v/...").</maml:para>
           </maml:Description>
@@ -709,7 +709,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Count</maml:name>
           <maml:Description>
-            <maml:para>Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100) Default: 20</maml:para>
+            <maml:para>Specifies the number of most recent broadcasts to search when `Target` is a name. (1-100) Default: 20</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -780,8 +780,8 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="none">
-        <maml:name>XRef</maml:name>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="XRef">
+        <maml:name>Target</maml:name>
         <maml:Description>
           <maml:para>Specifies where you want to perform the cross-reference lookup. Accepts either a Twitch channel/user (as a URL or just the name) or a Twitch video (as a URL or shorthand "v/...").</maml:para>
         </maml:Description>
@@ -795,7 +795,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Count</maml:name>
         <maml:Description>
-          <maml:para>Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100) Default: 20</maml:para>
+          <maml:para>Specifies the number of most recent broadcasts to search when `Target` is a name. (1-100) Default: 20</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -860,7 +860,7 @@
           <maml:name>System.String</maml:name>
         </dev:type>
         <maml:description>
-          <maml:para>Used for `Source`, `XRef`, and `ApiKey` parameters. Can be pipelined by property name.</maml:para>
+          <maml:para>Used for `Source`, `Target`, and `ApiKey` parameters. Can be pipelined by property name.</maml:para>
         </maml:description>
       </command:inputType>
       <command:inputType>
@@ -895,8 +895,8 @@
         <maml:para>The `Source` parameter works with both styles of clip URL that Twitch uses.</maml:para>
         <maml:para>The following ErrorIds are defined: * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")</maml:para>
         <maml:para>* `VideoNotFound`: The originating video the source clip came from is unavailable or deleted.</maml:para>
-        <maml:para>* `InvalidVideoType`: The source, originating, or `XRef` video is not an archived broadcast.</maml:para>
-        <maml:para>* `UserNotFound`: The user/channel name given for `XRef` wasn't found.</maml:para>
+        <maml:para>* `InvalidVideoType`: The source, originating, or `Target` video is not an archived broadcast.</maml:para>
+        <maml:para>* `UserNotFound`: The user/channel name given for `Target` wasn't found.</maml:para>
         <maml:para>* `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.</maml:para>
         <maml:para>* `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.</maml:para>
         <maml:para></maml:para>
@@ -907,7 +907,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS &gt; Find-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -XRef "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
+        <dev:code>PS &gt; Find-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -Target "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
         <dev:remarks>
@@ -916,7 +916,7 @@ https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 2 --------------------------</maml:title>
-        <dev:code>PS &gt; Find-TwitchXRef -Source "NameOfTheClip" -XRef "https://www.twitch.tv/videos/123456789"
+        <dev:code>PS &gt; Find-TwitchXRef -Source "NameOfTheClip" -Target "https://www.twitch.tv/videos/123456789"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
         <dev:remarks>
@@ -925,7 +925,7 @@ https://www.twitch.tv/videos/123456789?t=0h32m54s</dev:code>
       </command:example>
       <command:example>
         <maml:title>-------------------------- Example 3 --------------------------</maml:title>
-        <dev:code>PS &gt; Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "https://www.twitch.tv/ChannelName2" -Count 60
+        <dev:code>PS &gt; Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -Target "https://www.twitch.tv/ChannelName2" -Count 60
 
 https://www.twitch.tv/videos/122333444?t=1h04m42s</dev:code>
         <dev:remarks>

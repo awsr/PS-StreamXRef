@@ -6,7 +6,7 @@
 
     CompanyName = 'Alex Wiser'
 
-    ModuleVersion = '3.2.0'
+    ModuleVersion = '3.3.0'
 
     GUID = '8c89ef10-5110-4406-a876-82b8eadf5bb2'
 
@@ -41,6 +41,10 @@
             IconUri = 'https://raw.githubusercontent.com/awsr/PS-StreamXRef/master/sxr.png'
 
             ReleaseNotes = @'
+## 3.3.0
+
+* Find: 2nd parameter name changed to `Target` (from `XRef`, which will still work).
+
 ## 3.2.0
 
 * Find: Allow shorthand format for video sources ("v/...", "video/...").

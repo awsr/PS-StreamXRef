@@ -113,7 +113,7 @@ $TXRArgumentCompleter = {
 
     $script:TwitchData.UserInfoCache.Keys | Where-Object { $_ -like "$wordToComplete*" }
 }
-Register-ArgumentCompleter -CommandName Find-TwitchXRef -ParameterName XRef -ScriptBlock $TXRArgumentCompleter
+Register-ArgumentCompleter -CommandName Find-TwitchXRef -ParameterName Target -ScriptBlock $TXRArgumentCompleter
 
 $FunctionNames = $AllFunctions | ForEach-Object {
     # Use the name of the file to specify function(s) to be exported

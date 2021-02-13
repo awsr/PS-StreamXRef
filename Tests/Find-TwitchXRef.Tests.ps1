@@ -79,21 +79,21 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         }
 
         It "Clip name not found" {
-            $Result = Find-TwitchXRef -Source ClipNameThatResultsIn404Error -XRef TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
+            $Result = Find-TwitchXRef -Source ClipNameThatResultsIn404Error -Target TestVal -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
         }
 
         It "Clip URL not found" {
-            $Result = Find-TwitchXRef -Source "https://clip.twitch.tv/AnotherBadClipName" -XRef "TestVal" -ErrorVariable TestErrs -ErrorAction SilentlyContinue
+            $Result = Find-TwitchXRef -Source "https://clip.twitch.tv/AnotherBadClipName" -Target "TestVal" -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
         }
 
         It "Video URL not found" {
-            $Result = Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=1h23m45s" -XRef "TestVal" -ErrorVariable TestErrs -ErrorAction SilentlyContinue
+            $Result = Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=1h23m45s" -Target "TestVal" -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404
             $Result | Should -BeNullOrEmpty
@@ -140,7 +140,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
                 $PSCmdlet.ThrowTerminatingError($(MakeMockHTTPError -Code 503))
             }
 
-            { Find-TwitchXRef -Source "https://clip.twitch.tv/WhatCouldGoWrong" -XRef "TestVal" } | Should -Throw
+            { Find-TwitchXRef -Source "https://clip.twitch.tv/WhatCouldGoWrong" -Target "TestVal" } | Should -Throw
         }
     }
 }
@@ -299,6 +299,6 @@ Describe "Other exceptions" {
             }
         }
 
-        { Find-TwitchXRef -Source TestClipName -XRef TestVal } | Should -Throw
+        { Find-TwitchXRef -Source TestClipName -Target TestVal } | Should -Throw
     }
 }

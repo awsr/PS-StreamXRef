@@ -8,8 +8,9 @@ function Find-TwitchXRef {
         [string]$Source,
 
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipelineByPropertyName = $true)]
+        [Alias("XRef")]
         [ValidateNotNullOrEmpty()]
-        [string]$XRef,
+        [string]$Target,
 
         [Parameter()]
         [ValidateRange(1, 100)]
@@ -105,7 +106,7 @@ function Find-TwitchXRef {
 
         # Initial basic sorting
         $SourceIsVideo = $Source -imatch $VideoPattern ? $true : $false
-        $XRefIsVideo = $XRef -imatch $VideoPattern ? $true : $false
+        $TargetIsVideo = $Target -imatch $VideoPattern ? $true : $false
 
         #region Source Lookup ##########################
 
@@ -144,9 +145,9 @@ function Find-TwitchXRef {
             if (-not $Force -and $script:TwitchData.ClipInfoCache.ContainsKey($Slug)) {
                 # Found cached values to use
 
-                if (-not $XRefIsVideo -and $script:TwitchData.ClipInfoCache[$Slug].Mapping.ContainsKey($XRef)) {
+                if (-not $TargetIsVideo -and $script:TwitchData.ClipInfoCache[$Slug].Mapping.ContainsKey($Target)) {
                     # Quick return path using cached data
-                    return $script:TwitchData.ClipInfoCache[$Slug].Mapping[$XRef]
+                    return $script:TwitchData.ClipInfoCache[$Slug].Mapping[$Target]
                 }
                 else {
                     $TimeOffset = New-TimeSpan -Seconds $script:TwitchData.ClipInfoCache[$Slug].Offset
@@ -194,8 +195,8 @@ function Find-TwitchXRef {
 
                     $NewDataAdded = $true
 
-                    # Quick return path for when XRef is original broadcaster
-                    if ($XRef -ieq $ClipResponse.broadcaster.name) {
+                    # Quick return path for when Target is original broadcaster
+                    if ($Target -ieq $ClipResponse.broadcaster.name) {
                         return $ClipResponse.vod.url
                     }
                 }
@@ -265,14 +266,14 @@ function Find-TwitchXRef {
 
         #endregion Source Lookup =======================
 
-        #region XRef Lookup ############################
+        #region Target Lookup ############################
 
-        if ($XRefIsVideo) {
+        if ($TargetIsVideo) {
             # Using VOD link
 
             # 32-bit integer to match Twitch backend
-            [Int32]$XRefID = $XRef | Get-LastUrlSegment
-            $RestArgs["Uri"] = "$API/videos/$XRefID"
+            [Int32]$TargetID = $Target | Get-LastUrlSegment
+            $RestArgs["Uri"] = "$API/videos/$TargetID"
 
             $Multi = $false
         }
@@ -280,11 +281,11 @@ function Find-TwitchXRef {
             # Using username/channel
 
             # Strip potential URL formatting
-            $XRef = $XRef | Get-LastUrlSegment
+            $Target = $Target | Get-LastUrlSegment
 
             # Check if repeated search using a name that wasn't found during this instance
-            if ($NotFoundList -icontains $XRef) {
-                Write-Error "(XRef Username) `"$XRef`" not found." -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef
+            if ($NotFoundList -icontains $Target) {
+                Write-Error "(Target Username) `"$Target`" not found." -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName Target -TargetObject $Target
                 if ($ExplicitNull) {
                     return $null
                 }
@@ -294,14 +295,14 @@ function Find-TwitchXRef {
             }
 
             # Get cached user ID number if available or call API if not
-            if (-not $Force -and $script:TwitchData.UserInfoCache.ContainsKey($XRef)) {
-                $UserIdNum = $script:TwitchData.UserInfoCache[$XRef]
+            if (-not $Force -and $script:TwitchData.UserInfoCache.ContainsKey($Target)) {
+                $UserIdNum = $script:TwitchData.UserInfoCache[$Target]
             }
             else {
                 # Get ID number for username using API
                 $RestArgs["Uri"] = "$API/users"
                 $RestArgs["Body"] = @{
-                    "login" = $XRef
+                    "login" = $Target
                 }
 
                 $UserLookup = Invoke-RestMethod @RestArgs
@@ -309,14 +310,14 @@ function Find-TwitchXRef {
                 try {
                     # Unlike other API requests, this doesn't return a 404 error if not found
                     if ($UserLookup._total -eq 0) {
-                        $NotFoundList.Add($XRef)
-                        Write-Error "(XRef Username) `"$XRef`" not found." -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
+                        $NotFoundList.Add($Target)
+                        Write-Error "(Target Username) `"$Target`" not found." -ErrorId UserNotFound -Category ObjectNotFound -CategoryTargetName Target -TargetObject $Target -ErrorAction Stop
                     }
 
                     [int]$UserIdNum = $UserLookup.users[0]._id
 
                     # Save ID number in user cache
-                    $script:TwitchData.UserInfoCache[$XRef] = $UserIdNum
+                    $script:TwitchData.UserInfoCache[$Target] = $UserIdNum
                     $NewDataAdded = $true
                 }
                 catch [Microsoft.PowerShell.Commands.WriteErrorException] {
@@ -349,9 +350,9 @@ function Find-TwitchXRef {
         $XRefResponse = Invoke-RestMethod @RestArgs
 
         try {
-            # Check for incorrect video type if XRef is a video URL ($Multi will be $false)
+            # Check for incorrect video type if Target is a video URL ($Multi will be $false)
             if (-not $Multi -and $XRefResponse.broadcast_type -ine "archive") {
-                Write-Error "(XRef Video) Video is not an archived broadcast." -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName XRef -TargetObject $XRef -ErrorAction Stop
+                Write-Error "(Target Video) Video is not an archived broadcast." -ErrorId InvalidVideoType -Category InvalidOperation -CategoryTargetName Target -TargetObject $Target -ErrorAction Stop
             }
 
             $XRefSet = $Multi ? $XRefResponse.videos : $XRefResponse
@@ -379,7 +380,7 @@ function Find-TwitchXRef {
             $PSCmdlet.ThrowTerminatingError($_)
         }
 
-        #endregion XRef Lookup =========================
+        #endregion Target Lookup =========================
 
         # Look for first video that starts before the timestamp
 
@@ -398,10 +399,10 @@ function Find-TwitchXRef {
                 $NewOffset = $EventTimestamp - $VideoToCompare.recorded_at
                 $NewUrl = "$($VideoToCompare.url)?t=$($NewOffset.Hours)h$($NewOffset.Minutes)m$($NewOffset.Seconds)s"
 
-                if (-not $SourceIsVideo -and -not $XRefIsVideo) {
+                if (-not $SourceIsVideo -and -not $TargetIsVideo) {
                     try {
                         # Add to clip result mapping
-                        $script:TwitchData.ClipInfoCache[$Slug].Mapping[$XRef] = $NewUrl
+                        $script:TwitchData.ClipInfoCache[$Slug].Mapping[$Target] = $NewUrl
                         $NewDataAdded = $true
                     }
                     catch {

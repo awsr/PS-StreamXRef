@@ -13,7 +13,7 @@ Cross-reference Twitch clips and video timestamps between different channels/use
 ## SYNTAX
 
 ```
-Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] [-Force]
+Find-TwitchXRef [-Source] <String> [-Target] <String> [-Count <Int32>] [-Offset <Int32>] [-Force]
  -ApiKey <String> [<CommonParameters>]
 ```
 
@@ -28,7 +28,7 @@ An event with a `SourceIdentifier` of "**XRefNewDataAdded**" will be sent after 
 
 ### Example 1
 ```powershell
-PS > Find-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -XRef "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
+PS > Find-TwitchXRef -Source "https://clips.twitch.tv/NameOfTheClip" -Target "ChannelName1" -ApiKey "1234567890abcdefghijklmnopqrst"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s
 ```
@@ -37,7 +37,7 @@ This will search through ChannelName1's most recent broadcasts and return a URL 
 
 ### Example 2
 ```powershell
-PS > Find-TwitchXRef -Source "NameOfTheClip" -XRef "https://www.twitch.tv/videos/123456789"
+PS > Find-TwitchXRef -Source "NameOfTheClip" -Target "https://www.twitch.tv/videos/123456789"
 
 https://www.twitch.tv/videos/123456789?t=0h32m54s
 ```
@@ -46,7 +46,7 @@ This will get the same result as the previous example, but uses just the name of
 
 ### Example 3
 ```powershell
-PS > Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -XRef "https://www.twitch.tv/ChannelName2" -Count 60
+PS > Find-TwitchXRef -Source "https://www.twitch.tv/videos/123456789?t=0h32m54s" -Target "https://www.twitch.tv/ChannelName2" -Count 60
 
 https://www.twitch.tv/videos/122333444?t=1h04m42s
 ```
@@ -79,13 +79,13 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -XRef
+### -Target
 Specifies where you want to perform the cross-reference lookup. Accepts either a Twitch channel/user (as a URL or just the name) or a Twitch video (as a URL or shorthand "v/...").
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: XRef
 
 Required: True
 Position: 2
@@ -95,7 +95,7 @@ Accept wildcard characters: False
 ```
 
 ### -Count
-Specifies the number of most recent broadcasts to search when `XRef` is a name. (1-100)
+Specifies the number of most recent broadcasts to search when `Target` is a name. (1-100)
 Default: 20
 
 ```yaml
@@ -180,7 +180,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.String
 
-Used for `Source`, `XRef`, and `ApiKey` parameters. Can be pipelined by property name.
+Used for `Source`, `Target`, and `ApiKey` parameters. Can be pipelined by property name.
 
 ### System.Int32
 
@@ -203,8 +203,8 @@ The `Source` parameter works with both styles of clip URL that Twitch uses.
 The following ErrorIds are defined:
 * `MissingTimestamp`: The `Source` video URL is missing a timestamp parameter. ("...t=1h23m45s")
 * `VideoNotFound`: The originating video the source clip came from is unavailable or deleted.
-* `InvalidVideoType`: The source, originating, or `XRef` video is not an archived broadcast.
-* `UserNotFound`: The user/channel name given for `XRef` wasn't found.
+* `InvalidVideoType`: The source, originating, or `Target` video is not an archived broadcast.
+* `UserNotFound`: The user/channel name given for `Target` wasn't found.
 * `EventNotInRange`: The `Source` event happened before the earliest video returned by Twitch API.
 * `EventNotFound`: The `Source` event happened when the user/channel wasn't broadcasting.
 
