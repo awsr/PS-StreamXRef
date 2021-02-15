@@ -25,17 +25,17 @@ You will need to have a valid API key (Client ID), which you can obtain from the
 Alias: `txr`
 
 ```
-Find-TwitchXRef [-Source] <String> [-XRef] <String> [-Count <Int32>] [-Offset <Int32>] [-Force]
+Find-TwitchXRef [-Source] <String> [-Target] <String> [-Count <Int32>] [-Offset <Int32>] [-Force]
  -ApiKey <String> [-ExplicitNull] [<CommonParameters>]
 ```
 
 **-Source** accepts Twitch clips (as a URL or just the ID) and videos with timestamps (as a URL or shorthand "v/...").
 
-**-XRef** accepts Twitch channels/users (as a URL or just the name) and videos (as a URL or shorthand "v/...").
+**-Target** accepts Twitch channels/users (as a URL or just the name) and videos (as a URL or shorthand "v/...").
 
-**-Count** (*default 20*) determines the number of videos to request when **-XRef** is a channel/user.
+**-Count** (*default 20*) determines the number of videos to request when **-Target** is a channel/user.
 
-**-Offset** (*default 0*) sets the starting offset for search results when **-XRef** is a channel/user.
+**-Offset** (*default 0*) sets the starting offset for search results when **-Target** is a channel/user.
 
 **-Force** tells the function to skip reading from the internal lookup cache.
 
