@@ -176,7 +176,7 @@ Structure of StreamXRef.DataCache:
         Key   = [string] Clip slug name
         Value = [StreamXRef.ClipObject]@{
             Offset  = [int] Time offset in seconds
-            VideoID = [int] Video ID number
+            VideoID = [int64] Video ID number
             Created = [datetime] UTC date/time clip was created
             Mapping = [dictionary]@{
                 Key   = [string] Username from a previous search
@@ -185,7 +185,7 @@ Structure of StreamXRef.DataCache:
         }
 
     [dictionary]VideoInfoCache:
-        Key   = [int] Video ID number
+        Key   = [int64] Video ID number
         Value = [datetime] Starting timestamp in UTC
 
 (All dictionaries use case-insensitive keys)

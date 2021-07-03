@@ -142,9 +142,9 @@ function Import-XRefData {
         if ($ImportStaging.psobject.Properties.Name -contains "ClipInfoCache" -and $ImportStaging.ClipInfoCache.Count -gt 0) {
             $ImportStaging.ClipInfoCache | ForEach-Object {
                 try {
-                    # Enforce casting to [int]
+                    # Enforce type casting
                     [int]$NewOffsetValue = $_.offset
-                    [int]$NewVideoIDValue = $_.video
+                    [Int64]$NewVideoIDValue = $_.video
 
                     $ConvertedDateTime = $_.created | ConvertTo-UtcDateTime
 

@@ -152,8 +152,8 @@ function Find-TwitchXRef {
 
             $TimeOffset = New-TimeSpan @OffsetArgs
 
-            # Twitch backend currently uses a signed 32-bit integer for Video IDs
-            [Int32]$VideoID = $Source | Get-LastUrlSegment
+            # Assuming that Twitch will switch to 64-bit integers once they run out of room with 32-bit
+            [Int64]$VideoID = $Source | Get-LastUrlSegment
 
             $RestArgs["Uri"] = "$API/videos/$VideoID"
         }
@@ -194,7 +194,7 @@ function Find-TwitchXRef {
                     $TimeOffset = New-TimeSpan -Seconds $ClipResponse.vod.offset
 
                     # Get Video ID from API response
-                    [int]$VideoID = $ClipResponse.vod.id
+                    [Int64]$VideoID = $ClipResponse.vod.id
 
                     # Add username to cache
                     if (-not $script:TwitchData.UserInfoCache.ContainsKey($ClipResponse.broadcaster.name)) {
@@ -297,8 +297,8 @@ function Find-TwitchXRef {
         if ($TargetIsVideo) {
             # Using VOD link
 
-            # 32-bit integer to match Twitch backend
-            [Int32]$TargetID = $Target | Get-LastUrlSegment
+            # 64-bit integer for future-proofing
+            [Int64]$TargetID = $Target | Get-LastUrlSegment
             $RestArgs["Uri"] = "$API/videos/$TargetID"
 
             $Multi = $false
