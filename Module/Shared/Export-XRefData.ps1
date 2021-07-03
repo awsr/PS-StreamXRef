@@ -55,7 +55,7 @@ function Export-XRefData {
 
         # ==== METADATA ====
         $Metadata = [pscustomobject]@{
-            schema = 1
+            schema = $script:SchemaVersion
         }
         if ($_PersistConfig) {
             $Metadata | Add-Member -NotePropertyName "_persist" -NotePropertyValue $script:PersistFormatting

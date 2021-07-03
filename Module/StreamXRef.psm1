@@ -11,6 +11,9 @@ catch {
     throw "Unable to initialize StreamXRef data object"
 }
 
+# Module constants
+$script:SchemaVersion = 1
+
 #region Internal shared helper functions ================
 
 filter Get-LastUrlSegment {

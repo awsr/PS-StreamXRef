@@ -47,7 +47,7 @@ function Import-XRefData {
     }
 
     Process {
-        $SchemaVersion = 0
+        $ImportedSchema = 0
 
         if ($IsGeneral) {
             try {
@@ -56,7 +56,7 @@ function Import-XRefData {
 
                 # Read metadata
                 if ($ImportStaging.psobject.Properties.Name -contains "config") {
-                    $SchemaVersion = $ImportStaging.config.schema
+                    $ImportedSchema = $ImportStaging.config.schema
                 }
             }
             catch {
@@ -269,7 +269,8 @@ function Import-XRefData {
             }
         }
 
-        if ($SchemaVersion -ge 1) {
+        # Additional schema-dependent actions (ImportedSchema will only be > 0 in "General" ParameterSet so checking the set isn't needed)
+        if ($ImportedSchema -ge 1) {
             # Process optional persistence formatting data
             if ($ImportStaging.config.psobject.Properties.Name -contains "_persist") {
                 $script:PersistFormatting = [SXRPersistFormat]$ImportStaging.config._persist
