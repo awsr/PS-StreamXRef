@@ -53,26 +53,26 @@ Describe "Import results object" {
         It "Imported counts are correct" {
             $Results.User.Imported | Should -Be 3
             $Results.Clip.Imported | Should -Be 2
-            $Results.Video.Imported | Should -Be 2
+            $Results.Video.Imported | Should -Be 3
         }
 
         It "Total counts are correct" {
             $Results.User.Total | Should -Be 3
             $Results.Clip.Total | Should -Be 2
-            $Results.Video.Total | Should -Be 2
+            $Results.Video.Total | Should -Be 3
         }
 
         It "ToString method override works" {
             "$($Results.User)" | Should -Be "Imported: 3, Skipped: 0, Error: 0, Total: 3"
             "$($Results.Clip)" | Should -Be "Imported: 2, Skipped: 0, Error: 0, Total: 2"
-            "$($Results.Video)" | Should -Be "Imported: 2, Skipped: 0, Error: 0, Total: 2"
+            "$($Results.Video)" | Should -Be "Imported: 3, Skipped: 0, Error: 0, Total: 3"
         }
 
         It "All___ properties work" {
-            $Results.AllImported | Should -Be 7
+            $Results.AllImported | Should -Be 8
             $Results.AllSkipped | Should -Be 0
             $Results.AllError | Should -Be 0
-            $Results.AllTotal | Should -Be 7
+            $Results.AllTotal | Should -Be 8
         }
     }
 
@@ -86,7 +86,7 @@ Describe "Import results object" {
             $Results.Clip.Imported | Should -Be 0
             $Results.Clip.Skipped | Should -Be 2
             $Results.Video.Imported | Should -Be 0
-            $Results.Video.Skipped | Should -Be 2
+            $Results.Video.Skipped | Should -Be 3
         }
     }
 

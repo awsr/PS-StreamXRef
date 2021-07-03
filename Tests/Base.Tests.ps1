@@ -116,6 +116,21 @@ Describe "Custom type data" {
             $TestCache.GetTotalCount() | Should -Be 3
         }
     }
+
+    Context "Data types" {
+        It "Rejects invalid data" {
+            $TypeTest = [StreamXRef.DataCache]::new()
+            { $TypeTest.UserInfoCache.Add("Oopsies", "I'm not a number!") } | Should -Throw
+            { $TypeTest.ClipInfoCache.Add("MissingObject") } | Should -Throw
+            { $TypeTest.VideoInfoCache.Add($true, $false) } | Should -Throw
+        }
+
+        It "Works with 64-bit integers for videos" {
+            $Test64 = [StreamXRef.DataCache]::new()
+            { $Test64.VideoInfoCache.Add(12345678987654321, [datetime]::UtcNow) } | Should -Not -Throw
+            { [StreamXRef.ClipObject]@{VideoId = 12345678987654321} } | Should -Not -Throw
+        }
+    }
 }
 
 Describe "Internal function validation" {
