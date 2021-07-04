@@ -1,4 +1,4 @@
-#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.2' }
+#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.2.2' }
 
 BeforeAll {
     Get-Module StreamXRef | Remove-Module

@@ -1,4 +1,4 @@
-#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.2' }
+#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.2.2' }
 
 BeforeAll {
     Get-Module StreamXRef | Remove-Module
@@ -100,7 +100,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
         }
 
         It "Continues with next entry in the pipeline" {
-            Mock Invoke-RestMethod -ParameterFilter { $Uri -like "*ValidClipName" } -MockWith {
+            Mock Invoke-RestMethod -ModuleName StreamXRef -ParameterFilter { $Uri -like "*ValidClipName" } -MockWith {
                 return [pscustomobject]@{
                     broadcaster = [pscustomobject]@{
                         id        = 22446688
@@ -122,7 +122,7 @@ Describe "HTTP response errors" -Tag HTTPResponse {
             $Result = $TestArray | Find-TwitchXRef -ErrorVariable TestErrs -ErrorAction SilentlyContinue
 
             $TestErrs[$global:TestErrorOffset].InnerException.Response.StatusCode | Should -Be 404 -Because "only the call with 'ValidClipName' is mocked with values"
-            Should -Invoke "Invoke-RestMethod" -Exactly 3  # 1 404 response, 1 response with data, then 1 404 response
+            Should -Invoke "Invoke-RestMethod" -ModuleName StreamXRef -Exactly 3  # 1 404 response, 1 response with data, then 1 404 response
             $Result | Should -BeNullOrEmpty
         }
 
