@@ -1,5 +1,13 @@
 Set-StrictMode -Version 3
 
+# Deprecation error/warning due to Twitch shutting down v5 API at the end of February, 2022
+if ([datetime]::UtcNow -ge [datetime]::new(2022, 3, 1)) {
+    Write-Error "Twitch v5 API has been shut down. Upgrade module, if available, or uninstall."
+}
+else {
+    Write-Warning "Twitch v5 API will be shut down by the end of February, 2022."
+}
+
 # Add type data
 Add-Type -Path "$PSScriptRoot/typedata/StreamXRefTypes.dll"
 

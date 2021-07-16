@@ -6,7 +6,7 @@
 
     CompanyName = 'Alex Wiser'
 
-    ModuleVersion = '3.4.0'
+    ModuleVersion = '3.4.1'
 
     GUID = '8c89ef10-5110-4406-a876-82b8eadf5bb2'
 
@@ -41,6 +41,11 @@
             IconUri = 'https://raw.githubusercontent.com/awsr/PS-StreamXRef/master/sxr.png'
 
             ReleaseNotes = @'
+## 3.4.1
+
+* Added deprecation warning due to Twitch shutting down the v5 API in February, 2022.
+* Added error message if module is run after this date
+
 ## 3.4.0
 
 * Future-proofing by assuming Twitch will use 64-bit integers after running out of 32-bit integers for video ids.
