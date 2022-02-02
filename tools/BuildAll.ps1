@@ -36,17 +36,21 @@ $BuildParameters = [System.Collections.Generic.List[hashtable]]::new()
 
 #region Config
 $ScriptBuilder = Join-Path $ProjectRoot "tools/ScriptBuilder.ps1"
-
+$TempPath = Join-Path $ProjectRoot "build/temp"
 $OutPath = $ForDebug ? (Join-Path $ProjectRoot "debug/Module") : (Join-Path $ProjectRoot "Module")
 $srcItems = Join-Path $ProjectRoot "src/*"
 #endregion Config
+
+if (-not (Test-Path $TempPath)) {
+    [void] (New-Item -Path $TempPath -ItemType Directory)
+}
 
 $Files = Get-ChildItem $srcItems -Include "*.ps1", "*.psd1", "*.psm1"
 $Files | ForEach-Object {
     $BuildParameters.Add(
         @{
             File             = $_.FullName
-            OutputRootPath   = $OutPath
+            OutputRootPath   = $TempPath
             DefaultDirName   = "Shared"
             ScriptToGlobal   = $ForDebug
             Verbose          = $true
@@ -63,8 +67,15 @@ try {
         # Call the ScriptBuilder script and use splatting to populate the parameters
         & $ScriptBuilder @_
     }
+
+    # Remove previous non-assembly contents of $OutPath directory
+    Remove-Item "$OutPath/*" -Recurse -Exclude "*typedata*","*.dll","*.xml"
+
+    # Move files to $OutPath directory
+    Move-Item "$TempPath/*" $OutPath
 }
 catch {
+    Remove-Item $TempPath -Recurse
     throw $_
 }
 
@@ -75,9 +86,9 @@ if ($ForDebug -and (Get-Command dotnet)) {
 
     if (-not (Test-Path $typedataPath)) {
         # Placeholder file
-        New-Item $typedataPath -ItemType File
+        [void] (New-Item $typedataPath -ItemType File)
     }
 
-    Copy-Item "$ProjectRoot/src/dotnet/bin/Debug/netstandard2.0/StreamXRefTypes.dll" $typedataPath
+    Copy-Item "$ProjectRoot/src/dotnet/bin/Debug/netstandard2.0/StreamXRefTypes.dll" $typedataPath -Force
     Write-Verbose "Assembly copied to $typedataPath"
 }
